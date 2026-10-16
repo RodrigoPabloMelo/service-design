@@ -30,6 +30,7 @@ App que ajuda **mulheres viajantes (sozinhas ou com mais 1 pessoa)** a **descobr
 - Apresentação do ciclo 1: `[rod-eulalia-clara] Primeiro ciclo de design de um serviço.pdf` (DD032, 2026.2 — fora do repo)
 - Esboço do mapa do ecossistema: [assets/2026-10-ecossistema-esboco.webp](../assets/2026-10-ecossistema-esboco.webp)
 - Mapa da jornada: [assets/2026-10-mapa-jornada.webp](../assets/2026-10-mapa-jornada.webp)
+- Diagramas digitais exportados (versionados): [imagens/](imagens/README.md)
 
 ## IDs usados para referência cruzada
 

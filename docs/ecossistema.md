@@ -2,6 +2,8 @@
 
 > **Atualizado:** 2026-10-16 · **Fonte:** esboço à mão [assets/2026-10-ecossistema-esboco.webp](../assets/2026-10-ecossistema-esboco.webp) + conversa com Rodrigo
 > Transcrição do esboço; numeração dos atores igual à do desenho. Refinamento do ecossistema é próxima etapa.
+> **Versão digital interativa:** [artifact](https://claude.ai/artifact/5i9EX1Tf66DbZX2kTZ3Wyc) · fonte em [diagrams/ecossistema.html](../diagrams/ecossistema.html). Ao mudar atores ou fluxos aqui, atualize também o SVG no HTML e republique. Pictogramas: Hugeicons (MIT), embutidos como `<symbol>`.
+> **Imagem v1:** [imagens/diagramas/2026-10-16-ecossistema-servico-v1.png](imagens/diagramas/2026-10-16-ecossistema-servico-v1.png) (histórico de versões em [imagens/README.md](imagens/README.md)).
 
 ## Zonas
 

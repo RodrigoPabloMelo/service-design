@@ -1,0 +1,232 @@
+<title>Ecossistema de rolês locais</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: o diagrama direto na superfície da página, legenda logo acima. Estático, sem animação.
+   Atores são pictogramas (Hugeicons, MIT, embutidos como <symbol>) em discos de contorno fino.
+   Raio: zonas 28px, etiquetas em pílula. Tudo neutro; a única cor marca o dinheiro (o modelo do serviço).
+   Informação e material se distinguem pelo traço: tracejado e pontilhado. */
+:root {
+  --bg: #f4f6f5;
+  --core: #ffffff;
+  --ink: #15201d;
+  --muted: #5a6762;
+  --zone: #e9eeec;
+  --pillar: #b4bfbb;
+  --info: #3b4844;
+  --fin: #b0375b;
+  --mat: #7d8a85;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Geist", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1513; --core: #1b2522; --ink: #e4ebe8; --muted: #9ba9a4;
+    --zone: #151e1b; --pillar: #3e4b46;
+    --info: #c3ceca; --fin: #ec85a3; --mat: #7f8c87;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1513; --core: #1b2522; --ink: #e4ebe8; --muted: #9ba9a4;
+  --zone: #151e1b; --pillar: #3e4b46;
+  --info: #c3ceca; --fin: #ec85a3; --mat: #7f8c87;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: clamp(24px, 5vw, 64px);
+}
+
+.map { max-width: 1280px; margin: 0 auto; display: grid; gap: clamp(16px, 2.4vw, 28px); }
+
+.legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; justify-content: center; order: 2; }
+.legend li {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 14px; font-weight: 500;
+  padding: 7px 15px 7px 13px; border-radius: 999px;
+}
+.legend li { color: var(--ink); padding-left: 0; }
+.legend .l-info svg { color: var(--info); }
+.legend .l-fin svg { color: var(--fin); }
+.legend .l-mat svg { color: var(--mat); }
+.legend svg { width: 30px; height: 10px; flex: none; }
+
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.map svg.eco { display: block; width: 100%; height: auto; }
+@media (max-width: 760px) { .map svg.eco { min-width: 820px; } }
+
+/* Zonas */
+.zone { fill: var(--zone); }
+.ztag { font: 500 10.5px var(--font-mono); fill: var(--muted); letter-spacing: .2em; text-transform: uppercase; }
+.pillar { stroke: var(--pillar); stroke-width: 2; stroke-linecap: round; }
+
+/* Pictogramas: disco com contorno fino */
+.actor .disc { fill: var(--core); stroke: var(--pillar); stroke-width: 1; }
+.actor .glyph { color: var(--ink); }
+.actor .name { font: 650 17px var(--font-display); fill: var(--ink); text-anchor: middle; letter-spacing: -0.01em; }
+.actor .sub { font: 400 13px var(--font-body); fill: var(--muted); text-anchor: middle; }
+.actor .name, .actor .sub { paint-order: stroke; stroke: var(--zone); stroke-width: 6px; stroke-linejoin: round; }
+.actor.on-bg .name, .actor.on-bg .sub { stroke: var(--bg); }
+.actor.hub .disc { fill: var(--ink); stroke: none; }
+.actor.hub .glyph { color: var(--core); }
+.actor.traveler .disc { stroke: var(--ink); stroke-width: 1.25; }
+
+/* Fluxos */
+.edge .ln { fill: none; stroke-width: 1.5; }
+.t-info .ln { stroke: var(--info); stroke-dasharray: 6 5; }
+.t-fin .ln { stroke: var(--fin); stroke-width: 1.75; }
+.t-mat .ln { stroke: var(--mat); stroke-dasharray: 0.1 5.5; stroke-linecap: round; stroke-width: 2.75; }
+.mk { stroke: none; }
+.mk-info { fill: var(--info); } .mk-fin { fill: var(--fin); } .mk-mat { fill: var(--mat); }
+
+.elabel {
+  font: 400 13px var(--font-body);
+  fill: var(--muted);
+  text-anchor: middle;
+  paint-order: stroke; stroke: var(--bg); stroke-width: 8px; stroke-linejoin: round;
+}
+.elabel.in-zone { stroke: var(--zone); }
+</style>
+
+<figure class="map" style="margin: 0 auto;">
+  <ul class="legend" aria-label="Legenda">
+    <li class="l-info">
+      <svg viewBox="0 0 30 10" aria-hidden="true"><line x1="1" y1="5" x2="29" y2="5" stroke="currentColor" stroke-width="2.25" stroke-dasharray="7 6"/></svg>
+      Informação
+    </li>
+    <li class="l-fin">
+      <svg viewBox="0 0 30 10" aria-hidden="true"><line x1="1" y1="5" x2="29" y2="5" stroke="currentColor" stroke-width="2.5"/></svg>
+      Financeiro
+    </li>
+    <li class="l-mat">
+      <svg viewBox="0 0 30 10" aria-hidden="true"><line x1="3" y1="5" x2="28" y2="5" stroke="currentColor" stroke-width="3.25" stroke-linecap="round" stroke-dasharray="0.1 7"/></svg>
+      Material
+    </li>
+  </ul>
+
+  <div class="scroll">
+    <svg class="eco" viewBox="0 50 1200 690" role="img" aria-label="Mapa do ecossistema: moradoras, moradores e prestadores enviam informação ao grupo, que faz a curadoria e alimenta o app; a viajante usa o app antes, durante e depois da viagem, paga planos ao grupo e rolês ao prestador, que paga comissão ao grupo; o grupo dá crédito a quem recomenda.">
+      <defs>
+        <!-- Hugeicons (MIT, hugeicons.com), pacote @hugeicons/core-free-icons 4.3.5 -->
+        <symbol id="hi-store01" viewBox="0 0 24 24" fill="none"><path d="M3.50002 10V15C3.50002 17.8284 3.50002 19.2426 4.37869 20.1213C5.25737 21 6.67159 21 9.50002 21H14.5C17.3284 21 18.7427 21 19.6213 20.1213C20.5 19.2426 20.5 17.8284 20.5 15V10" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/><path d="M17 7.50184C17 8.88255 15.8807 9.99997 14.5 9.99997C13.1193 9.99997 12 8.88068 12 7.49997C12 8.88068 10.8807 9.99997 9.50002 9.99997C8.1193 9.99997 7.00002 8.88068 7.00002 7.49997C7.00002 8.88068 5.82655 9.99997 4.37901 9.99997C3.59984 9.99997 2.90008 9.67567 2.42 9.16087C1.59462 8.2758 2.12561 6.97403 2.81448 5.98842L3.20202 5.45851C4.08386 4.2527 4.52478 3.6498 5.16493 3.32494C5.80508 3.00008 6.55201 3.00018 8.04587 3.00038L15.9551 3.00143C17.4485 3.00163 18.1952 3.00173 18.8351 3.32658C19.475 3.65143 19.9158 4.25414 20.7974 5.45957L21.1855 5.99029C21.8744 6.97589 22.4054 8.27766 21.58 9.16273C21.0999 9.67754 20.4002 10.0018 19.621 10.0018C18.1734 10.0018 17 8.88255 17 7.50184Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/><path d="M14.9971 17C14.3133 17.6072 13.2247 18 11.9985 18C10.7723 18 9.68376 17.6072 9 17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/></symbol>
+        <symbol id="hi-user-love01" viewBox="0 0 24 24" fill="none"><path d="M11.995 13.5663L11 13.5C10.6446 13.5097 10.3134 13.5226 10.0008 13.5379C6.3 13.7193 3.28417 16.8058 3 20.5002" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/><circle cx="11" cy="6.5" r="4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/><path d="M16.9437 21.3121C15.9563 20.5675 14 18.8652 14 17.3333C14 16.3208 14.7368 15.5 15.75 15.5C16.275 15.5 16.8 15.6765 17.5 16.3823C18.2 15.6765 18.725 15.5 19.25 15.5C20.2632 15.5 21 16.3208 21 17.3333C21 18.8652 19.0437 20.5675 18.0563 21.3121C17.724 21.5626 17.276 21.5626 16.9437 21.3121Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/></symbol>
+        <symbol id="hi-user-group" viewBox="0 0 24 24" fill="none"><path d="M18.4995 20.5C18.2663 17.5685 15.8417 15.2477 12.808 15.0521L11.9995 15C11.7107 15.0076 11.4416 15.0178 11.1877 15.0298C8.18075 15.1723 5.7304 17.5974 5.49951 20.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/><path d="M15.2495 9.25C15.2495 11.0449 13.7944 12.5 11.9995 12.5C10.2046 12.5 8.74952 11.0449 8.74952 9.25C8.74952 7.45507 10.2046 6 11.9995 6C13.7944 6 15.2495 7.45507 15.2495 9.25Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/><path d="M5.50249 8.5C5.17908 7.99485 4.99158 7.39432 4.99158 6.75C4.99158 4.95507 6.44665 3.5 8.24157 3.5C8.68752 3.5 9.1125 3.58982 9.49939 3.75235" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/><path d="M18.4963 8.5C18.8197 7.99485 19.0072 7.39432 19.0072 6.75C19.0072 4.95507 17.5521 3.5 15.7572 3.5C15.3113 3.5 14.8863 3.58982 14.4994 3.75235" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/><path d="M22.0007 17.9996C21.8208 15.7374 19.9995 13.5 17.9995 13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/><path d="M1.99927 17.9996C2.17923 15.7374 4.00049 13.5 6.00049 13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/></symbol>
+        <symbol id="hi-smart-phone01" viewBox="0 0 24 24" fill="none"><path d="M13.5 2H10.5C8.14298 2 6.96447 2 6.23223 2.73223C5.5 3.46447 5.5 4.64298 5.5 7V17C5.5 19.357 5.5 20.5355 6.23223 21.2678C6.96447 22 8.14298 22 10.5 22H13.5C15.857 22 17.0355 22 17.7678 21.2678C18.5 20.5355 18.5 19.357 18.5 17V7C18.5 4.64298 18.5 3.46447 17.7678 2.73223C17.0355 2 15.857 2 13.5 2Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/><path d="M12.125 19H12M12.25 19C12.25 19.1381 12.1381 19.25 12 19.25C11.8619 19.25 11.75 19.1381 11.75 19C11.75 18.8619 11.8619 18.75 12 18.75C12.1381 18.75 12.25 18.8619 12.25 19Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/></symbol>
+        <symbol id="hi-woman" viewBox="0 0 24 24" fill="none"><path d="M14 4C14 5.10457 13.1046 6 12 6C10.8954 6 10 5.10457 10 4C10 2.89543 10.8954 2 12 2C13.1046 2 14 2.89543 14 4Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25"/><path d="M10.0002 16V20C10.0002 20.9428 10.0002 21.4142 10.2931 21.7071C10.586 22 11.0574 22 12.0002 22C12.943 22 13.4144 22 13.7073 21.7071C14.0002 21.4142 14.0002 20.9428 14.0002 20V16L14.2603 16.0007C15.8127 16.0005 16.5889 16.0004 16.8927 15.5149C17.1965 15.0295 16.8312 14.3728 16.1007 13.0595L14.3008 9.82358C13.8476 9.00874 12.9628 8.49982 11.9996 8.5C11.0368 8.50018 10.1525 9.00901 9.69941 9.82351L7.89935 13.0595C7.1688 14.3728 6.80353 15.0294 7.10731 15.5149C7.41109 16.0004 8.1873 16.0005 9.73972 16.0007L10.0002 16Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.25"/></symbol>
+        <marker id="ar-info" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="mk mk-info" d="M0,0.5 L10,5 L0,9.5 z"/></marker>
+        <marker id="ar-fin" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="mk mk-fin" d="M0,0.5 L10,5 L0,9.5 z"/></marker>
+        <marker id="ar-mat" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="mk mk-mat" d="M0,0.5 L10,5 L0,9.5 z"/></marker>
+      </defs>
+
+      <!-- Zonas -->
+      <rect class="zone" x="20" y="64" width="300" height="610" rx="28"/>
+      <text class="ztag" x="44" y="96">Parceiros externos</text>
+      <rect class="zone" x="615" y="64" width="570" height="610" rx="28"/>
+      <text class="ztag" x="639" y="96">Usuária</text>
+      <line class="pillar" x1="470" y1="124" x2="470" y2="620"/>
+      <text class="ztag" x="470" y="96" text-anchor="middle">Fronteira</text>
+
+      <!-- Fluxos -->
+      <g class="edge t-info">
+        <path class="ln" d="M207,505 Q340,495 437,393" marker-end="url(#ar-info)"/>
+        <text class="elabel" x="331" y="477">recomendação</text>
+      </g>
+      <g class="edge t-fin">
+        <path class="ln" d="M426,372 Q240,370 170,476" marker-end="url(#ar-fin)"/>
+        <text class="elabel in-zone" x="252" y="397">crédito e desconto</text>
+      </g>
+      <g class="edge t-info">
+        <path class="ln" d="M207,197 Q330,250 437,327" marker-end="url(#ar-info)"/>
+        <text class="elabel" x="384" y="270">oferta do rolê</text>
+      </g>
+      <g class="edge t-fin">
+        <path class="ln" d="M214,170 Q450,165 462,312" marker-end="url(#ar-fin)"/>
+        <text class="elabel" x="372" y="187">comissão</text>
+      </g>
+      <g class="edge t-mat">
+        <path class="ln" d="M505,330 Q620,225 737,332" marker-end="url(#ar-mat)"/>
+        <text class="elabel in-zone" x="676" y="290">bugs e updates</text>
+      </g>
+      <g class="edge t-info">
+        <path class="ln" d="M518,360 L726,360" marker-end="url(#ar-info)"/>
+        <text class="elabel" x="621" y="365">curadoria</text>
+      </g>
+      <g class="edge t-fin">
+        <path class="ln" d="M1006,160 Q620,90 493,318" marker-end="url(#ar-fin)"/>
+        <text class="elabel in-zone" x="700" y="166">planos e pacotes</text>
+      </g>
+      <g class="edge t-info">
+        <path class="ln" d="M800,330 Q880,230 1019,191" marker-end="url(#ar-info)"/>
+        <text class="elabel in-zone" x="895" y="250">recomendações</text>
+      </g>
+      <g class="edge t-info">
+        <path class="ln" d="M803,388 Q880,490 1019,529" marker-start="url(#ar-info)" marker-end="url(#ar-info)"/>
+        <text class="elabel in-zone" x="896" y="479">roteiro e ajustes</text>
+      </g>
+      <g class="edge t-info">
+        <path class="ln" d="M1036,360 L814,360" marker-end="url(#ar-info)"/>
+        <text class="elabel in-zone" x="925" y="365">avaliação</text>
+      </g>
+      <g class="edge t-fin">
+        <path class="ln" d="M1094,560 H1150 Q1170,560 1170,580 V685 Q1170,705 1150,705 H60 Q40,705 40,685 V195 Q40,175 60,175 H126" marker-end="url(#ar-fin)"/>
+        <text class="elabel" x="600" y="710">paga o rolê, no app ou no local</text>
+      </g>
+
+      <!-- Atores: casca r+8, núcleo r, pictograma no centro -->
+      <g class="actor">
+        <circle class="disc" cx="170" cy="175" r="36"/>
+        <use class="glyph" href="#hi-store01" x="153" y="158" width="34" height="34"/>
+        <text class="name" x="170" y="242">Prestador(a)</text>
+        <text class="sub" x="170" y="260">restaurante, transporte</text>
+      </g>
+      <g class="actor">
+        <circle class="disc" cx="170" cy="520" r="36"/>
+        <use class="glyph" href="#hi-user-love01" x="153" y="503" width="34" height="34"/>
+        <text class="name" x="170" y="587">Local</text>
+        <text class="sub" x="170" y="605">moradora ou criadora</text>
+      </g>
+      <g class="actor hub on-bg">
+        <circle class="disc" cx="470" cy="360" r="43"/>
+        <use class="glyph" href="#hi-user-group" x="451" y="341" width="38" height="38"/>
+        <text class="name" x="470" y="434">Grupo</text>
+        <text class="sub" x="470" y="452">faz a curadoria</text>
+      </g>
+      <g class="actor">
+        <circle class="disc" cx="770" cy="360" r="36"/>
+        <use class="glyph" href="#hi-smart-phone01" x="753" y="343" width="34" height="34"/>
+        <text class="name" x="770" y="427">App</text>
+        <text class="sub" x="770" y="445">reúne o curado</text>
+      </g>
+      <g class="actor traveler">
+        <circle class="disc" cx="1050" cy="160" r="36"/>
+        <use class="glyph" href="#hi-woman" x="1033" y="143" width="34" height="34"/>
+        <text class="name" x="1050" y="232">Antes</text>
+        <text class="sub" x="1050" y="250">planeja o roteiro</text>
+      </g>
+      <g class="actor traveler">
+        <circle class="disc" cx="1080" cy="360" r="36"/>
+        <use class="glyph" href="#hi-woman" x="1063" y="343" width="34" height="34"/>
+        <text class="name" x="1080" y="432">Depois</text>
+        <text class="sub" x="1080" y="450">avalia e indica</text>
+      </g>
+      <g class="actor traveler">
+        <circle class="disc" cx="1050" cy="560" r="36"/>
+        <use class="glyph" href="#hi-woman" x="1033" y="543" width="34" height="34"/>
+        <text class="name" x="1050" y="632">Durante</text>
+        <text class="sub" x="1050" y="650">visita e paga</text>
+      </g>
+    </svg>
+  </div>
+</figure>
+
