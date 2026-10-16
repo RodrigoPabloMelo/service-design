@@ -1,0 +1,127 @@
+# Questões em aberto
+
+> **Atualizado:** 2026-10-16 · **Origem:** levantadas na documentação do ciclo 1 (conversa com Rodrigo, 2026-10-16)
+> **Status:** `aberta` · `em discussão` · `resolvida` (→ registrar em [decisoes.md](decisoes.md) com o `D-xx`)
+> **Prioridade:** **alta** = bloqueia ideação/blueprint · **média** = precisa antes do protótipo · **baixa** = pode esperar
+
+## Painel
+
+| ID | Questão | Área | Prioridade | Status |
+| --- | --- | --- | --- | --- |
+| [Q-01](#q-01) | Nome do serviço | Marca | média | aberta |
+| [Q-02](#q-02) | Estrutura dos planos/pacotes | Receita | alta | aberta |
+| [Q-03](#q-03) | Como funciona o transporte com motoristas mulheres | Receita/Segurança | alta | aberta |
+| [Q-04](#q-04) | Comissão: valor e rastreio no pagamento no local | Receita | alta | aberta |
+| [Q-05](#q-05) | O que se paga no app x no local | Pagamento | média | aberta |
+| [Q-06](#q-06) | Critérios e operação da curadoria | Curadoria | alta | aberta |
+| [Q-07](#q-07) | Regras do crédito/desconto para locais | Recomendação | média | aberta |
+| [Q-08](#q-08) | Criadoras de conteúdo x desconfiança de publi | Confiança | alta | aberta |
+| [Q-09](#q-09) | Recomendações de homens no recorte de confiança | Confiança | média | aberta |
+| [Q-10](#q-10) | Critérios do selo de segurança | Segurança | alta | aberta |
+| [Q-11](#q-11) | Escopo e dados da IA de roteiro | IA | média | aberta |
+| [Q-12](#q-12) | Segurança "durante" e "depois" do rolê | Segurança | alta | aberta |
+| [Q-13](#q-13) | App exclusivo para mulheres? Confiabilidade das avaliações | Avaliações | alta | aberta |
+| [Q-14](#q-14) | Refinamento das personas ainda vai acontecer? | Pesquisa | baixa | aberta |
+| [Q-15](#q-15) | Para qual persona é o mapa de jornada atual | Pesquisa | média | aberta |
+| [Q-16](#q-16) | Detalhe da análise de concorrentes | Pesquisa | média | aberta |
+| [Q-17](#q-17) | Como motivar a viajante a avaliar | Avaliações | média | aberta |
+| [Q-18](#q-18) | Número e perfil das entrevistadas | Pesquisa | baixa | aberta |
+| [Q-19](#q-19) | Conteúdo da Matriz CSD | Pesquisa | baixa | aberta |
+| [Q-20](#q-20) | Sustentabilidade do serviço além da disciplina | Negócio | baixa | aberta |
+| [Q-21](#q-21) | Entrada e relação com prestadores | Ecossistema | alta | aberta |
+| [Q-22](#q-22) | Papel da companhia no serviço | Ecossistema/UX | média | aberta |
+| [Q-23](#q-23) | Medição de impacto (ODS 12.b) | Impacto | baixa | aberta |
+
+---
+
+<a id="q-01"></a>
+### Q-01 · Nome do serviço
+Ainda sem nome. Nos docs: "o app" / "o serviço".
+
+<a id="q-02"></a>
+### Q-02 · Estrutura dos planos/pacotes
+Ref.: D-01. Quantos planos? O que é grátis e o que é pago? Preço? Plano por viagem (passe) ou recorrente? Pacote é por rolê (ex.: jantar com reserva + prato + motorista) ou por período?
+
+<a id="q-03"></a>
+### Q-03 · Transporte com motoristas mulheres
+Ref.: D-01, [ecossistema.md](ecossistema.md). É parceria com app existente, cooperativa ou rede própria de motoristas? Quem paga e como? Esse parceiro vira ator do ecossistema. Também é recurso de segurança na ida/volta.
+
+<a id="q-04"></a>
+### Q-04 · Comissão do prestador
+Ref.: D-02, D-08. Qual percentual/modelo? Quando o rolê é pago **direto no local**, como o app sabe que a venda veio dele (cupom, QR, código, check-in)?
+
+<a id="q-05"></a>
+### Q-05 · O que se paga no app x no local
+Ref.: D-08. Quais tipos de rolê entram como pacote/reserva no app e quais ficam avulsos? Bares e cafés têm comissão?
+
+<a id="q-06"></a>
+### Q-06 · Curadoria: critérios e operação
+Ref.: D-05. Quais critérios o grupo usa para aprovar uma recomendação (local de verdade? acessível? seguro? preço justo)? Quem do grupo revisa e com que frequência? Qual sinal da comunidade derruba uma recomendação (nota, denúncia, "fechou/mudou")? Como se combate a dor de **info desatualizada** (`P-JULIA`)?
+
+<a id="q-07"></a>
+### Q-07 · Crédito/desconto para locais
+Ref.: D-04. Quanto vale uma recomendação? Ganha ao enviar, ao ser aprovada ou ao ser usada? Moradores locais usam rolês do próprio app (que é para viajantes)? Isso não incentiva recomendação em massa/baixa qualidade?
+
+<a id="q-08"></a>
+### Q-08 · Criadoras de conteúdo x desconfiança de publi
+Ref.: D-03, `E-04`, `P-JULIA`. Publi disfarçada é uma das maiores dores. Se criadoras recomendam e ganham crédito, e prestadores pagam comissão, como o app **sinaliza transparência** (quem recomendou, se há vínculo, por que está ali)? Prestador pode pagar para aparecer?
+
+<a id="q-09"></a>
+### Q-09 · Recomendações de homens
+Ref.: D-03. A pesquisa diz que **avaliações de outras mulheres** são as mais confiáveis. Moradores homens também recomendam — isso é sinalizado? Pesa diferente no selo de segurança?
+
+<a id="q-10"></a>
+### Q-10 · Selo de segurança
+Ref.: D-06. O selo é dado pela comunidade, pela curadoria ou pelos dois? Quais critérios (sozinha, em dupla, à noite, transporte de volta)? É por lugar, por horário ou por trajeto? Como evitar estigmatizar bairros periféricos (conflito com ODS 8.9 / 11.7)?
+
+<a id="q-11"></a>
+### Q-11 · IA de roteiro
+Ref.: D-07. A IA gera roteiro inteiro, sugere encaixes ou só replaneja durante a estadia? De onde vêm dados de clima, localização, horários de funcionamento e rotas? Como mostrar **por que** cada item foi recomendado? O que acontece quando a base curada não cobre um pedido?
+
+<a id="q-12"></a>
+### Q-12 · Segurança durante e depois
+Ref.: D-06, `E-07`. A proposta promete segurança "antes, durante e depois", mas o confirmado (entorno + selo) atua sobretudo **antes**. O que cobre a **hipervigilância** de `E-07` e a volta para o hotel? O que é segurança "depois"? Compartilhar localização / check-in / SOS foram descartados ou só despriorizados?
+
+<a id="q-13"></a>
+### Q-13 · App exclusivo para mulheres? Avaliações confiáveis
+Ref.: D-09. O app é só para mulheres? Há cadastro/verificação? Como saber que a avaliadora esteve no lugar? Como evitar avaliações falsas (inclusive de prestadores)?
+
+<a id="q-14"></a>
+### Q-14 · Refinamento das personas
+O PDF lista "refinamento das personas a partir das entrevistas feitas após a apresentação", mas não entrou nas próximas etapas confirmadas (D-12). Vai acontecer? Há entrevistas novas a incorporar?
+
+<a id="q-15"></a>
+### Q-15 · Persona do mapa de jornada
+A jornada atual mistura sinais de viagem acompanhada ("alinha prioridades com a companhia", "envia opções para quem vai junto") e sozinha ("hipervigilância quando está sozinha"). É de uma persona específica ou uma jornada geral? As jornadas das outras personas (D-12) precisam saber de qual partir.
+
+<a id="q-16"></a>
+### Q-16 · Análise de concorrentes
+Ref.: [pesquisa.md](pesquisa.md). A página do PDF está em imagem. Registrar: quais apps de mulheres viajantes foram analisados, critérios, forças/fraquezas e o diferencial do serviço frente a cada um.
+
+<a id="q-17"></a>
+### Q-17 · Motivação para avaliar
+Ref.: `E-08`. Elas "avaliam só quando foi bom" e têm pouca motivação nas plataformas. Viajantes também ganham crédito ao avaliar? Como capturar o boca a boca (WhatsApp, stories) para dentro do app?
+
+<a id="q-18"></a>
+### Q-18 · Entrevistas
+Quantas entrevistas no ciclo 1? Perfil (idade, cidade de origem, sozinha/acompanhada)? Onde estão as notas? (ir para [`research/`](../research/))
+
+<a id="q-19"></a>
+### Q-19 · Matriz CSD
+Citada nos métodos, mas o conteúdo (certezas, suposições, dúvidas) não está no material. Registrar em [pesquisa.md](pesquisa.md).
+
+<a id="q-20"></a>
+### Q-20 · Sustentabilidade do serviço
+O grupo faz curadoria e sustentação (bugs/updates). No conceito, quem opera o serviço no longo prazo e na expansão para outras cidades? Curadoria manual escala?
+
+<a id="q-21"></a>
+### Q-21 · Prestadores
+Ref.: `A-1`, `A-6`. Como um prestador entra na rede (convite, cadastro, via recomendação de local)? Há contrato/critério? Um prestador pode recomendar o próprio negócio (`A-1` = `A-6`)? Qual o benefício para ele além de vendas (ODS 8.3)?
+
+<a id="q-22"></a>
+### Q-22 · Papel da companhia
+Ref.: `P-JULIA` ("decidir juntas"), `P-MARINA` ("agradar às duas pessoas"), `E-02`/`E-03`. A amiga/parceiro(a) usa o app também? Há roteiro/lista compartilhada? Planos valem para duas pessoas?
+
+<a id="q-23"></a>
+### Q-23 · Medição de impacto
+Ref.: ODS 12.b em [visao-do-servico.md](visao-do-servico.md). O serviço vai medir impacto (gasto em negócios locais, dispersão para fora do circuito turístico)? Quais indicadores?
