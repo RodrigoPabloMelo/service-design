@@ -31,6 +31,9 @@
 | [Q-21](#q-21) | Entrada e relação com prestadores | Ecossistema | alta | aberta |
 | [Q-22](#q-22) | Papel da companhia no serviço | Ecossistema/UX | média | aberta |
 | [Q-23](#q-23) | Medição de impacto (ODS 12.b) | Impacto | baixa | aberta |
+| [Q-24](#q-24) | Tom de voz e linguagem | UX writing | média | aberta |
+| [Q-25](#q-25) | Plataforma, conectividade e acessibilidade | Produto | média | aberta |
+| [Q-26](#q-26) | Identidade visual / DESIGN.md | Visual | média | aberta |
 
 ---
 
@@ -125,3 +128,15 @@ Ref.: `P-JULIA` ("decidir juntas"), `P-MARINA` ("agradar às duas pessoas"), `E-
 <a id="q-23"></a>
 ### Q-23 · Medição de impacto
 Ref.: ODS 12.b em [visao-do-servico.md](visao-do-servico.md). O serviço vai medir impacto (gasto em negócios locais, dispersão para fora do circuito turístico)? Quais indicadores?
+
+<a id="q-24"></a>
+### Q-24 · Tom de voz e linguagem
+Ref.: [UX.md](../UX.md) §6. A hipótese atual é um tom "de amiga local": direto, concreto, no feminino, sem alarmismo. Isso é o tom oficial? Como falar de segurança sem gerar medo nem estigmatizar bairros?
+
+<a id="q-25"></a>
+### Q-25 · Plataforma, conectividade e acessibilidade
+App nativo (iOS/Android), PWA ou os dois? Precisa funcionar offline ou com pouca conexão no "durante" (roteiro e entorno salvos)? Quais requisitos de acessibilidade (contraste no sol, uso com uma mão, leitor de tela)?
+
+<a id="q-26"></a>
+### Q-26 · Identidade visual / DESIGN.md
+Não há identidade visual. Quando houver, registrar num `DESIGN.md` na raiz (tokens + regras de uso), referenciado pelo [UX.md](../UX.md), para a IA não inventar marca.

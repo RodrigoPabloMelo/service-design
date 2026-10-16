@@ -2,6 +2,10 @@
 
 Repositório de service design de um app para **mulheres viajantes descobrirem rolês locais com confiança e segurança** (piloto Recife/Olinda). Projeto da disciplina DD032, 2026.2 — Rodrigo, Eulália e Maria Clara.
 
+## Gerando qualquer coisa (telas, fluxos, textos, protótipos, slides, código de UI)
+
+Leia [UX.md](UX.md) antes e siga as restrições, a seção "Não faça" e a "Checagem da saída". Quando a IA errar de forma recorrente, registre no log da seção 10 do UX.md e ajuste a regra.
+
 ## Contexto do serviço
 
 Comece por [docs/README.md](docs/README.md): resumo, índice e IDs de referência. Leia o arquivo temático conforme a tarefa:

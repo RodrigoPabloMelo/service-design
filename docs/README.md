@@ -7,6 +7,10 @@
 
 App que ajuda **mulheres viajantes (sozinhas ou com mais 1 pessoa)** a **descobrir passeios e lugares não-turísticos de forma confiável e unificada**, através de **recomendações de pessoas locais curadas pelo grupo** e **recursos de segurança antes, durante e depois do rolê**. Piloto em **Recife/Olinda**. Receita via **planos/pacotes com benefícios** + **comissão dos prestadores**.
 
+## Contexto para IA
+
+[`../UX.md`](../UX.md) destila estes docs em restrições de geração: modelo da usuária, contexto de uso, achados `F-xx`, padrões de interação, linguagem e o que não inventar. A IA deve lê-lo antes de gerar telas, textos ou protótipos. Os arquivos abaixo continuam sendo a fonte de verdade.
+
 ## Arquivos
 
 | Arquivo | Conteúdo | Quando ler |
