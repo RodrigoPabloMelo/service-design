@@ -2,7 +2,7 @@
 
 > **O que é:** o contexto que qualquer IA deve ler **antes de gerar** telas, fluxos, textos (UX writing), protótipos, slides ou código de UI deste serviço. Formato inspirado em [UX-Context Design (NN/g, 2026)](https://www.nngroup.com/articles/ux-context-design/).
 > **Não é** um documento de convencimento: o sucesso dele se mede pela melhora da saída da IA.
-> **Atualizado:** 2026-10-16 · **Fonte de verdade:** [`docs/`](docs/README.md). Se algo aqui contradisser `docs/decisoes.md`, vale o docs — corrija este arquivo.
+> **Atualizado:** 2026-11-04 · **Fonte de verdade:** [`docs/`](docs/README.md). Se algo aqui contradisser `docs/decisoes.md`, vale o docs — corrija este arquivo.
 > **Identidade visual:** ainda não existe `DESIGN.md` ([Q-26](docs/questoes-em-aberto.md#q-26)). Até lá, não invente marca: use layout neutro e sinalize.
 
 Convenção: `[F-xx]` achado de pesquisa · `[D-xx]` decisão · `[Q-xx]` questão aberta · **(hipótese)** = inferência ainda não validada.
@@ -83,6 +83,8 @@ Condições que atravessam tudo:
 7. **Atualizado em** `[F-07]`
 8. Ações: salvar · encaixar no roteiro · compartilhar
 
+**Formato de exibição** `[D-18]`: card no estilo dos sites de avaliação de viagem (foto, nota, avaliações) + **vídeo curto** curado, no formato que ela já consome nas redes. Não cite marcas na interface. Origem dos vídeos em `[Q-34]`. Rolês abertos **sem login**; a conta só é pedida para salvar `[D-16]`.
+
 **Roteiro com IA** `[D-07]`
 - A IA só monta com itens da base curada; cada item mostra o motivo.
 - Replanejar por clima, cansaço, horário e localização é um gesto primário no "durante".
@@ -93,8 +95,10 @@ Condições que atravessam tudo:
 - Não confirmados: SOS, check-in, compartilhar localização. Não gere esses recursos como se existissem `[Q-12]`.
 - Se a informação de segurança básica fica atrás de plano pago: **não definido** `[Q-02]`. Não gere paywall em informação de segurança.
 
-**Planos/pacotes** `[D-01]`
-- Benefícios conhecidos: motoristas mulheres, reservas pré-feitas, pratos sugeridos em restaurantes selecionados. Estrutura e preço indefinidos `[Q-02]` — use placeholders.
+**Gratuito × pago** `[D-01]` `[D-17]`
+- Grátis: rolês curados + agente de IA com **mensagens limitadas**. Pagos (extras): **transfer com motoristas mulheres** e **rolês em grupo só com mulheres, guiados**. Preço e formato indefinidos `[Q-02]` — use placeholders.
+- Não há reserva integrada no app `[D-13]`.
+- O limite de mensagens no "durante" está em aberto `[Q-35]`: não gere bloqueio do agente na rua, à noite ou na volta.
 - Não usar upsell nos momentos de tensão (trajeto, volta, à noite).
 
 ## 6. Linguagem
@@ -107,7 +111,7 @@ Condições que atravessam tudo:
 
 ## 7. Não faça
 
-- Listagem genérica estilo TripAdvisor, ranking por popularidade, feed infinito.
+- Ranking por popularidade, feed infinito, lista longa de opções parecidas. (O **formato** de card de site de avaliação é a referência `[D-18]`; o que se evita é a **lógica** de ranking e excesso de opções `[F-06]`.)
 - Recomendação sem fonte, sem data ou sem motivo.
 - Endereço, horário, preço ou rota inventados.
 - Mapa de "perigo" por bairro ou linguagem de medo.

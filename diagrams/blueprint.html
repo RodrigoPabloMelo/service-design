@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Blueprint do serviço</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+/* ================= EDITE SÓ ESTE BLOCO =================
+   rows[].type: "stages" | "bullets" | "chips" | "text" | "emotion" | "cards" | "divider"
+   Cada linha (exceto divider) tem um valor por etapa em "cells" (null = vazio).
+   emotion: values de -2 a 2 + labels.  divider: só "label" (linha tracejada).          */
+const DATA = {
+  eyebrow: "", title: "",
+  phases: [
+    { label: "Antes da viagem",   span: 5 },
+    { label: "Durante a estadia", span: 2 },
+    { label: "Depois",            span: 1 }
+  ],
+  stages: ["Descobre o app", "Pesquisa rolês em Recife", "Seleciona rolês curados", "Cria conta e salva",
+           "Organiza locais com o agente", "Acompanha e reajusta", "Vive o rolê", "Fechamento e recompensas"],
+  rows: [
+    { type: "stages", label: "Etapas" },
+    { type: "bullets", label: "Ações da viajante", cells: [
+      ["Pesquisa rolês no buscador", "Abre o site pelo link", "Vê rolês indicados por locais"],
+      ["Busca rolês em Recife", "Filtra por companhia e dia"],
+      ["Assiste aos vídeos curtos", "Confere quem recomendou", "Vê entorno e selo"],
+      ["Cria conta", "Informa datas e hospedagem", "Salva os rolês"],
+      ["Pede ao agente para organizar", "Ajusta e salva o roteiro", "Contrata extras, se quiser"],
+      ["Recebe sugestão de ajuste", "Aceita ou pede outra opção"],
+      ["Chega e paga no local", "Vai de transfer ou em grupo", "Volta para a hospedagem"],
+      ["Avalia em 1–2 toques", "Troca pontos por cupons"]
+    ]},
+    { type: "chips", label: "Pontos de contato", cells: [
+      ["Buscador", "Site do app", "Indicação"],
+      ["Lista curada", "Filtro de companhia"],
+      ["Card do rolê", "Vídeo curto", "Selo de segurança"],
+      ["Cadastro", "Lista de salvos"],
+      ["Roteiro no mapa", "Evento no calendário", "Chat do agente"],
+      ["Notificação", "Calendário atualizado"],
+      ["Entorno na tela", "Transfer", "Check-in no local?"],
+      ["Pedido de avaliação", "Resumo da viagem", "Cupom 99/Uber"]
+    ]},
+    { type: "text", label: "Gratuito × pago", cells: [
+      "Grátis, sem login",
+      "Grátis, sem login",
+      "Grátis, sem login",
+      "Grátis",
+      "Agente grátis com limite de mensagens · extras pagos",
+      "Agente grátis com limite?",
+      "Extras pagos: transfer e rolê em grupo",
+      "Grátis · pontos viram desconto"
+    ]},
+    { type: "divider", label: "Linha de interação" },
+    { type: "cards", label: "Frontstage · app e agente de IA", cells: [
+      ["Página do rolê aberta, sem login", "Rolês indicados por locais"],
+      ["Lista curta e curada", "Motivo de cada indicação"],
+      ["Cards com fotos e avaliações", "Vídeos curtos no showcase", "Entorno, selo e data"],
+      ["Cadastro curto", "Perfil da viagem"],
+      ["Agente agrupa por dia e distância", "Mapa e calendário integrados", "Oferta de extras pagos"],
+      ["Agente monitora clima e horário", "1 troca principal, perto"],
+      ["Entorno e volta visíveis", "Atalho para o transfer"],
+      ["Mensagens do agente", "Catálogo personalizado", "Carteira de pontos"]
+    ]},
+    { type: "divider", label: "Linha de visibilidade" },
+    { type: "cards", label: "Backstage · nós (curadoria)", cells: [
+      ["Publica páginas de rolê para busca"],
+      ["Adiciona rolês na plataforma"],
+      ["Cura rolês e vídeos", "Verifica dados e data"],
+      ["Verificação de conta?"],
+      ["Mantém horários e endereços", "Monta grupos e transfers"],
+      ["Corrige o que fechou ou mudou"],
+      ["Acompanha grupos e transfers", "Registra comissão?", "Atende incidentes?"],
+      ["Avaliações voltam à curadoria", "Gere parcerias de desconto"]
+    ]},
+    { type: "divider", label: "Linha de interação interna" },
+    { type: "cards", label: "Suporte · sistemas", cells: [
+      ["Site indexável (SEO)", "Link rastreável"],
+      ["Base curada", "Busca e filtros"],
+      ["Hospedagem de vídeos", "Dados de entorno e selo"],
+      ["Conta e perfil", "Consentimento LGPD"],
+      ["IA só com base curada", "Limite de mensagens", "Pagamento dos extras"],
+      ["Localização", "Notificações com limite"],
+      ["Validação do check-in?"],
+      ["Pontos e antifraude", "Integração com parceiros"]
+    ]},
+    { type: "divider", label: "Parceiros externos" },
+    { type: "cards", label: "Locais · recomendam", cells: [
+      ["Indicam o app no boca a boca"],
+      ["Indicam rolês para a curadoria"],
+      ["Nome aparece no card", "Gravam os vídeos?"],
+      null, null, null, null,
+      ["Ganham pontos quando o rolê é usado"]
+    ]},
+    { type: "cards", label: "Prestadores e parceiros", cells: [
+      null,
+      ["Ofertam o rolê"],
+      null, null,
+      ["Informam horários", "Confirmam vagas no grupo"],
+      ["Avisam mudanças?"],
+      ["Atendem e recebem no local", "Motoristas mulheres no transfer", "Guia do rolê em grupo", "Pagam comissão"],
+      ["99/Uber e restaurantes dão desconto"]
+    ]}
+  ]
+};
+/* ======================================================= */
+</script>
+<style>
+:root{--ink:#1c1c1c;--ink-2:#3a3a3a;--muted:#8c8c8c;--line:#e6e6e6;--line-2:#cfcfcf;--chip:#efefef;--zone:#f4f3f1}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{font-family:'Inter','Segoe UI',Helvetica,Arial,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+#canvas{width:2000px;min-height:1125px;background:#fff;position:relative;padding:62px 75px 70px}
+.eyebrow{font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.title{font-size:30px;font-weight:600;margin:6px 0 28px}
+.grid{display:grid;position:relative}
+.phases{display:grid;column-gap:13px;margin-left:162px}
+.phase{font-size:15.5px;color:#444;padding:0 0 13px 21px;border-bottom:2px solid #222}
+.row{display:contents}
+.lab{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#999;font-weight:500;padding-top:32px;border-top:1px solid var(--line)}
+.cell{border-top:1px solid var(--line);padding:30px 22px 34px 14px;position:relative}
+.row.first .lab,.row.first .cell{border-top:none}
+.num{font-size:13px;color:var(--muted);margin-bottom:6px}
+.stg{font-size:22px;font-weight:600;line-height:1.2;letter-spacing:-.005em}
+ul{list-style:none}
+li{font-size:16.5px;line-height:1.4;color:#333;padding-left:15px;position:relative;margin-bottom:13px}
+li:before{content:"";position:absolute;left:1px;top:10px;width:4px;height:4px;border-radius:50%;background:#aaa}
+.chips{display:flex;flex-wrap:wrap;gap:9px 7px}
+.chip{background:var(--chip);border-radius:999px;padding:7px 12px;font-size:14.5px;color:#555;white-space:nowrap}
+.txt{font-size:16.5px;line-height:1.4;color:#444}
+.card{border:1.5px solid var(--line-2);border-radius:10px;padding:10px 12px;font-size:15.5px;line-height:1.35;color:#333;background:#fff;margin-bottom:8px}
+.emo{border-top:1px solid var(--line);height:260px;position:relative}
+.divider{grid-column:1/-1;position:relative;height:44px}
+.divider + .row .lab,.divider + .row .cell{border-top:none}
+.divider span{position:absolute;left:0;top:50%;transform:translateY(-50%);background:#fff;padding-right:14px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#777;font-weight:600}
+.divider i{position:absolute;left:0;right:0;top:50%;border-top:1.5px dashed #bbb}
+svg.overlay{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+</style>
+</head>
+<body>
+<div id="canvas"></div>
+<script>
+Promise.all(["400","500","600"].map(w=>document.fonts?document.fonts.load(w+" 16px Inter"):0)).catch(()=>0).then(function(){ // carrega a Inter antes de medir a grade
+  const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const n=DATA.stages.length, LABW=175;
+  const cv=document.getElementById('canvas');
+  let h='';
+  if(DATA.eyebrow) h+=`<div class="eyebrow">${esc(DATA.eyebrow)}</div>`;
+  if(DATA.title) h+=`<div class="title">${esc(DATA.title)}</div>`;
+  const cols=`${LABW}px repeat(${n},1fr)`;
+  // fases (alinhadas às colunas)
+  h+=`<div class="phases" style="grid-template-columns:repeat(${n},1fr);margin-left:${LABW}px">`+
+     DATA.phases.map(p=>`<div class="phase" style="grid-column:span ${p.span}">${esc(p.label)}</div>`).join('')+`</div>`;
+  h+=`<div class="grid" id="grid" style="grid-template-columns:${cols};margin-top:14px">`;
+  DATA.rows.forEach((r,ri)=>{
+    const first=ri===0?' first':'';
+    if(r.type==='divider'){h+=`<div class="divider"><i></i><span>${esc(r.label)}</span></div>`;return;}
+    if(r.type==='emotion'){h+=`<div class="lab" style="border-top:1px solid var(--line)">${esc(r.label)}</div><div class="emo" data-emo="${ri}" style="grid-column:span ${n}"></div>`;return;}
+    h+=`<div class="row${first}"><div class="lab">${esc(r.label)}</div>`;
+    for(let i=0;i<n;i++){
+      let c='';
+      if(r.type==='stages') c=`<div class="num">${String(i+1).padStart(2,'0')}</div><div class="stg">${esc(DATA.stages[i])}</div>`;
+      else{const v=r.cells?.[i]; if(v!=null&&v!==''){
+        if(r.type==='bullets') c=`<ul>${[].concat(v).map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
+        else if(r.type==='chips') c=`<div class="chips">${[].concat(v).map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>`;
+        else if(r.type==='cards') c=[].concat(v).map(t=>`<div class="card">${esc(t)}</div>`).join('');
+        else c=`<div class="txt">${esc(v)}</div>`;}}
+      h+=`<div class="cell" data-col="${i}" style="${r.type==='stages'?'padding-top:28px':''}">${c}</div>`;
+    }
+    h+=`</div>`;
+  });
+  h+=`</div>`;
+  cv.innerHTML=h;
+
+  const grid=document.getElementById('grid'), G=grid.getBoundingClientRect();
+  // posições das colunas a partir da linha de etapas
+  const colCells=[...grid.querySelectorAll('.row.first .cell')];
+  const colX=colCells.map(c=>{const b=c.getBoundingClientRect();return{l:b.left-G.left,r:b.right-G.left,c:(b.left+b.right)/2-G.left}});
+  let svg=`<svg class="overlay" width="${G.width}" height="${G.height}">`;
+  // linhas tracejadas verticais nas fronteiras das fases
+  let acc=0; DATA.phases.slice(0,-1).forEach(p=>{acc+=p.span; const x=colX[acc].l-0.5;
+    svg+=`<line x1="${x}" x2="${x}" y1="0" y2="${G.height}" stroke="#d4d4d4" stroke-width="1.2" stroke-dasharray="3 4"/>`;});
+  // curvas de emoção
+  grid.querySelectorAll('.emo').forEach(el=>{
+    const r=DATA.rows[+el.dataset.emo], b=el.getBoundingClientRect(), top=b.top-G.top, H=b.height;
+    const base=top+H/2, amp=H/2-62, yv=v=>base-amp*v/2;
+    const P=r.values.map((v,i)=>[colX[i].c,yv(v)]);
+    // separadores finos entre colunas
+    colX.slice(1).forEach(c=>svg+=`<line x1="${c.l-0.5}" x2="${c.l-0.5}" y1="${top}" y2="${top+H}" stroke="#efefef" stroke-width="1"/>`);
+    svg+=`<line x1="${colX[0].l-160}" x2="${colX[n-1].r}" y1="${base}" y2="${base}" stroke="#cfcfcf" stroke-width="1.3" stroke-dasharray="4 5"/>`;
+    let d=`M${P[0][0]},${P[0][1]}`;
+    for(let i=1;i<P.length;i++){const[x0,y0]=P[i-1],[x1,y1]=P[i],dx=(x1-x0)/2;d+=` C${x0+dx},${y0} ${x1-dx},${y1} ${x1},${y1}`;}
+    svg+=`<path d="M${P[0][0]},${base} L${d.slice(1)} L${P[P.length-1][0]},${base} Z" fill="#f2f2f2" opacity=".85"/>`;
+    svg+=`<path d="${d}" fill="none" stroke="#1c1c1c" stroke-width="2.2"/>`;
+    P.forEach(([x,y],i)=>{const v=r.values[i],up=v>=0;
+      svg+=`<circle cx="${x}" cy="${y}" r="7.5" fill="#fff" stroke="#1c1c1c" stroke-width="2"/>`;
+      svg+=`<text x="${x}" y="${up?y-19:y+36}" text-anchor="middle" font-size="17.5" font-weight="600" fill="#1c1c1c" font-family="Inter,Segoe UI,sans-serif">${esc(r.labels?.[i])}</text>`;});
+  });
+  svg+=`</svg>`;
+  grid.insertAdjacentHTML('beforeend',svg);
+});
+</script>
+</body>
+</html>

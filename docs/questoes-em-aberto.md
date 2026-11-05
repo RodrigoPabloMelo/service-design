@@ -1,6 +1,6 @@
 # Questões em aberto
 
-> **Atualizado:** 2026-10-16 · **Origem:** levantadas na documentação do ciclo 1 (conversa com Rodrigo, 2026-10-16)
+> **Atualizado:** 2026-11-04 · **Origem:** levantadas na documentação do ciclo 1 (conversa com Rodrigo, 2026-10-16); `Q-27` a `Q-32` no rascunho do blueprint (2026-11-04)
 > **Status:** `aberta` · `em discussão` · `resolvida` (→ registrar em [decisoes.md](decisoes.md) com o `D-xx`)
 > **Prioridade:** **alta** = bloqueia ideação/blueprint · **média** = precisa antes do protótipo · **baixa** = pode esperar
 
@@ -14,7 +14,7 @@
 | [Q-04](#q-04) | Comissão: valor e rastreio no pagamento no local | Receita | alta | aberta |
 | [Q-05](#q-05) | O que se paga no app x no local | Pagamento | média | aberta |
 | [Q-06](#q-06) | Critérios e operação da curadoria | Curadoria | alta | aberta |
-| [Q-07](#q-07) | Regras do crédito/desconto para locais | Recomendação | média | aberta |
+| [Q-07](#q-07) | Regras do crédito/desconto para locais | Recomendação | média | em discussão |
 | [Q-08](#q-08) | Criadoras de conteúdo x desconfiança de publi | Confiança | alta | aberta |
 | [Q-09](#q-09) | Recomendações de homens no recorte de confiança | Confiança | média | aberta |
 | [Q-10](#q-10) | Critérios do selo de segurança | Segurança | alta | aberta |
@@ -34,6 +34,15 @@
 | [Q-24](#q-24) | Tom de voz e linguagem | UX writing | média | aberta |
 | [Q-25](#q-25) | Plataforma, conectividade e acessibilidade | Produto | média | aberta |
 | [Q-26](#q-26) | Identidade visual / DESIGN.md | Visual | média | aberta |
+| [Q-27](#q-27) | Programa de pontos/moedas da viajante | Receita/Avaliações | alta | aberta |
+| [Q-28](#q-28) | Parceiros de benefício (99/Uber, restaurantes) | Ecossistema | alta | aberta |
+| [Q-29](#q-29) | Agente de IA: calendário e notificações | IA | alta | aberta |
+| [Q-30](#q-30) | Como o app sabe que ela foi ao rolê | Confiança/Receita | alta | aberta |
+| [Q-31](#q-31) | Atendimento e recuperação de falhas | Operação | média | aberta |
+| [Q-32](#q-32) | Retenção depois da viagem | Negócio | média | aberta |
+| [Q-33](#q-33) | Rolês em grupo só com mulheres | Receita/Segurança | alta | aberta |
+| [Q-34](#q-34) | Origem e curadoria dos vídeos curtos | Conteúdo/Confiança | alta | aberta |
+| [Q-35](#q-35) | Limite de mensagens do agente durante a viagem | IA/Receita | alta | aberta |
 
 ---
 
@@ -44,10 +53,12 @@ Ainda sem nome. Nos docs: "o app" / "o serviço".
 <a id="q-02"></a>
 ### Q-02 · Estrutura dos planos/pacotes
 Ref.: D-01. Quantos planos? O que é grátis e o que é pago? Preço? Plano por viagem (passe) ou recorrente? Pacote é por rolê (ex.: jantar com reserva + prato + motorista) ou por período?
+**2026-11-04 (D-17):** modelo freemium definido: grátis = rolês curados + agente com mensagens limitadas; pagos = transfer com motoristas mulheres e rolês em grupo só com mulheres. Ainda em aberto: preço, se os extras são avulsos ou num plano, se o plano pago amplia as mensagens do agente.
 
 <a id="q-03"></a>
 ### Q-03 · Transporte com motoristas mulheres
 Ref.: D-01, [ecossistema.md](ecossistema.md). É parceria com app existente, cooperativa ou rede própria de motoristas? Quem paga e como? Esse parceiro vira ator do ecossistema. Também é recurso de segurança na ida/volta.
+**2026-11-04 (D-17):** o transfer com motoristas mulheres é um **serviço adicional pago**. Segue em aberto quem opera (parceiro de app de transporte ou rede própria) e como se paga.
 
 <a id="q-04"></a>
 ### Q-04 · Comissão do prestador
@@ -56,6 +67,7 @@ Ref.: D-02, D-08. Qual percentual/modelo? Quando o rolê é pago **direto no loc
 <a id="q-05"></a>
 ### Q-05 · O que se paga no app x no local
 Ref.: D-08. Quais tipos de rolê entram como pacote/reserva no app e quais ficam avulsos? Bares e cafés têm comissão?
+**2026-11-04 (D-13):** não há reserva integrada no app. Resta saber: o que ainda se paga no app (só os planos?) e como fica o benefício "reservas pré-feitas" de D-01 (feito à mão pelo grupo? sai do plano?).
 
 <a id="q-06"></a>
 ### Q-06 · Curadoria: critérios e operação
@@ -64,6 +76,7 @@ Ref.: D-05. Quais critérios o grupo usa para aprovar uma recomendação (local 
 <a id="q-07"></a>
 ### Q-07 · Crédito/desconto para locais
 Ref.: D-04. Quanto vale uma recomendação? Ganha ao enviar, ao ser aprovada ou ao ser usada? Moradores locais usam rolês do próprio app (que é para viajantes)? Isso não incentiva recomendação em massa/baixa qualidade?
+**2026-11-04 (D-14):** o local ganha pontos **quando o rolê é usado** por uma viajante. Ainda em aberto: quanto vale, como o uso é comprovado (`Q-30`), onde o local troca os pontos (`Q-27`).
 
 <a id="q-08"></a>
 ### Q-08 · Criadoras de conteúdo x desconfiança de publi
@@ -135,8 +148,44 @@ Ref.: [UX.md](../UX.md) §6. A hipótese atual é um tom "de amiga local": diret
 
 <a id="q-25"></a>
 ### Q-25 · Plataforma, conectividade e acessibilidade
-App nativo (iOS/Android), PWA ou os dois? Precisa funcionar offline ou com pouca conexão no "durante" (roteiro e entorno salvos)? Quais requisitos de acessibilidade (contraste no sol, uso com uma mão, leitor de tela)?
+App nativo (iOS/Android), PWA ou os dois? **2026-11-04 (D-15, D-16):** a entrada é pela **web** (buscador → site, rolês abertos sem login); falta decidir se existe app nativo além do site. Precisa funcionar offline ou com pouca conexão no "durante" (roteiro e entorno salvos)? Quais requisitos de acessibilidade (contraste no sol, uso com uma mão, leitor de tela)?
 
 <a id="q-26"></a>
 ### Q-26 · Identidade visual / DESIGN.md
 Não há identidade visual. Quando houver, registrar num `DESIGN.md` na raiz (tokens + regras de uso), referenciado pelo [UX.md](../UX.md), para a IA não inventar marca.
+
+<a id="q-27"></a>
+### Q-27 · Programa de pontos/moedas da viajante
+Ref.: [blueprint rascunho](../diagrams/2026-11-04-blueprint-rascunho.md) etapas 8–9, D-04, `Q-07`, `Q-17`. No panorama, os descontos funcionam como pontos/moedas trocáveis por serviços e cupons. Falta definir: o que gera pontos (visitar, avaliar, indicar amiga, completar roteiro?); quanto vale cada ação; se expiram; quem financia o desconto (app, parceiro, os dois); se locais e viajantes usam a mesma moeda. Risco: premiar a avaliação pode enviesar notas ou gerar avaliações falsas (`Q-13`). Premiar o ato de avaliar, não a nota?
+
+<a id="q-28"></a>
+### Q-28 · Parceiros de benefício
+Ref.: blueprint etapa 9. O panorama cita cupons em 99/Uber, restaurantes locais (modelo clube de descontos) e experiências. São um novo ator do ecossistema (`A-8`?). Qual o acordo com cada um (co-marketing, pagamento por resgate)? Isso se mistura com o transporte com motoristas mulheres (`Q-03`)?
+
+<a id="q-29"></a>
+### Q-29 · Agente de IA: calendário e notificações
+Ref.: `D-07`, `Q-11`, blueprint etapas 4 e 6. No panorama, o agente trabalha com mapa e calendário integrados e manda notificações durante a viagem. O calendário é exportado (.ics) ou sincronizado (Google/Apple)? Quais gatilhos de reajuste ("necessidades multifatoriais": clima, horário, distância, noite/volta, cansaço, orçamento)? O ajuste é automático ou sempre pede confirmação? Qual o limite de notificações por dia?
+
+<a id="q-30"></a>
+### Q-30 · Como o app sabe que ela foi ao rolê
+Ref.: `Q-04`, `Q-13`, `Q-27`, blueprint etapa 7. Uma prova de visita resolveria três coisas: rastrear a comissão no pagamento no local, validar avaliações e liberar pontos. Opções **(hipótese)**: QR no balcão, código no app validado pelo prestador, cupom usado, geolocalização. Qual é viável no piloto?
+
+<a id="q-31"></a>
+### Q-31 · Atendimento e recuperação de falhas
+Ref.: blueprint etapa 7. O que acontece quando o rolê está fechado, a reserva não é honrada, o preço é outro ou ela se sente insegura? Quem ela aciona e por qual canal? Quem do grupo atende e em quanto tempo? Liga com `Q-12`.
+
+<a id="q-32"></a>
+### Q-32 · Retenção depois da viagem
+Ref.: blueprint etapas 8–9, `D-10`. O panorama prevê um catálogo personalizado com base na última visita. Com só Recife/Olinda no piloto, o que ela faz com o app depois de voltar para casa? Pontos e catálogo só têm valor se servirem fora de Recife (ex.: 99/Uber na cidade dela), numa volta, ou para indicar amigas.
+
+<a id="q-33"></a>
+### Q-33 · Rolês em grupo só com mulheres
+Ref.: D-17, D-11, `P-CAMILA`. Serviço pago e guiado. Quem guia (guia local parceira, prestadora, alguém do grupo)? Quantas pessoas por grupo, como se forma e se confirma? Como se verifica que são só mulheres (`Q-13`)? Encaixa para quem viaja com parceiro(a) (`P-MARINA`)? O guia vira ator do ecossistema.
+
+<a id="q-34"></a>
+### Q-34 · Origem e curadoria dos vídeos curtos
+Ref.: D-18, D-03, `Q-08`. Quem grava os vídeos do showcase: criadoras locais, o grupo, as próprias viajantes? Com que direitos de uso? Como mostrar que o vídeo não é publi (dor central de `E-04`)? Como manter o vídeo atualizado com o rolê (`F-07`)?
+
+<a id="q-35"></a>
+### Q-35 · Limite de mensagens do agente durante a viagem
+Ref.: D-17, D-07, [UX.md §5](../UX.md). O agente grátis tem mensagens limitadas, mas o reajuste "durante" (clima, noite, volta) é justamente quando ela mais precisa e quando o UX.md proíbe upsell em momento de tensão. O limite vale igual durante a viagem? Reajustes ligados a segurança ou volta ficam fora do limite? O que ela vê quando o limite acaba na rua?
