@@ -1,6 +1,6 @@
 # Log de decisões
 
-> **Atualizado:** 2026-11-04
+> **Atualizado:** 2026-11-09
 > Uma linha por decisão. Para mudar uma decisão, não apague: marque como `substituída por D-xx` e crie a nova.
 
 | ID | Data | Área | Decisão | Origem |
@@ -23,3 +23,7 @@
 | D-16 | 2026-11-04 | Acesso | **Rolês visíveis sem login.** A conta é pedida para salvar | Conversa Rodrigo (blueprint) |
 | D-17 | 2026-11-04 | Receita | **Freemium.** Grátis: rolês curados + agente de IA com **mensagens limitadas** (como assistentes de IA comerciais). Pagos (serviços adicionais, a parte mais monetizável): **transfer com motoristas mulheres** e **rolês em grupo só com mulheres, guiados**. Detalha D-01; estrutura e preço seguem em `Q-02` | Conversa Rodrigo (blueprint) |
 | D-18 | 2026-11-04 | Conteúdo/UX | Exibição dos rolês: **cards no estilo de sites de avaliação de viagem** (foto, nota, avaliações) **+ vídeos curtos** no formato que ela já usa nas redes, **curados pelo grupo** | Conversa Rodrigo (blueprint) |
+| D-19 | 2026-11-09 | Protótipo | Protótipo navegável em **Flutter web** em `prototype/app/`, com **dados mockados** (sem backend nem IA real). Mapa ligando telas aos docs: [prototipo.md](prototipo.md) | Conversa Rodrigo (união do app ao repo) |
+| D-20 | 2026-11-04 | Protótipo | Primeira tela prototipada = **etapa 05 do blueprint, "Organiza locais com o agente"**: conversa com o agente + mapa + roteiro por dia (aplica D-07) | Blueprint (PDF 2026-11-04) + protótipo |
+| D-21 | 2026-11-07 | Confiança | No card do rolê, a prova de confiança vem junto: **quem indicou** (nome, vínculo com o lugar, citação), **fotos reais**, **vídeos curtos** e **entorno** com data de verificação (aplica D-03, D-06, D-18) | Protótipo, com Rodrigo |
+| D-22 | 2026-11-07 | Visual | Identidade visual **de trabalho** "Maré" (flat, iOS, neutros cinza + azul de contraste) documentada na skill `.claude/skills/mare-design/`. Provisória: ver [Q-26](questoes-em-aberto.md#q-26); o nome segue em aberto ([Q-01](questoes-em-aberto.md#q-01)) | Protótipo, com Rodrigo |

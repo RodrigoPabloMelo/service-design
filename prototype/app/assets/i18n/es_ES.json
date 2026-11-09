@@ -1,0 +1,39 @@
+{
+  "appName": "Flutter MVVM Leap",
+  "app": {
+    "common": {
+      "hello": "¡Hola, {}!",
+      "errors": {
+        "generic": "Hubo un problema",
+        "connection": {
+          "title": "Fallo en la conexión",
+          "description": "Por favor, verifica tu conexión a internet."
+        }
+      },
+      "activeFilters": {
+        "one": "{} filtro activo",
+        "many": "{} filtros activos"
+      }
+    },
+    "features": {
+      "example": {
+        "title": "Titulo",
+        "form": {
+          "exampleLabel": "Ejemplo",
+          "exampleLabel2": "Ejemplo 2",
+          "exampleHint": "Pista del ejemplo",
+          "exampleHint2": "Pista del ejemplo 2",
+          "exampleButton": "Botón",
+          "exampleButton2": "Mostrar flushbar",
+          "exampleButton3": "Mostrar modal"
+        }
+      },
+      "splash": {
+        "title": "Splash"
+      }
+    },
+    "accessibility": {
+      "togglePassword": "Mostrar/Esconder contraseña"
+    }
+  }
+}

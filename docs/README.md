@@ -1,7 +1,7 @@
 # Docs do serviço — índice
 
-> **Status:** ciclo 1 concluído (pesquisa + personas + jornada + ecossistema). Próximo: jornadas das outras personas, ideação, blueprint.
-> **Atualizado:** 2026-10-16 · **Nome do serviço:** ainda sem nome (ver [Q-01](questoes-em-aberto.md#q-01)) — nos docs usamos "o app" / "o serviço".
+> **Status:** ciclo 1 concluído (pesquisa + personas + jornada + ecossistema). Blueprint feito (PDF 2026-11-04, ainda fora do repo) e protótipo da etapa 05 em [`prototype/app/`](../prototype/app/README.md) — ver [prototipo.md](prototipo.md).
+> **Atualizado:** 2026-11-09 · **Nome do serviço:** ainda sem nome (ver [Q-01](questoes-em-aberto.md#q-01)) — nos docs usamos "o app" / "o serviço"; o protótipo usa **Maré** como nome de trabalho.
 
 ## Resumo em 30 segundos
 
@@ -24,6 +24,7 @@ App que ajuda **mulheres viajantes (sozinhas ou com mais 1 pessoa)** a **descobr
 | [decisoes.md](decisoes.md) | Log de decisões já tomadas (com origem) | Antes de propor algo que pode contradizer o que foi decidido |
 | [questoes-em-aberto.md](questoes-em-aberto.md) | Tudo que ainda não está definido, com ID, prioridade e status | Para acompanhar e atualizar o que falta |
 | [glossario.md](glossario.md) | Termos do projeto (rolê, local, curadoria, selo…) | Quando um termo for ambíguo |
+| [prototipo.md](prototipo.md) | O que o protótipo (`prototype/app`) cobre: telas ↔ etapas `E-xx`, personas, decisões e questões | Ao mexer no protótipo ou avaliar o que já foi materializado |
 
 ## Fontes originais
 

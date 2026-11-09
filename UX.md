@@ -2,8 +2,8 @@
 
 > **O que é:** o contexto que qualquer IA deve ler **antes de gerar** telas, fluxos, textos (UX writing), protótipos, slides ou código de UI deste serviço. Formato inspirado em [UX-Context Design (NN/g, 2026)](https://www.nngroup.com/articles/ux-context-design/).
 > **Não é** um documento de convencimento: o sucesso dele se mede pela melhora da saída da IA.
-> **Atualizado:** 2026-11-04 · **Fonte de verdade:** [`docs/`](docs/README.md). Se algo aqui contradisser `docs/decisoes.md`, vale o docs — corrija este arquivo.
-> **Identidade visual:** ainda não existe `DESIGN.md` ([Q-26](docs/questoes-em-aberto.md#q-26)). Até lá, não invente marca: use layout neutro e sinalize.
+> **Atualizado:** 2026-11-09 · **Fonte de verdade:** [`docs/`](docs/README.md). Se algo aqui contradisser `docs/decisoes.md`, vale o docs — corrija este arquivo.
+> **Identidade visual:** provisória, na skill [`mare-design`](.claude/skills/mare-design/SKILL.md) (D-22, [Q-26](docs/questoes-em-aberto.md#q-26) em discussão). Para o protótipo, siga-a; fora dele, não invente marca além dela e sinalize.
 
 Convenção: `[F-xx]` achado de pesquisa · `[D-xx]` decisão · `[Q-xx]` questão aberta · **(hipótese)** = inferência ainda não validada.
 

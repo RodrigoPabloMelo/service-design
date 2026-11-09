@@ -1,6 +1,6 @@
 # Questões em aberto
 
-> **Atualizado:** 2026-11-04 · **Origem:** levantadas na documentação do ciclo 1 (conversa com Rodrigo, 2026-10-16); `Q-27` a `Q-32` no rascunho do blueprint (2026-11-04)
+> **Atualizado:** 2026-11-09 · **Origem:** levantadas na documentação do ciclo 1 (conversa com Rodrigo, 2026-10-16); `Q-27` a `Q-32` no rascunho do blueprint (2026-11-04)
 > **Status:** `aberta` · `em discussão` · `resolvida` (→ registrar em [decisoes.md](decisoes.md) com o `D-xx`)
 > **Prioridade:** **alta** = bloqueia ideação/blueprint · **média** = precisa antes do protótipo · **baixa** = pode esperar
 
@@ -33,7 +33,7 @@
 | [Q-23](#q-23) | Medição de impacto (ODS 12.b) | Impacto | baixa | aberta |
 | [Q-24](#q-24) | Tom de voz e linguagem | UX writing | média | aberta |
 | [Q-25](#q-25) | Plataforma, conectividade e acessibilidade | Produto | média | aberta |
-| [Q-26](#q-26) | Identidade visual / DESIGN.md | Visual | média | aberta |
+| [Q-26](#q-26) | Identidade visual / DESIGN.md | Visual | média | em discussão |
 | [Q-27](#q-27) | Programa de pontos/moedas da viajante | Receita/Avaliações | alta | aberta |
 | [Q-28](#q-28) | Parceiros de benefício (99/Uber, restaurantes) | Ecossistema | alta | aberta |
 | [Q-29](#q-29) | Agente de IA: calendário e notificações | IA | alta | aberta |
@@ -49,6 +49,8 @@
 <a id="q-01"></a>
 ### Q-01 · Nome do serviço
 Ainda sem nome. Nos docs: "o app" / "o serviço".
+
+**2026-11-09:** o protótipo usa **Maré** como nome de trabalho ([prototipo.md](prototipo.md)) — **(hipótese)**, não é o nome decidido.
 
 <a id="q-02"></a>
 ### Q-02 · Estrutura dos planos/pacotes
@@ -153,6 +155,8 @@ App nativo (iOS/Android), PWA ou os dois? **2026-11-04 (D-15, D-16):** a entrada
 <a id="q-26"></a>
 ### Q-26 · Identidade visual / DESIGN.md
 Não há identidade visual. Quando houver, registrar num `DESIGN.md` na raiz (tokens + regras de uso), referenciado pelo [UX.md](../UX.md), para a IA não inventar marca.
+
+**2026-11-09 — em discussão:** o protótipo tem um sistema visual de trabalho na skill [`mare-design`](../.claude/skills/mare-design/SKILL.md) (`tokens.md`, `patterns.md`, `writing.md`), ver D-22. Falta decidir se ele vira a identidade do serviço (e, nesse caso, se é promovido a `DESIGN.md` na raiz).
 
 <a id="q-27"></a>
 ### Q-27 · Programa de pontos/moedas da viajante
