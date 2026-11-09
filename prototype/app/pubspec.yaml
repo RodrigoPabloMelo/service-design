@@ -1,0 +1,124 @@
+name: studio_app
+description: A New Flutter Project
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1.0.0
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  # URL sem hash no preview web (usePathUrlStrategy) — vem do SDK.
+  flutter_web_plugins:
+    sdk: flutter
+
+  # Route management
+  go_router: ^16.1.0
+
+  # Connection
+  dio: ^5.9.0
+
+  # Service locator
+  provider: ^6.1.5
+
+  # Loggers
+  logger: ^2.6.1
+  pretty_dio_logger: ^1.4.0
+  package_info_plus: ^8.3.1
+
+  # Dependecy Injector
+  get_it: ^8.2.0
+
+  # Image
+  image_picker: ^1.1.2
+
+  # Preview app in different devices
+  device_preview: ^1.3.1
+
+  # State Management
+  bloc: ^9.0.0
+  flutter_bloc: ^9.1.1
+
+  # Render SVG icon
+  flutter_svg: ^2.2.0
+  flutter_svg_provider: ^1.0.7
+
+  # Get application directory
+  path_provider: ^2.1.5
+  path: ^1.9.1
+
+  # Storage
+  flutter_secure_storage: ^9.2.4
+  shared_preferences: ^2.5.3
+  file: ^7.0.1
+
+  # Unit Tests
+  equatable: ^2.0.7
+
+  # Image
+  cached_network_image: ^3.4.1
+
+  # Connectivity
+  connectivity_wrapper: ^1.2.8
+
+  # Device
+  app_settings: ^6.1.1
+  device_info_plus: ^11.5.0
+  share_plus: ^11.0.0
+
+  # File download and save
+  media_store_plus: ^0.1.3
+  flutter_file_dialog: ^3.0.2
+  permission_handler: ^12.0.1
+
+  # Others
+  url_launcher: ^6.3.2
+  gal: ^2.3.2
+  store_redirect: ^2.0.4
+  event_bus: ^2.0.1
+  hugeicons: 0.0.11
+
+  # Liquid Glass (iOS 26) — isolado em core/components/glass/app_glass.dart
+  liquid_glass_widgets: ^1.17.0
+  # Exigido pelo liquid_glass_widgets (glifos internos)
+  cupertino_icons: ^1.0.8
+  font_awesome_flutter: ^11.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  mocktail: ^1.0.4
+  bloc_test: ^10.0.0
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/i18n/
+    - assets/images/
+    - assets/images/roles/
+    - assets/images/connectors/
+    - assets/images/people/
+    - assets/icons/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-VariableFont.ttf
+    # Títulos (Maré) — Oswald variável, OFL
+    - family: Oswald
+      fonts:
+        - asset: assets/fonts/Oswald-Variable.ttf
+    # Corpo (Maré) — Plus Jakarta Sans variável, OFL
+    - family: PlusJakartaSans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans-Variable.ttf
+        - asset: assets/fonts/PlusJakartaSans-Italic-Variable.ttf
+          style: italic

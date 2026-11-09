@@ -1,0 +1,63 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+.cursor/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+**/.vscode/*
+!**/.vscode/launch.json
+!**/.vscode/flutter.code-snippets
+
+# Flutter/Dart/Pub related
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+*.g.dart
+.fvm/
+
+# Web related
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Exceptions to above rules.
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+.gradle
+.env*
+/.fvm/flutter_sdk
+.mason
+mason-lock.json
+
+# Builds de versões antigas servidos localmente para a trilha de versões do
+# /docs. Gerados sob demanda (git worktree + flutter build web
+# --base-href=/v/<commit>/ + cópia para web/v/<commit>/); no publicado é o
+# deploy que cria esse prefixo. Não versionar: megabytes de JS compilado.
+/web/v/

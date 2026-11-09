@@ -12,3 +12,9 @@ node_modules/
 dist/
 .env
 .env.local
+
+# Protótipo Flutter (prototype/app tem .gitignore próprio; reforço aqui)
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies

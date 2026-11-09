@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "design-preview",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": [
+        "-c",
+        "cd prototype/app && exec \"$HOME/fvm/versions/3.47.9/bin/flutter\" run -d web-server --release -t lib/main_design.dart --web-hostname localhost --web-port 8080 < /dev/null"
+      ],
+      "port": 8080
+    }
+  ]
+}
