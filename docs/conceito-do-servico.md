@@ -1,6 +1,6 @@
 # Conceito do serviço — como funciona
 
-> **Atualizado:** 2026-10-16 · **Fonte:** conversa com Rodrigo (2026-10-16) + esboço do ecossistema
+> **Atualizado:** 2026-11-04 · **Fonte:** conversa com Rodrigo (2026-10-16 e 2026-11-04) + esboço do ecossistema
 > Ideação ainda não aconteceu: este arquivo registra o que já foi **decidido** no conceito. O resto está em [questoes-em-aberto.md](questoes-em-aberto.md).
 
 ## Ciclo do serviço (visão rápida)
@@ -50,7 +50,16 @@ O transporte com motoristas mulheres (benefício de plano) também atua como rec
 
 ## 5. Pagamento e planos
 
-- **Pagamento em dois caminhos** (D-08): pacotes/reservas **dentro do app**; rolês avulsos **pagos direto no local**.
+- **Pagamento em dois caminhos** (D-08): pacotes **dentro do app**; rolês avulsos **pagos direto no local**.
+- **Sem reserva integrada no app** (D-13, 2026-11-04). O que ainda se paga no app: [Q-05](questoes-em-aberto.md#q-05).
+- **Retorno ao local** (D-14): o local ganha pontos quando uma viajante usa o rolê que ele indicou.
+- **Freemium** (D-17): grátis = rolês curados + agente de IA com mensagens limitadas; pagos = transfer com motoristas mulheres e rolês em grupo só com mulheres, guiados ([Q-33](questoes-em-aberto.md#q-33), [Q-35](questoes-em-aberto.md#q-35)).
+
+## 7. Descoberta e exibição
+
+- A viajante chega **principalmente por buscadores**, abrindo o site pelo link; indicação é secundária (D-15).
+- Rolês **visíveis sem login**; conta só para salvar (D-16).
+- Exibição em **cards no estilo de sites de avaliação de viagem + vídeos curtos curados** pelo grupo (D-18). Origem dos vídeos: [Q-34](questoes-em-aberto.md#q-34).
 - **Comissão** do prestador em ambos os casos — como rastrear no pagamento no local: [Q-04](questoes-em-aberto.md#q-04).
 - **Planos/pacotes** com benefícios (motoristas mulheres, reservas, pratos sugeridos): [Q-02](questoes-em-aberto.md#q-02), [Q-03](questoes-em-aberto.md#q-03).
 
