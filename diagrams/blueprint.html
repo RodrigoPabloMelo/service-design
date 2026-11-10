@@ -12,40 +12,42 @@
    emotion: values de -2 a 2 + labels.  divider: só "label" (linha tracejada).          */
 const DATA = {
   eyebrow: "", title: "",
+  startAt: 0, // numeração das etapas começa em 00 (coluna de bastidores contínuos)
   phases: [
-    { label: "Antes da viagem",   span: 5 },
-    { label: "Durante a estadia", span: 2 },
-    { label: "Depois",            span: 1 }
+    { label: "Bastidores · contínuo", span: 1 },
+    { label: "Antes da viagem",       span: 4 },
+    { label: "Durante a estadia",     span: 2 },
+    { label: "Depois",                span: 1 }
   ],
-  stages: ["Descobre o app", "Pesquisa rolês em Recife", "Seleciona rolês curados", "Cria conta e salva",
+  stages: ["Base curada", "Descobre o app", "Pesquisa rolês em Recife", "Seleciona e salva rolês",
            "Organiza locais com o agente", "Acompanha e reajusta", "Vive o rolê", "Fechamento e recompensas"],
   rows: [
     { type: "stages", label: "Etapas" },
     { type: "bullets", label: "Ações da viajante", cells: [
+      null,
       ["Pesquisa rolês no buscador", "Abre o site pelo link", "Vê rolês indicados por locais"],
       ["Busca rolês em Recife", "Filtra por companhia e dia"],
-      ["Assiste aos vídeos curtos", "Confere quem recomendou", "Vê entorno e selo"],
-      ["Cria conta", "Informa datas e hospedagem", "Salva os rolês"],
-      ["Pede ao agente para organizar", "Ajusta e salva o roteiro", "Contrata extras, se quiser"],
+      ["Assiste aos vídeos curtos", "Confere quem recomendou", "Vê entorno e selo", "Toca em salvar e cria conta"],
+      ["Informa datas e hospedagem", "Pede ao agente para organizar", "Ajusta e salva o roteiro", "Contrata extras, se quiser"],
       ["Recebe sugestão de ajuste", "Aceita ou pede outra opção"],
       ["Chega e paga no local", "Vai de transfer ou em grupo", "Volta para a hospedagem"],
       ["Avalia em 1–2 toques", "Troca pontos por cupons"]
     ]},
     { type: "chips", label: "Pontos de contato", cells: [
+      null,
       ["Buscador", "Site do app", "Indicação"],
       ["Lista curada", "Filtro de companhia"],
-      ["Card do rolê", "Vídeo curto", "Selo de segurança"],
-      ["Cadastro", "Lista de salvos"],
+      ["Card do rolê", "Vídeo curto", "Selo de segurança", "Cadastro", "Lista de salvos"],
       ["Roteiro no mapa", "Evento no calendário", "Chat do agente"],
       ["Notificação", "Calendário atualizado"],
       ["Entorno na tela", "Transfer", "Check-in no local?"],
       ["Pedido de avaliação", "Resumo da viagem", "Cupom 99/Uber"]
     ]},
     { type: "text", label: "Gratuito × pago", cells: [
+      null,
       "Grátis, sem login",
       "Grátis, sem login",
-      "Grátis, sem login",
-      "Grátis",
+      "Grátis · conta pedida ao salvar",
       "Agente grátis com limite de mensagens · extras pagos",
       "Agente grátis com limite?",
       "Extras pagos: transfer e rolê em grupo",
@@ -53,32 +55,32 @@ const DATA = {
     ]},
     { type: "divider", label: "Linha de interação" },
     { type: "cards", label: "Frontstage · app e agente de IA", cells: [
+      ["Página do rolê publicada"],
       ["Página do rolê aberta, sem login", "Rolês indicados por locais"],
       ["Lista curta e curada", "Motivo de cada indicação"],
-      ["Cards com fotos e avaliações", "Vídeos curtos no showcase", "Entorno, selo e data"],
-      ["Cadastro curto", "Perfil da viagem"],
-      ["Agente agrupa por dia e distância", "Mapa e calendário integrados", "Oferta de extras pagos"],
+      ["Cards com fotos e avaliações", "Vídeos curtos no showcase", "Entorno, selo e data", "Cadastro curto ao salvar"],
+      ["Perfil da viagem", "Agente agrupa por dia e distância", "Mapa e calendário integrados", "Oferta de extras pagos"],
       ["Agente monitora clima e horário", "1 troca principal, perto"],
       ["Entorno e volta visíveis", "Atalho para o transfer"],
       ["Mensagens do agente", "Catálogo personalizado", "Carteira de pontos"]
     ]},
     { type: "divider", label: "Linha de visibilidade" },
     { type: "cards", label: "Backstage · nós (curadoria)", cells: [
-      ["Publica páginas de rolê para busca"],
-      ["Adiciona rolês na plataforma"],
-      ["Cura rolês e vídeos", "Verifica dados e data"],
-      ["Verificação de conta?"],
-      ["Mantém horários e endereços", "Monta grupos e transfers"],
+      ["Analisa indicações pelos critérios", "Cura os vídeos", "Publica a página do rolê", "Mantém horários e endereços", "Revisa o que a comunidade sinaliza", "Gere parcerias de desconto"],
+      null,
+      null,
+      ["Recebe aviso de info errada?", "Verificação de conta?"],
+      ["Monta grupos e transfers"],
       ["Corrige o que fechou ou mudou"],
       ["Acompanha grupos e transfers", "Registra comissão?", "Atende incidentes?"],
-      ["Avaliações voltam à curadoria", "Gere parcerias de desconto"]
+      ["Avaliações voltam à curadoria"]
     ]},
     { type: "divider", label: "Linha de interação interna" },
     { type: "cards", label: "Suporte · sistemas", cells: [
+      ["Formulário de indicação", "Painel da curadoria"],
       ["Site indexável (SEO)", "Link rastreável"],
       ["Base curada", "Busca e filtros"],
-      ["Hospedagem de vídeos", "Dados de entorno e selo"],
-      ["Conta e perfil", "Consentimento LGPD"],
+      ["Hospedagem de vídeos", "Dados de entorno e selo", "Conta e perfil", "Consentimento LGPD"],
       ["IA só com base curada", "Limite de mensagens", "Pagamento dos extras"],
       ["Localização", "Notificações com limite"],
       ["Validação do check-in?"],
@@ -86,17 +88,17 @@ const DATA = {
     ]},
     { type: "divider", label: "Parceiros externos" },
     { type: "cards", label: "Locais · recomendam", cells: [
+      ["Indicam rolês para a curadoria", "Gravam os vídeos?"],
       ["Indicam o app no boca a boca"],
-      ["Indicam rolês para a curadoria"],
-      ["Nome aparece no card", "Gravam os vídeos?"],
-      null, null, null, null,
+      null,
+      ["Nome aparece no card"],
+      null, null, null,
       ["Ganham pontos quando o rolê é usado"]
     ]},
     { type: "cards", label: "Prestadores e parceiros", cells: [
-      null,
-      ["Ofertam o rolê"],
-      null, null,
-      ["Informam horários", "Confirmam vagas no grupo"],
+      ["Ofertam o rolê", "Atualizam horários e preços?", "Pedem para entrar? (Q-36)"],
+      null, null, null,
+      ["Confirmam vagas no grupo"],
       ["Avisam mudanças?"],
       ["Atendem e recebem no local", "Motoristas mulheres no transfer", "Guia do rolê em grupo", "Pagam comissão"],
       ["99/Uber e restaurantes dão desconto"]
@@ -159,7 +161,7 @@ Promise.all(["400","500","600"].map(w=>document.fonts?document.fonts.load(w+" 16
     h+=`<div class="row${first}"><div class="lab">${esc(r.label)}</div>`;
     for(let i=0;i<n;i++){
       let c='';
-      if(r.type==='stages') c=`<div class="num">${String(i+1).padStart(2,'0')}</div><div class="stg">${esc(DATA.stages[i])}</div>`;
+      if(r.type==='stages') c=`<div class="num">${String(i+(DATA.startAt??1)).padStart(2,'0')}</div><div class="stg">${esc(DATA.stages[i])}</div>`;
       else{const v=r.cells?.[i]; if(v!=null&&v!==''){
         if(r.type==='bullets') c=`<ul>${[].concat(v).map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
         else if(r.type==='chips') c=`<div class="chips">${[].concat(v).map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>`;

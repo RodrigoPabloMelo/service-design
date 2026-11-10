@@ -779,7 +779,7 @@ abstract final class TravelMock {
     ],
   );
 
-  /// Os 8 rolês salvos (etapa 04 do blueprint).
+  /// Os 8 rolês salvos (etapa 03 do blueprint).
   static const savedRoles = [
     casaAstral,
     mercadoBoaVista,

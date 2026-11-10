@@ -6,7 +6,7 @@
 
 ## De onde vem
 
-A tela `/agente` materializa a **etapa 05 "Organiza locais com o agente"** do blueprint de serviço (PDF de 2026-11-04, viajante mulher, rolês em Recife). O blueprint **ainda não está no repo** — quando entrar em `diagrams/`, linkar aqui.
+A tela `/agente` materializa a **etapa 04 "Organiza locais com o agente"** do [blueprint de serviço](../diagrams/blueprint.html) (viajante mulher, rolês em Recife). Na v1 do blueprint (PDF de 2026-11-04) era a etapa 05; a renumeração veio com D-23.
 
 Na jornada atual ([jornada.md](jornada.md)), ela responde principalmente a `E-05` (montagem do roteiro: "IA erra rotas, horários e endereços") e `E-06` (ajustes na estadia: clima, cansaço, perto de onde está), e traz para dentro do app as provas que a viajante buscaria fora em `E-04` (validação e confiança).
 

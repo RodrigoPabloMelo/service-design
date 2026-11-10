@@ -15,6 +15,8 @@ feedback do designer; não reabra sem ele pedir.
 
 1. **Sem sombra, sem borda de separação, sem "linha de pixel".** Separe por
    camada sólida (`s0` fundo → `s1` card → `s2` grupo) e espaço.
+   Exceção: cards de sugestão da abertura — sem fundo, só borda fina
+   (`ink` 10%), raio do composer (ver patterns.md).
 2. **Neutros cinza** (nada de areia/bege). **Uma** cor de contraste: azul
    `accent #006FD6`. Tiffany `#0ABAB5` é só marca (símbolo, água, aurora).
    Tiffany também nos bichos da maré em pixels (são água).
