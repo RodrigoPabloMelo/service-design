@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -152,6 +153,7 @@ class ConnectorTile extends StatelessWidget {
 
 /// Aurora: brilho que desliza e pulsa no rodapé do sheet.
 /// [intensity] escala o alfa (fundo claro pede menos que o escuro).
+/// No modo leve ([AppEffects.lite]) anda a ~15 fps.
 class Aurora extends StatefulWidget {
   const Aurora({required this.colors, this.intensity = 1, super.key});
 
@@ -163,35 +165,73 @@ class Aurora extends StatefulWidget {
 }
 
 class _AuroraState extends State<Aurora> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 7),
-  );
+  static const _cycle = Duration(seconds: 7);
+
+  // Criado só quando usado: no modo leve nunca nasce (o dispose não pode
+  // criá-lo — o ticker consulta o contexto, já desmontado ali).
+  AnimationController? _ctrl;
+  AnimationController get _c =>
+      _ctrl ??= AnimationController(vsync: this, duration: _cycle);
+
+  // Modo leve (celular no navegador): relógio próprio a ~15 fps em vez do
+  // ticker (60–120 fps). No navegador cada quadro redesenha a cena inteira,
+  // e o brilho é lento — 15 fps já parece contínuo.
+  final _phase = ValueNotifier<double>(0);
+  final _clock = Stopwatch();
+  Timer? _timer;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (MediaQuery.disableAnimationsOf(context)) {
+    final reduce = MediaQuery.disableAnimationsOf(context);
+    if (AppEffects.lite) {
+      // Timer não obedece TickerMode sozinho (a conversa desliga a aurora
+      // assim depois do fade): lê e para junto.
+      final on = !reduce && TickerMode.valuesOf(context).enabled;
+      on ? _startTimer() : _stopTimer();
+    } else if (reduce) {
       _c.stop();
     } else if (!_c.isAnimating) {
       _c.repeat();
     }
   }
 
+  void _startTimer() {
+    if (_timer != null) return;
+    _clock.start();
+    _timer = Timer.periodic(const Duration(milliseconds: 66), (_) {
+      _phase.value =
+          (_clock.elapsedMilliseconds % _cycle.inMilliseconds) /
+              _cycle.inMilliseconds;
+    });
+  }
+
+  void _stopTimer() {
+    _timer?.cancel();
+    _timer = null;
+    _clock.stop();
+  }
+
   @override
   void dispose() {
-    _c.dispose();
+    _stopTimer();
+    _phase.dispose();
+    _ctrl?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final lite = AppEffects.lite;
     return IgnorePointer(
       child: AnimatedBuilder(
-        animation: _c,
+        animation: lite ? _phase : _c,
         builder: (context, _) => CustomPaint(
           painter: _AuroraPainter(
-              _c.value * math.pi * 2, widget.colors, widget.intensity),
+            (lite ? _phase.value : _c.value) * math.pi * 2,
+            widget.colors,
+            widget.intensity,
+          ),
         ),
       ),
     );
