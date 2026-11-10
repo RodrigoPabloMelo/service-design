@@ -9,6 +9,7 @@ import 'package:studio_app/design_browser.dart';
 import 'package:studio_app/design_doc_page.dart';
 import 'package:studio_app/design_system_page.dart';
 import 'package:studio_app/design_hub_page.dart';
+import 'package:studio_app/design_perf_hud.dart';
 import 'package:studio_app/design_theme.dart';
 import 'package:studio_app/design_tokens.dart';
 import 'package:studio_app/features/feature_registry.dart';
@@ -110,12 +111,18 @@ final _router = GoRouter(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // `?efeitos=leve|completo` e `?fps=1` lidos antes do router: o redirect de
+  // `/` pra primeira tela descarta a query.
+  AppEffects.init();
+  final perfHud = DesignPerfHud.requested();
   // `/docs/fluxo/onboarding` em vez de `/#/docs?flow=Onboarding`.
   usePrettyUrls();
   await setupDesignDependencies();
   // Liquid Glass: pré-aquece shaders (sem isso, 1º frame pisca).
   await initAppGlass();
-  runApp(const _DesignRoot());
+  runApp(perfHud
+      ? const DesignPerfHud(child: _DesignRoot())
+      : const _DesignRoot());
 }
 
 class _DesignRoot extends StatefulWidget {
