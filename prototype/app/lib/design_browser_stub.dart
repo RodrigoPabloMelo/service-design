@@ -25,3 +25,5 @@ Future<bool> versionExists(String commit) async => false;
 Widget? versionFrame(String url) => null;
 
 void usePrettyUrls() {}
+
+void setPageColor(String css) {}

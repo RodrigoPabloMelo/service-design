@@ -13,6 +13,7 @@ import 'package:studio_app/design_perf_hud.dart';
 import 'package:studio_app/design_theme.dart';
 import 'package:studio_app/design_tokens.dart';
 import 'package:studio_app/features/feature_registry.dart';
+import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/core/components/glass/app_glass.dart';
 
 // Entry point do loop de design (branch `design` — build web hospedado).
@@ -132,6 +133,18 @@ class _DesignRoot extends StatefulWidget {
   State<_DesignRoot> createState() => _DesignRootState();
 }
 
+/// Fundo do protótipo (o `s0` da Maré) no tema atual. Vira o fundo da página
+/// e a `theme-color`: no celular o navegador pinta as próprias barras com
+/// essas cores (Safari no iPhone pelo fundo da página, Chrome no Android pela
+/// `theme-color`) — em branco, elas pareciam cortar o app.
+Color _pageColor(ThemeMode mode) {
+  final dark = mode == ThemeMode.dark ||
+      (mode == ThemeMode.system &&
+          WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+              Brightness.dark);
+  return (dark ? TravelPalette.dark : TravelPalette.light).s0;
+}
+
 class _DesignRootState extends State<_DesignRoot> {
   bool _toolbarVisible = false;
 
@@ -139,13 +152,18 @@ class _DesignRootState extends State<_DesignRoot> {
   void initState() {
     super.initState();
     _router.routerDelegate.addListener(_onRoute);
+    designThemeMode.addListener(_syncPageColor);
+    _syncPageColor();
   }
 
   @override
   void dispose() {
     _router.routerDelegate.removeListener(_onRoute);
+    designThemeMode.removeListener(_syncPageColor);
     super.dispose();
   }
+
+  void _syncPageColor() => setPageColor(_pageColor(designThemeMode.value));
 
   /// `/docs` é documentação — sem moldura de device. As rotas de tela são o
   /// protótipo e ganham o device_preview em volta.
@@ -268,6 +286,11 @@ class _DesignApp extends StatelessWidget {
       valueListenable: designThemeMode,
       builder: (context, mode, _) => MaterialApp.router(
         title: 'Studio Design',
+        // Cor do app pro sistema (seletor de abas). No web o Title também a
+        // manda pra meta `theme-color` do engine — sem ela ia o roxo do
+        // Material. Quem vale no navegador é a `#mare-theme` (index.html),
+        // que vem antes e o engine não apaga.
+        color: _pageColor(mode),
         debugShowCheckedModeBanner: false,
         locale: DevicePreview.locale(context),
         supportedLocales: const [Locale('pt', 'BR')],
