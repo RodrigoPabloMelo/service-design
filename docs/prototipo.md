@@ -16,7 +16,9 @@ Na jornada atual ([jornada.md](jornada.md)), ela responde principalmente a `E-05
 cd prototype/app && fvm flutter run -d chrome -t lib/main_design.dart
 ```
 
-Publicado em <https://rodrigopablomelo.github.io/service-design/agente>. O deploy é automático a cada push na `main` que mexe em `prototype/app/` ([`deploy-prototipo.yml`](../.github/workflows/deploy-prototipo.yml)): roda analyze e testes, builda e substitui a branch `gh-pages`. Também dá para disparar à mão em Actions → "Deploy do protótipo".
+Publicado na Vercel em <https://service-design-three.vercel.app/agente>. A Vercel builda sozinha a cada push na `main` ([`vercel.json`](../vercel.json) chama [`tool/vercel_build.sh`](../prototype/app/tool/vercel_build.sh)). O script baixa o Flutter do `.fvmrc`, roda analyze e testes e gera o build web. Ramos que não são a `main` ganham um preview.
+
+O workflow do GitHub Pages ([`deploy-prototipo.yml`](../.github/workflows/deploy-prototipo.yml), em `rodrigopablomelo.github.io/service-design/`) continua no repositório, mas só roda quando o Actions da conta estiver liberado.
 
 Abra `/agente`. Cenários do mock (`TravelAgentScenario`): `padrao` (8 rolês salvos), `vazio` (começo do zero), `erro`, `carregando`.
 
