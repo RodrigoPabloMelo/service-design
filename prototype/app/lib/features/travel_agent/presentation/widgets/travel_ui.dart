@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:studio_app/core/components/glass/app_glass.dart';
 import 'package:studio_app/core/components/widgets/app_activity_indicator.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
@@ -983,6 +984,10 @@ class SheetTopInset extends InheritedWidget {
 /// Desfoque progressivo do iOS no topo do sheet, com véu `s0` em degradê
 /// pra legibilidade do cabeçalho. Faixas de `BackdropFilter` empilhadas,
 /// cada uma mais curta: perto da borda o desfoque soma mais. Sem toque.
+///
+/// No modo leve ([AppEffects.lite], celular no navegador) são 3 faixas em
+/// vez de 8 — cada faixa é uma leitura da tela na GPU, a cada quadro —, com
+/// sigmas que mantêm o desfoque somado no topo (~σ 6,9) e a rampa.
 class ProgressiveBlurTop extends StatelessWidget {
   const ProgressiveBlurTop({
     required this.height,
@@ -993,6 +998,10 @@ class ProgressiveBlurTop extends StatelessWidget {
   final double height;
   final int steps;
 
+  /// Modo leve: base fraca (sem degrau visível onde a faixa termina) e o
+  /// topo somando √(0,6² + 2,4² + 6,4²) ≈ 6,9, como as 8 faixas.
+  static const _liteSigmas = [0.6, 2.4, 6.4];
+
   static double _smooth(double t) => 0.5 - 0.5 * math.cos(math.pi * t);
 
   @override
@@ -1000,23 +1009,27 @@ class ProgressiveBlurTop extends StatelessWidget {
     if (height <= 0.5) return const SizedBox.shrink();
     final p = TravelPalette.of(context);
     const veilSteps = 10;
+    final sigmas = AppEffects.lite
+        ? _liteSigmas
+        : [for (var i = 0; i < steps; i++) 0.4 + 0.5 * i];
+    final n = sigmas.length;
     return IgnorePointer(
       child: SizedBox(
         height: height,
         child: Stack(
           children: [
-            for (var i = 0; i < steps; i++)
+            for (var i = 0; i < n; i++)
               Positioned(
                 top: 0,
                 left: 0,
                 right: 0,
-                height: height * (1 - i / steps),
+                height: height * (1 - i / n),
                 child: ClipRect(
                   // Rampa: a faixa mais alta (que chega na base) desfoca
                   // pouco; as de cima somam mais — sem degrau na base.
                   child: BackdropFilter(
                     filter: ui.ImageFilter.blur(
-                        sigmaX: 0.4 + 0.5 * i, sigmaY: 0.4 + 0.5 * i),
+                        sigmaX: sigmas[i], sigmaY: sigmas[i]),
                     child: const SizedBox.expand(),
                   ),
                 ),

@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studio_app/core/components/glass/app_glass.dart';
@@ -268,24 +266,23 @@ class DetailHeader extends StatelessWidget {
                     onTap: onBack,
                     child: Pressable(
                       onTap: onBack,
-                      child: ClipOval(
-                        child: BackdropFilter(
-                          filter: ui.ImageFilter.blur(
-                              sigmaX: 12 * t, sigmaY: 12 * t),
-                          child: Container(
-                            width: 44,
-                            height: 44,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: p.s1.withValues(alpha: 1 - 0.25 * t),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: p.ink.withValues(alpha: 0.06 * t),
-                              ),
+                      child: AppBackdropBlur(
+                        sigma: 12 * t,
+                        circle: true,
+                        liteColor: p.s1.withValues(alpha: 0.6 * t),
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: p.s1.withValues(alpha: 1 - 0.25 * t),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: p.ink.withValues(alpha: 0.06 * t),
                             ),
-                            child: FaIcon(TravelIcons.back,
-                                size: 16, color: p.ink),
                           ),
+                          child:
+                              FaIcon(TravelIcons.back, size: 16, color: p.ink),
                         ),
                       ),
                     ),
