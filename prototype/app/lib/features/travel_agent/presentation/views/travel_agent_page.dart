@@ -1337,7 +1337,11 @@ class _DetailCta extends StatelessWidget {
 }
 
 /// Modal com scrim: desliza de baixo, fecha tocando fora.
-class _Modal extends StatelessWidget {
+///
+/// Fechado (depois da saída), o sheet fica montado — com estado, pra abrir
+/// na hora — mas fora da pintura e sem animar: deslizado pra fora da tela
+/// ele ainda era desenhado a cada quadro, carrossel com blur incluso.
+class _Modal extends StatefulWidget {
   const _Modal(
       {required this.open, required this.onDismiss, required this.child});
 
@@ -1346,7 +1350,22 @@ class _Modal extends StatelessWidget {
   final Widget child;
 
   @override
+  State<_Modal> createState() => _ModalState();
+}
+
+class _ModalState extends State<_Modal> {
+  /// Fechado e com a saída concluída.
+  late bool _parked = !widget.open;
+
+  @override
+  void didUpdateWidget(_Modal old) {
+    super.didUpdateWidget(old);
+    if (widget.open) _parked = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final open = widget.open;
     final reduce = MediaQuery.disableAnimationsOf(context);
     final d = Duration(milliseconds: reduce ? 1 : 360);
     return IgnorePointer(
@@ -1355,7 +1374,7 @@ class _Modal extends StatelessWidget {
         children: [
           Positioned.fill(
             child: GestureDetector(
-              onTap: onDismiss,
+              onTap: widget.onDismiss,
               child: AnimatedOpacity(
                 duration: d,
                 opacity: open ? 1 : 0,
@@ -1363,13 +1382,22 @@ class _Modal extends StatelessWidget {
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: AnimatedSlide(
-              duration: d,
-              curve: Curves.easeOutCubic,
-              offset: open ? Offset.zero : const Offset(0, 1.05),
-              child: open || reduce ? child : _KeepAlive(child: child),
+          Visibility(
+            visible: !_parked,
+            maintainState: true,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: AnimatedSlide(
+                duration: d,
+                curve: Curves.easeOutCubic,
+                offset: open ? Offset.zero : const Offset(0, 1.05),
+                onEnd: () {
+                  if (mounted && !widget.open) setState(() => _parked = true);
+                },
+                child: open || reduce
+                    ? widget.child
+                    : _KeepAlive(child: widget.child),
+              ),
             ),
           ),
         ],
