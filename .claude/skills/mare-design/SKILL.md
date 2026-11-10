@@ -58,6 +58,14 @@ feedback do designer; não reabra sem ele pedir.
 13. **Botão acessível:** `Semantics(button: true, excludeSemantics: true)`
     sempre com `onTap:` (o mesmo do `Pressable` filho) — sem ele o leitor
     de tela anuncia um botão que não faz nada. Lint D11.
+14. **Celular no navegador = efeitos leves** (`AppEffects.lite`, em
+    `core/components/glass/app_glass.dart`). O Flutter web redesenha a cena
+    inteira a cada quadro e cada desfoque custa caro na GPU do celular. Lá,
+    o vidro é minimal (tinte + aro, sem refração), o desfoque progressivo
+    usa 3 faixas, frost e vidro do roteiro ficam sem blur (véu mais denso)
+    e a aurora anda a ~15 fps. Desfoque novo passa por `AppBackdropBlur`.
+    Fade de borda sobre fundo sólido = véu na cor do fundo por cima, nunca
+    `ShaderMask`. `?efeitos=completo` força o visual cheio, `?fps=1` mede.
 
 Valores exatos: [tokens.md](tokens.md). Padrões de componente e de fluxo
 (conversa→mapa, menu ⋯, composer, sheet de limites, card do rolê, player,

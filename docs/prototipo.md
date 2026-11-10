@@ -18,6 +18,11 @@ cd prototype/app && fvm flutter run -d chrome -t lib/main_design.dart
 
 Abra `/agente`. Cenários do mock (`TravelAgentScenario`): `padrao` (8 rolês salvos), `vazio` (começo do zero), `erro`, `carregando`.
 
+**No celular** (navegador), os efeitos caros entram sozinhos em **modo leve**: vidro sem refração, desfoque do topo em 3 faixas, frost sem blur e aurora a ~15 fps (regra 14 da skill `mare-design`). As barras do navegador (status e a de baixo no Safari, a barra do Chrome no Android) seguem o fundo do app. Para comparar no aparelho:
+
+- `/agente?fps=1` mostra fps, o pior quadro e os tempos de build/raster;
+- `?efeitos=completo` força o visual cheio, e `?efeitos=leve` força o leve no desktop.
+
 ## Telas e componentes ↔ docs
 
 | Parte do protótipo | O que faz | Etapa | Personas | Decisões que aplica | Questões que toca |
