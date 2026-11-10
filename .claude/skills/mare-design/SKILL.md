@@ -62,8 +62,10 @@ feedback do designer; não reabra sem ele pedir.
     `core/components/glass/app_glass.dart`). O Flutter web redesenha a cena
     inteira a cada quadro e cada desfoque custa caro na GPU do celular. Lá,
     o vidro é minimal (tinte + aro, sem refração), o desfoque progressivo
-    usa 3 faixas, frost e vidro do roteiro ficam sem blur (véu mais denso)
-    e a aurora anda a ~15 fps. Desfoque novo passa por `AppBackdropBlur`.
+    usa 3 faixas (cortes onde o véu já é denso), frost e vidro do roteiro
+    ficam sem blur (véu mais denso), os vizinhos do carrossel de conectores
+    só apagam (sem blur) e a aurora anda a ~15 fps. Desfoque novo passa por
+    `AppBackdropBlur`.
     Fade de borda sobre fundo sólido = véu na cor do fundo por cima, nunca
     `ShaderMask`. `?efeitos=completo` força o visual cheio, `?fps=1` mede.
 

@@ -998,9 +998,11 @@ class ProgressiveBlurTop extends StatelessWidget {
   final double height;
   final int steps;
 
-  /// Modo leve: base fraca (sem degrau visível onde a faixa termina) e o
-  /// topo somando √(0,6² + 2,4² + 6,4²) ≈ 6,9, como as 8 faixas.
-  static const _liteSigmas = [0.6, 2.4, 6.4];
+  /// Modo leve: (altura da faixa, σ). Os cortes caem onde o véu já é denso
+  /// (50% da altura ≈ 43% de `s0`, 22% ≈ 76%), pra emenda entre faixas não
+  /// virar costura; base fraca e topo somando √(0,6² + 2,4² + 6,4²) ≈ 6,9,
+  /// como as 8 faixas.
+  static const _liteStrips = [(1.0, 0.6), (0.5, 2.4), (0.22, 6.4)];
 
   static double _smooth(double t) => 0.5 - 0.5 * math.cos(math.pi * t);
 
@@ -1009,27 +1011,25 @@ class ProgressiveBlurTop extends StatelessWidget {
     if (height <= 0.5) return const SizedBox.shrink();
     final p = TravelPalette.of(context);
     const veilSteps = 10;
-    final sigmas = AppEffects.lite
-        ? _liteSigmas
-        : [for (var i = 0; i < steps; i++) 0.4 + 0.5 * i];
-    final n = sigmas.length;
+    final strips = AppEffects.lite
+        ? _liteStrips
+        : [for (var i = 0; i < steps; i++) (1 - i / steps, 0.4 + 0.5 * i)];
     return IgnorePointer(
       child: SizedBox(
         height: height,
         child: Stack(
           children: [
-            for (var i = 0; i < n; i++)
+            for (final (fraction, sigma) in strips)
               Positioned(
                 top: 0,
                 left: 0,
                 right: 0,
-                height: height * (1 - i / n),
+                height: height * fraction,
                 child: ClipRect(
                   // Rampa: a faixa mais alta (que chega na base) desfoca
                   // pouco; as de cima somam mais — sem degrau na base.
                   child: BackdropFilter(
-                    filter: ui.ImageFilter.blur(
-                        sigmaX: sigmas[i], sigmaY: sigmas[i]),
+                    filter: ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
                     child: const SizedBox.expand(),
                   ),
                 ),
