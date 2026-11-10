@@ -2,8 +2,9 @@
 
 ## Fluxo da tela
 
-- Abertura da conversa: bloco-resumo azul e, logo abaixo, só 3 sugestões
-  de maior valor (organizar, noite com as amigas, perto do hotel).
+- Abertura da conversa: bloco-resumo azul e só 3 sugestões de maior valor
+  (organizar, noite com as amigas, perto do hotel), presas em cima do
+  composer.
   Sem carrossel de salvos nem outros cards ali (polui); eles entram quando
   o agente responde.
 - Aurora (`Aurora`, azul `accent` + `piscina`) atrás do composer, presa ao
@@ -35,6 +36,16 @@
 - Volta: botão voltar no mapa, ou arrastar o sheet até o topo.
 - Detents sobre o mapa: 0.2 / 0.52 / 0.92. Card do rolê e roteiro completo
   abrem dentro do sheet (0.92 no mapa), sem empilhar sheets.
+
+## Sugestões da abertura
+
+**Sem título, presas logo acima do composer** (`AgentInputBar.above`, 8 px
+de respiro), só enquanto a Maré está ociosa e fora do roteiro.
+Linha rolável na horizontal (sangra até a borda), cards de 148×76 **sem
+fundo, só borda de 1 px** (`ink` 10%), raio `rComposer` 28 — nada de
+canto quadrado (ref. Claude, mas mais redondo). Texto em até 2 linhas:
+primeira palavra em `subheadStrong` `ink`, resto em `subhead` `inkMuted`.
+Todos iguais, nenhum em `accent`.
 
 ## Sheets modais (todos)
 

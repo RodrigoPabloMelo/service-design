@@ -40,7 +40,8 @@ class AgentConversation extends StatelessWidget {
         TravelSpace.gutter,
         18 + SheetTopInset.of(context),
         TravelSpace.gutter,
-        200,
+        // Rodapé fixo: composer + linha de sugestões (76 + 8) quando ociosa.
+        state.phase == AgentPhase.idle ? 284 : 200,
       ),
       children: [
         // Começo do zero: sem bloco-resumo (nada foi salvo pela pessoa; os
@@ -80,10 +81,7 @@ class AgentConversation extends StatelessWidget {
                 loop: state.scenario == TravelAgentScenario.carregando),
           ],
         ],
-        if (state.phase == AgentPhase.idle) ...[
-          const SizedBox(height: TravelSpace.xl),
-          _Suggestions(onTap: cubit.send),
-        ],
+        // Sugestões ficam presas em cima do composer (AgentInputBar.above).
       ],
     );
   }
@@ -1129,48 +1127,45 @@ class _SwapThumb extends StatelessWidget {
 
 // ── Sugestões (Hick: ≤5, mais relevante primeiro) ─────────────────────────
 
-/// Chips direto na superfície — sem bloco em volta.
-class _Suggestions extends StatelessWidget {
-  const _Suggestions({required this.onTap});
+/// Cards só com borda fina, sem fundo (some na superfície), raio do
+/// composer (28). Linha rolável, sem título, presa logo acima do composer
+/// e sangrando até a borda da tela.
+class AgentSuggestions extends StatelessWidget {
+  const AgentSuggestions({required this.onTap, super.key});
 
   final ValueChanged<String> onTap;
 
   @override
   Widget build(BuildContext context) {
-    final p = TravelPalette.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: _inset,
-          child: Text('Sugestões',
-              style: TravelType.section.copyWith(color: p.inkMuted)),
-        ),
-        const SizedBox(height: TravelSpace.sm),
-        Wrap(
-          spacing: TravelSpace.sm,
-          runSpacing: TravelSpace.sm,
-          children: [
-            for (final (i, s) in TravelMock.suggestions.indexed)
-              _Chip(label: s, primary: i == 0, onTap: () => onTap(s)),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      clipBehavior: Clip.none,
+      child: Row(
+        children: [
+          for (final (i, s) in TravelMock.suggestions.indexed) ...[
+            if (i > 0) const SizedBox(width: TravelSpace.sm),
+            _SuggestionCard(label: s, onTap: () => onTap(s)),
           ],
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-class _Chip extends StatelessWidget {
-  const _Chip({required this.label, required this.onTap, this.primary = false});
+/// Primeira palavra em `ink` 500, resto em `inkMuted` — lê como verbo +
+/// complemento, em até duas linhas.
+class _SuggestionCard extends StatelessWidget {
+  const _SuggestionCard({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;
-  final bool primary;
 
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
-    final fg = primary ? p.onAccent : p.ink;
+    final cut = label.indexOf(' ');
+    final head = cut < 0 ? label : label.substring(0, cut);
+    final tail = cut < 0 ? '' : label.substring(cut);
     return Semantics(
       button: true,
       label: label,
@@ -1179,20 +1174,25 @@ class _Chip extends StatelessWidget {
       child: Pressable(
         onTap: onTap,
         child: Container(
-          height: TravelSpace.tap,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          width: 148,
+          height: 76,
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
-            color: primary ? p.accent : p.s1,
-            borderRadius: BorderRadius.circular(TravelSpace.rPill),
+            borderRadius: BorderRadius.circular(TravelSpace.rComposer),
+            border: Border.all(color: p.ink.withValues(alpha: 0.1)),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(label,
-                    style: TravelType.subheadStrong.copyWith(color: fg)),
-              ),
-            ],
+          child: Text.rich(
+            TextSpan(children: [
+              TextSpan(
+                  text: head,
+                  style: TravelType.subheadStrong.copyWith(color: p.ink)),
+              TextSpan(
+                  text: tail,
+                  style: TravelType.subhead.copyWith(color: p.inkMuted)),
+            ]),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ),
@@ -1268,8 +1268,12 @@ class AgentInputBar extends StatefulWidget {
     this.autofocus = false,
     this.hint = 'Peça um ajuste à Maré…',
     this.safeBottom = true,
+    this.above,
     super.key,
   });
+
+  /// Linha presa logo acima do campo (sugestões da conversa). Nunca embaixo.
+  final Widget? above;
 
   final bool enabled;
   final int used;
@@ -1318,6 +1322,10 @@ class _AgentInputBarState extends State<AgentInputBar> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (widget.above != null) ...[
+            widget.above!,
+            const SizedBox(height: TravelSpace.sm),
+          ],
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
