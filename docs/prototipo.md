@@ -18,8 +18,6 @@ cd prototype/app && fvm flutter run -d chrome -t lib/main_design.dart
 
 Publicado na Vercel em <https://service-design-three.vercel.app/agente>. A Vercel builda sozinha a cada push na `main` ([`vercel.json`](../vercel.json) chama [`tool/vercel_build.sh`](../prototype/app/tool/vercel_build.sh)). O script baixa o Flutter do `.fvmrc`, roda analyze e testes e gera o build web. Ramos que não são a `main` ganham um preview.
 
-O workflow do GitHub Pages ([`deploy-prototipo.yml`](../.github/workflows/deploy-prototipo.yml), em `rodrigopablomelo.github.io/service-design/`) continua no repositório, mas só roda quando o Actions da conta estiver liberado.
-
 Abra `/agente`. Cenários do mock (`TravelAgentScenario`): `padrao` (8 rolês salvos), `vazio` (começo do zero), `erro`, `carregando`.
 
 **No celular** (navegador), os efeitos caros entram sozinhos em **modo leve**: vidro sem refração, desfoque do topo em 3 faixas, frost sem blur e aurora a ~15 fps (regra 14 da skill `mare-design`). As barras do navegador (status e a de baixo no Safari, a barra do Chrome no Android) seguem o fundo do app. Para comparar no aparelho:
