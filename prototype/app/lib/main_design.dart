@@ -185,21 +185,29 @@ class _DesignRootState extends State<_DesignRoot> {
     });
   }
 
+  /// Abaixo disto o browser já é um celular: o protótipo ocupa a tela toda,
+  /// sem moldura de device nem os botões do preview.
+  static const _mobileBreakpoint = 600.0;
+
   @override
   Widget build(BuildContext context) {
     final isDocs = _isDocs;
+    // O View do runApp já fornece MediaQuery acima do MaterialApp; depender
+    // dele refaz o build quando a janela muda de largura.
+    final isMobile = MediaQuery.sizeOf(context).width < _mobileBreakpoint;
+    final showPreview = kIsWeb && !isDocs && !isMobile;
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Stack(
         children: [
           Container(color: Colors.white),
           DevicePreview(
-            enabled: kIsWeb && !isDocs,
+            enabled: showPreview,
             isToolbarVisible: _toolbarVisible,
             backgroundColor: Colors.white,
             builder: (context) => const _DesignApp(),
           ),
-          if (!isDocs)
+          if (showPreview)
             AnimatedPositioned(
               duration: const Duration(milliseconds: 200),
               curve: Curves.easeOut,
