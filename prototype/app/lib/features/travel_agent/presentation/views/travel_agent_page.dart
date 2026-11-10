@@ -927,6 +927,37 @@ class _SheetBodyState extends State<_SheetBody> {
   static const _rampSteps = 16;
   static double _smooth(double t) => 0.5 - 0.5 * math.cos(math.pi * t);
 
+  static const _auroraHeight = 300.0;
+
+  /// A aurora só aparece onde o véu do rodapé cobre a lista, e na mesma
+  /// proporção (mesma rampa): fica "por baixo de tudo" como antes de o fade
+  /// virar véu. Na abertura ela cabe inteira sob o véu (sugestões + composer)
+  /// e nada muda; depois do 1º envio o rodapé encolhe e, enquanto ela se
+  /// esvai, o topo dela é recortado na rampa — sem tingir as mensagens.
+  Widget _underVeil(Widget aurora) {
+    // Altura, contada do fundo, em que a rampa do véu começa (alfa 0).
+    final rampTop = _footer - 16 + _bottomFade;
+    if (rampTop >= _auroraHeight) return aurora;
+    final start = (_auroraHeight - rampTop) / _auroraHeight;
+    const span = _bottomFade / _auroraHeight;
+    return ShaderMask(
+      blendMode: BlendMode.dstIn,
+      shaderCallback: (rect) => LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          for (var i = 0; i <= _rampSteps; i++)
+            Colors.black.withValues(alpha: _smooth(i / _rampSteps)),
+        ],
+        stops: [
+          for (var i = 0; i <= _rampSteps; i++)
+            (start + span * i / _rampSteps).clamp(0.0, 1.0),
+        ],
+      ).createShader(rect),
+      child: aurora,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
@@ -1004,12 +1035,13 @@ class _SheetBodyState extends State<_SheetBody> {
             ),
           ),
           // Aurora presa ao rodapé: por cima do véu (que esconde a lista sob
-          // o composer) e embaixo do composer.
+          // o composer) e embaixo do composer — nunca por cima da lista
+          // ([_underVeil]).
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            height: 300,
+            height: _auroraHeight,
             child: IgnorePointer(
               child: Opacity(
                 opacity: t,
@@ -1021,10 +1053,14 @@ class _SheetBodyState extends State<_SheetBody> {
                   curve: Curves.easeInOut,
                   onEnd: () => setState(() => _auroraIdle = !_fresh),
                   child: TickerMode(
-                    enabled: _fresh || !_auroraIdle,
-                    child: Aurora(
-                      colors: [p.accent, p.piscina, p.accent],
-                      intensity: p.isDark ? 0.8 : 0.6,
+                    // Sobre o mapa (t = 0) ela não aparece: nada de animar
+                    // escondida.
+                    enabled: t > 0 && (_fresh || !_auroraIdle),
+                    child: _underVeil(
+                      Aurora(
+                        colors: [p.accent, p.piscina, p.accent],
+                        intensity: p.isDark ? 0.8 : 0.6,
+                      ),
                     ),
                   ),
                 ),
