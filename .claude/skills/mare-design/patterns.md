@@ -11,7 +11,9 @@
   rodapé, **só enquanto nada foi enviado**. Na primeira mensagem se esvai
   devagar e desliga o ticker. Tem que aparecer no claro também
   (intensidade 0.6 claro / 0.8 escuro). Fica por baixo de tudo — nunca
-  sobre o composer nem entre bloco e sugestões.
+  sobre o composer nem entre bloco e sugestões. Na prática é pintada sobre
+  o véu `s0` do rodapé, recortada pela mesma rampa: só aparece onde o véu
+  esconde a lista, nunca tingindo mensagens. Com o mapa aberto não anima.
 - **Começo do zero** (nada salvo, sem datas — cenário Vazio): abre **no
   mapa**, sem sheet e sem bloco azul (`BlankStartHero`). No centro, véu
   radial `s0`, `MareMark` 28, "Oi, {nome}." em `inkMuted` + pergunta em

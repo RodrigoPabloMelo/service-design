@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:studio_app/core/components/glass/app_glass.dart';
 import 'package:studio_app/core/components/widgets/app_activity_indicator.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
@@ -838,6 +839,10 @@ class _PillSegmentedState extends State<PillSegmented>
 /// Lista horizontal que sangra até as bordas do sheet, com fade suave só na
 /// borda que tem mais conteúdo (some em repouso no começo/fim). [padding] é a
 /// margem de repouso — o primeiro item nunca nasce dentro do fade.
+///
+/// O fade é um véu na cor do fundo ([background], padrão `s0`) por cima da
+/// lista — mesmo desenho de uma máscara, sem saveLayer a cada quadro. Use só
+/// sobre fundo sólido dessa cor.
 class EdgeFadeScroll extends StatefulWidget {
   const EdgeFadeScroll({
     required this.height,
@@ -846,6 +851,7 @@ class EdgeFadeScroll extends StatefulWidget {
     this.spacing = TravelSpace.sm,
     this.padding = TravelSpace.gutter,
     this.fade = 28,
+    this.background,
     super.key,
   });
 
@@ -855,6 +861,9 @@ class EdgeFadeScroll extends StatefulWidget {
   final double spacing;
   final double padding;
   final double fade;
+
+  /// Cor sólida atrás da lista (padrão: `s0`, o fundo do sheet).
+  final Color? background;
 
   @override
   State<EdgeFadeScroll> createState() => _EdgeFadeScrollState();
@@ -869,59 +878,92 @@ class _EdgeFadeScrollState extends State<EdgeFadeScroll> {
     super.dispose();
   }
 
-  static double _smooth(double t) => 0.5 - 0.5 * math.cos(math.pi * t);
-
   @override
   Widget build(BuildContext context) {
-    final list = ListView.separated(
-      controller: _c,
-      scrollDirection: Axis.horizontal,
-      padding: EdgeInsets.symmetric(horizontal: widget.padding),
-      itemCount: widget.itemCount,
-      separatorBuilder: (_, __) => SizedBox(width: widget.spacing),
-      itemBuilder: widget.itemBuilder,
-    );
+    final bg = widget.background ?? TravelPalette.of(context).s0;
     return SizedBox(
       height: widget.height,
-      child: AnimatedBuilder(
-        animation: _c,
-        child: list,
-        builder: (context, child) {
-          double left = 0, right = 0;
-          if (_c.hasClients && _c.position.hasContentDimensions) {
-            left = _c.offset.clamp(0.0, widget.fade);
-            right = (_c.position.maxScrollExtent - _c.offset)
-                .clamp(0.0, widget.fade);
-          }
-          if (left == 0 && right == 0) return child!;
-          return ShaderMask(
-            blendMode: BlendMode.dstIn,
-            shaderCallback: (rect) {
-              final w = rect.width;
-              const steps = 12;
-              final colors = <Color>[];
-              final stops = <double>[];
-              for (var i = 0; i <= steps; i++) {
-                final t = i / steps;
-                colors.add(
-                    Colors.black.withValues(alpha: left == 0 ? 1 : _smooth(t)));
-                stops.add((left * t / w).clamp(0.0, 1.0));
-              }
-              for (var i = 0; i <= steps; i++) {
-                final t = i / steps;
-                colors.add(Colors.black
-                    .withValues(alpha: right == 0 ? 1 : 1 - _smooth(t)));
-                stops.add(((w - right + right * t) / w).clamp(0.0, 1.0));
-              }
-              return LinearGradient(colors: colors, stops: stops)
-                  .createShader(rect);
-            },
-            child: child,
-          );
-        },
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          ListView.separated(
+            controller: _c,
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: widget.padding),
+            itemCount: widget.itemCount,
+            separatorBuilder: (_, __) => SizedBox(width: widget.spacing),
+            itemBuilder: widget.itemBuilder,
+          ),
+          // Só o véu acompanha a rolagem; a lista não reconstrói.
+          IgnorePointer(
+            child: AnimatedBuilder(
+              animation: _c,
+              builder: (context, _) {
+                double left = 0, right = 0;
+                if (_c.hasClients && _c.position.hasContentDimensions) {
+                  left = _c.offset.clamp(0.0, widget.fade);
+                  right = (_c.position.maxScrollExtent - _c.offset)
+                      .clamp(0.0, widget.fade);
+                }
+                return CustomPaint(
+                  painter: _SideVeilPainter(bg, left: left, right: right),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+/// Véus laterais do [EdgeFadeScroll]: a mesma rampa senoidal (12 passos) da
+/// antiga máscara, invertida — pinta a cor do fundo onde ela apagava.
+class _SideVeilPainter extends CustomPainter {
+  _SideVeilPainter(this.color, {required this.left, required this.right});
+
+  final Color color;
+  final double left;
+  final double right;
+
+  static double _smooth(double t) => 0.5 - 0.5 * math.cos(math.pi * t);
+  static final _ks = [for (var i = 0; i <= 12; i++) i / 12];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (left > 0) {
+      canvas.drawRect(
+        Rect.fromLTWH(0, 0, left, size.height),
+        Paint()
+          ..shader = ui.Gradient.linear(
+            Offset.zero,
+            Offset(left, 0),
+            [
+              for (final k in _ks)
+                color.withValues(alpha: color.a * (1 - _smooth(k))),
+            ],
+            _ks,
+          ),
+      );
+    }
+    if (right > 0) {
+      final x = size.width - right;
+      canvas.drawRect(
+        Rect.fromLTWH(x, 0, right, size.height),
+        Paint()
+          ..shader = ui.Gradient.linear(
+            Offset(x, 0),
+            Offset(size.width, 0),
+            [for (final k in _ks) color.withValues(alpha: color.a * _smooth(k))],
+            _ks,
+          ),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_SideVeilPainter old) =>
+      old.color != color || old.left != left || old.right != right;
 }
 
 /// Recuo do topo do conteúdo rolável do sheet (status bar + cabeçalho).
@@ -942,6 +984,10 @@ class SheetTopInset extends InheritedWidget {
 /// Desfoque progressivo do iOS no topo do sheet, com véu `s0` em degradê
 /// pra legibilidade do cabeçalho. Faixas de `BackdropFilter` empilhadas,
 /// cada uma mais curta: perto da borda o desfoque soma mais. Sem toque.
+///
+/// No modo leve ([AppEffects.lite], celular no navegador) são 3 faixas em
+/// vez de 8 — cada faixa é uma leitura da tela na GPU, a cada quadro —, com
+/// sigmas que mantêm o desfoque somado no topo (~σ 6,9) e a rampa.
 class ProgressiveBlurTop extends StatelessWidget {
   const ProgressiveBlurTop({
     required this.height,
@@ -952,6 +998,12 @@ class ProgressiveBlurTop extends StatelessWidget {
   final double height;
   final int steps;
 
+  /// Modo leve: (altura da faixa, σ). Os cortes caem onde o véu já é denso
+  /// (50% da altura ≈ 43% de `s0`, 22% ≈ 76%), pra emenda entre faixas não
+  /// virar costura; base fraca e topo somando √(0,6² + 2,4² + 6,4²) ≈ 6,9,
+  /// como as 8 faixas.
+  static const _liteStrips = [(1.0, 0.6), (0.5, 2.4), (0.22, 6.4)];
+
   static double _smooth(double t) => 0.5 - 0.5 * math.cos(math.pi * t);
 
   @override
@@ -959,23 +1011,25 @@ class ProgressiveBlurTop extends StatelessWidget {
     if (height <= 0.5) return const SizedBox.shrink();
     final p = TravelPalette.of(context);
     const veilSteps = 10;
+    final strips = AppEffects.lite
+        ? _liteStrips
+        : [for (var i = 0; i < steps; i++) (1 - i / steps, 0.4 + 0.5 * i)];
     return IgnorePointer(
       child: SizedBox(
         height: height,
         child: Stack(
           children: [
-            for (var i = 0; i < steps; i++)
+            for (final (fraction, sigma) in strips)
               Positioned(
                 top: 0,
                 left: 0,
                 right: 0,
-                height: height * (1 - i / steps),
+                height: height * fraction,
                 child: ClipRect(
                   // Rampa: a faixa mais alta (que chega na base) desfoca
                   // pouco; as de cima somam mais — sem degrau na base.
                   child: BackdropFilter(
-                    filter: ui.ImageFilter.blur(
-                        sigmaX: 0.4 + 0.5 * i, sigmaY: 0.4 + 0.5 * i),
+                    filter: ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
                     child: const SizedBox.expand(),
                   ),
                 ),

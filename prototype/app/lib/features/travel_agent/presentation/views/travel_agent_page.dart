@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -85,9 +86,34 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
   bool _userDrag = false;
 
   /// 0 = sheet sobre o mapa, 1 = conversa em tela cheia (morfa no arraste).
-  double get _chatT => _chatLocked
+  double get _chatT => _chatTFor(_extent);
+
+  double _chatTFor(double extent) => _chatLocked
       ? 1
-      : ((_extent - _snaps[2]) / (_full - _snaps[2])).clamp(0.0, 1.0);
+      : ((extent - _snaps[2]) / (_full - _snaps[2])).clamp(0.0, 1.0);
+
+  /// Tamanho do sheet quadro a quadro. Só os controles do mapa acompanham
+  /// cada quadro (por aqui); a página reconstrói só quando muda algo que a
+  /// árvore lê ([_visualKey]) — antes a conversa inteira era refeita a cada
+  /// quadro do arraste.
+  late final ValueNotifier<double> _extentN = ValueNotifier(_initialSize);
+
+  /// O que a árvore lê do tamanho do sheet: a morfose conversa↔mapa
+  /// (`_chatT`, só varia entre 0,92 e 1), a opacidade dos controles do mapa
+  /// (> 0,7), o véu do mapa (> 0,8) e o topo (≥ 0,999).
+  (double, bool, bool, bool) _visualKey(double extent) => (
+        _chatTFor(extent),
+        extent > 0.7,
+        extent > 0.8,
+        extent >= 0.999,
+      );
+
+  void _setExtent(double extent) {
+    final before = _visualKey(_extent);
+    _extent = extent;
+    _extentN.value = extent;
+    if (_visualKey(extent) != before) setState(() {});
+  }
 
   /// Vídeo aberto: rolê, índice e retângulo do tile (origem da expansão).
   (Role, int, Rect?)? _player;
@@ -116,6 +142,7 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
   @override
   void dispose() {
     _sheet.dispose();
+    _extentN.dispose();
     super.dispose();
   }
 
@@ -300,7 +327,6 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
           backgroundColor: p.s0,
           body: LayoutBuilder(
             builder: (context, box) {
-              final sheetPx = _extent * box.maxHeight;
               final mapMode =
                   s.hasItinerary ? MapMode.itinerary : MapMode.explore;
               final chatT = _chatT;
@@ -342,12 +368,18 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
                                     : const SizedBox.shrink(),
                               ),
                             ),
-                            // Controles do mapa (vidro, sobre o mapa).
+                            // Controles do mapa (vidro, sobre o mapa). Seguem
+                            // o sheet quadro a quadro sem reconstruir a página.
                             if (!s.isBlankStart)
-                              AnimatedPositioned(
-                                duration: const Duration(milliseconds: 120),
-                                right: 12,
-                                bottom: sheetPx + 12,
+                              ValueListenableBuilder<double>(
+                                valueListenable: _extentN,
+                                builder: (context, extent, child) =>
+                                    AnimatedPositioned(
+                                  duration: const Duration(milliseconds: 120),
+                                  right: 12,
+                                  bottom: extent * box.maxHeight + 12,
+                                  child: child!,
+                                ),
                                 child: AnimatedOpacity(
                                   duration: const Duration(milliseconds: 200),
                                   opacity: _extent > 0.7 ? 0 : 1,
@@ -416,10 +448,7 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
                         child: NotificationListener<
                             DraggableScrollableNotification>(
                           onNotification: (n) {
-                            if ((n.extent - _extent).abs() > 0.004 ||
-                                (n.extent >= 0.999) != (_extent >= 0.999)) {
-                              setState(() => _extent = n.extent);
-                            }
+                            _setExtent(n.extent);
                             // Arrastou o sheet até o topo: volta pra conversa.
                             if (cubit.state.mapOpen &&
                                 _userDrag &&
@@ -898,6 +927,37 @@ class _SheetBodyState extends State<_SheetBody> {
   static const _rampSteps = 16;
   static double _smooth(double t) => 0.5 - 0.5 * math.cos(math.pi * t);
 
+  static const _auroraHeight = 300.0;
+
+  /// A aurora só aparece onde o véu do rodapé cobre a lista, e na mesma
+  /// proporção (mesma rampa): fica "por baixo de tudo" como antes de o fade
+  /// virar véu. Na abertura ela cabe inteira sob o véu (sugestões + composer)
+  /// e nada muda; depois do 1º envio o rodapé encolhe e, enquanto ela se
+  /// esvai, o topo dela é recortado na rampa — sem tingir as mensagens.
+  Widget _underVeil(Widget aurora) {
+    // Altura, contada do fundo, em que a rampa do véu começa (alfa 0).
+    final rampTop = _footer - 16 + _bottomFade;
+    if (rampTop >= _auroraHeight) return aurora;
+    final start = (_auroraHeight - rampTop) / _auroraHeight;
+    const span = _bottomFade / _auroraHeight;
+    return ShaderMask(
+      blendMode: BlendMode.dstIn,
+      shaderCallback: (rect) => LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          for (var i = 0; i <= _rampSteps; i++)
+            Colors.black.withValues(alpha: _smooth(i / _rampSteps)),
+        ],
+        stops: [
+          for (var i = 0; i <= _rampSteps; i++)
+            (start + span * i / _rampSteps).clamp(0.0, 1.0),
+        ],
+      ).createShader(rect),
+      child: aurora,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
@@ -925,12 +985,63 @@ class _SheetBodyState extends State<_SheetBody> {
       ),
       child: Stack(
         children: [
-          // Aurora atrás de tudo, presa ao rodapé: o composer fica por cima.
+          // Conteúdo rolável. A lista começa no topo do sheet (por baixo da
+          // status bar) e o recuo vira padding ([SheetTopInset]): rola por
+          // baixo do cabeçalho e some num fade curto que nasce na status
+          // bar — sem borda dura onde a lista começava (era a "linha de
+          // pixel").
+          Positioned.fill(
+            child: SheetTopInset(
+              value: 8 + inset,
+              child: _FadeIn(
+                key: ValueKey(
+                    detail?.id ?? (s.itineraryOpen ? 'roteiro' : 'chat')),
+                child: detail == null
+                    ? (s.itineraryOpen
+                        ? ItineraryView(
+                            state: s,
+                            cubit: cubit,
+                            scrollController: widget.scroll,
+                            onPlay: widget.onPlay,
+                          )
+                        : AgentConversation(
+                            state: s,
+                            cubit: cubit,
+                            scrollController: widget.scroll))
+                    : PlaceDetail(
+                        role: detail,
+                        scrollController: widget.scroll,
+                        onPlayVideo: (i, tile) =>
+                            widget.onPlay(detail, i, tile),
+                      ),
+              ),
+            ),
+          ),
+          // Fade das bordas fixas: véus `s0` por cima da lista (o fundo do
+          // sheet é `s0` sólido, então dá o mesmo desenho de uma máscara,
+          // sem o saveLayer de tela cheia a cada quadro).
+          // Sobre o mapa (t=0): fade sob a alça (e sob o cabeçalho do
+          // card/roteiro). Em tela cheia quem cuida do topo é o desfoque
+          // progressivo (abaixo).
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _EdgeVeilPainter(
+                  color: p.s0,
+                  topEnd: (1 - t) * (hasHeader ? 62 : 24),
+                  footer: _footer,
+                ),
+              ),
+            ),
+          ),
+          // Aurora presa ao rodapé: por cima do véu (que esconde a lista sob
+          // o composer) e embaixo do composer — nunca por cima da lista
+          // ([_underVeil]).
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            height: 300,
+            height: _auroraHeight,
             child: IgnorePointer(
               child: Opacity(
                 opacity: t,
@@ -942,86 +1053,16 @@ class _SheetBodyState extends State<_SheetBody> {
                   curve: Curves.easeInOut,
                   onEnd: () => setState(() => _auroraIdle = !_fresh),
                   child: TickerMode(
-                    enabled: _fresh || !_auroraIdle,
-                    child: Aurora(
-                      colors: [p.accent, p.piscina, p.accent],
-                      intensity: p.isDark ? 0.8 : 0.6,
+                    // Sobre o mapa (t = 0) ela não aparece: nada de animar
+                    // escondida.
+                    enabled: t > 0 && (_fresh || !_auroraIdle),
+                    child: _underVeil(
+                      Aurora(
+                        colors: [p.accent, p.piscina, p.accent],
+                        intensity: p.isDark ? 0.8 : 0.6,
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
-          ),
-          // Conteúdo rolável com máscara de transparência nas bordas fixas.
-          // A lista começa no topo do sheet (por baixo da status bar) e o
-          // recuo vira padding ([SheetTopInset]): rola por baixo do
-          // cabeçalho e some num fade curto que nasce na status bar — sem
-          // borda dura onde a lista começava (era a "linha de pixel").
-          Positioned.fill(
-            child: ShaderMask(
-              blendMode: BlendMode.dstIn,
-              shaderCallback: (rect) {
-                final h = rect.height;
-                // Fim do fade do topo: logo abaixo do cabeçalho (ou da
-                // alça, sobre o mapa). Em repouso o conteúdo já começa
-                // abaixo dele.
-                // Sobre o mapa (t=0): fade sob a alça (e sob o cabeçalho do
-                // card/roteiro). Em tela cheia quem cuida do topo é o
-                // desfoque progressivo (abaixo).
-                final topEnd = ((1 - t) * (hasHeader ? 62 : 24)).clamp(0.0, h);
-                // Fim do fade já dentro do respiro do composer.
-                final bottomEdge = (h - _footer + 16).clamp(0.0, h);
-                final bottomStart = (bottomEdge - _bottomFade).clamp(0.0, h);
-                final colors = <Color>[];
-                final stops = <double>[];
-                // Topo: transparente → opaco, em curva (só sobre o mapa).
-                if (topEnd < 1) {
-                  colors.add(Colors.black);
-                  stops.add(0);
-                } else {
-                  for (var i = 0; i <= _rampSteps; i++) {
-                    final k = i / _rampSteps;
-                    colors.add(Colors.black.withValues(alpha: _smooth(k)));
-                    stops.add((topEnd * k / h).clamp(0.0, 1.0));
-                  }
-                }
-                // Rodapé: opaco → 0, em curva.
-                for (var i = 0; i <= _rampSteps; i++) {
-                  final t = i / _rampSteps;
-                  colors.add(Colors.black.withValues(alpha: 1 - _smooth(t)));
-                  stops.add(
-                      ((bottomStart + _bottomFade * t) / h).clamp(0.0, 1.0));
-                }
-                return LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: colors,
-                  stops: stops,
-                ).createShader(rect);
-              },
-              child: SheetTopInset(
-                value: 8 + inset,
-                child: _FadeIn(
-                  key: ValueKey(
-                      detail?.id ?? (s.itineraryOpen ? 'roteiro' : 'chat')),
-                  child: detail == null
-                      ? (s.itineraryOpen
-                          ? ItineraryView(
-                              state: s,
-                              cubit: cubit,
-                              scrollController: widget.scroll,
-                              onPlay: widget.onPlay,
-                            )
-                          : AgentConversation(
-                              state: s,
-                              cubit: cubit,
-                              scrollController: widget.scroll))
-                      : PlaceDetail(
-                          role: detail,
-                          scrollController: widget.scroll,
-                          onPlayVideo: (i, tile) =>
-                              widget.onPlay(detail, i, tile),
-                        ),
                 ),
               ),
             ),
@@ -1181,7 +1222,80 @@ class _SheetBodyState extends State<_SheetBody> {
   }
 }
 
-/// Informa o tamanho do filho depois do layout (para a máscara do rodapé).
+/// Véus na cor do fundo nas bordas fixas do sheet: topo (sob a alça ou o
+/// cabeçalho, só sobre o mapa) e rodapé (sob o composer). Mesmas rampas
+/// senoidais da antiga máscara `ShaderMask` + `dstIn`, invertidas: onde a
+/// máscara apagava o conteúdo, o véu pinta `s0` por cima.
+class _EdgeVeilPainter extends CustomPainter {
+  _EdgeVeilPainter({
+    required this.color,
+    required this.topEnd,
+    required this.footer,
+  });
+
+  final Color color;
+
+  /// Altura do fade do topo (menos de 1 px = sem fade).
+  final double topEnd;
+
+  /// Altura medida do rodapé fixo (composer ou CTA).
+  final double footer;
+
+  static final _ks = [
+    for (var i = 0; i <= _SheetBodyState._rampSteps; i++)
+      i / _SheetBodyState._rampSteps,
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final h = size.height;
+    if (h <= 0) return;
+    // Topo: `s0` opaco → transparente, em curva.
+    final top = topEnd.clamp(0.0, h);
+    if (top >= 1) {
+      canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.width, top),
+        Paint()
+          ..shader = ui.Gradient.linear(
+            Offset.zero,
+            Offset(0, top),
+            [
+              for (final k in _ks)
+                color.withValues(
+                    alpha: color.a * (1 - _SheetBodyState._smooth(k))),
+            ],
+            _ks,
+          ),
+      );
+    }
+    // Rodapé: transparente → `s0` em curva; opaco daí até o fim. O fim da
+    // rampa cai dentro do respiro do composer.
+    const fade = _SheetBodyState._bottomFade;
+    final edge = (h - footer + 16).clamp(0.0, h);
+    final start = (edge - fade).clamp(0.0, h);
+    if (start < h) {
+      canvas.drawRect(
+        Rect.fromLTRB(0, start, size.width, h),
+        Paint()
+          ..shader = ui.Gradient.linear(
+            Offset(0, start),
+            Offset(0, start + fade),
+            [
+              for (final k in _ks)
+                color.withValues(alpha: color.a * _SheetBodyState._smooth(k)),
+            ],
+            _ks,
+          ),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_EdgeVeilPainter old) =>
+      old.color != color || old.topEnd != topEnd || old.footer != footer;
+}
+
+/// Informa o tamanho do filho depois do layout (para o véu do rodapé).
 class _MeasureSize extends SingleChildRenderObjectWidget {
   const _MeasureSize({required this.onChange, required super.child});
 
@@ -1259,7 +1373,11 @@ class _DetailCta extends StatelessWidget {
 }
 
 /// Modal com scrim: desliza de baixo, fecha tocando fora.
-class _Modal extends StatelessWidget {
+///
+/// Fechado (depois da saída), o sheet fica montado — com estado, pra abrir
+/// na hora — mas fora da pintura e sem animar: deslizado pra fora da tela
+/// ele ainda era desenhado a cada quadro, carrossel com blur incluso.
+class _Modal extends StatefulWidget {
   const _Modal(
       {required this.open, required this.onDismiss, required this.child});
 
@@ -1268,7 +1386,22 @@ class _Modal extends StatelessWidget {
   final Widget child;
 
   @override
+  State<_Modal> createState() => _ModalState();
+}
+
+class _ModalState extends State<_Modal> {
+  /// Fechado e com a saída concluída.
+  late bool _parked = !widget.open;
+
+  @override
+  void didUpdateWidget(_Modal old) {
+    super.didUpdateWidget(old);
+    if (widget.open) _parked = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final open = widget.open;
     final reduce = MediaQuery.disableAnimationsOf(context);
     final d = Duration(milliseconds: reduce ? 1 : 360);
     return IgnorePointer(
@@ -1277,7 +1410,7 @@ class _Modal extends StatelessWidget {
         children: [
           Positioned.fill(
             child: GestureDetector(
-              onTap: onDismiss,
+              onTap: widget.onDismiss,
               child: AnimatedOpacity(
                 duration: d,
                 opacity: open ? 1 : 0,
@@ -1285,13 +1418,22 @@ class _Modal extends StatelessWidget {
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: AnimatedSlide(
-              duration: d,
-              curve: Curves.easeOutCubic,
-              offset: open ? Offset.zero : const Offset(0, 1.05),
-              child: open || reduce ? child : _KeepAlive(child: child),
+          Visibility(
+            visible: !_parked,
+            maintainState: true,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: AnimatedSlide(
+                duration: d,
+                curve: Curves.easeOutCubic,
+                offset: open ? Offset.zero : const Offset(0, 1.05),
+                onEnd: () {
+                  if (mounted && !widget.open) setState(() => _parked = true);
+                },
+                child: open || reduce
+                    ? widget.child
+                    : _KeepAlive(child: widget.child),
+              ),
             ),
           ),
         ],

@@ -34,6 +34,17 @@ external _Document get _document;
 
 extension type _Document._(JSObject _) implements JSObject {
   external _Element createElement(String tag);
+  external _Element? querySelector(String selectors);
+  external _Styled? get documentElement;
+  external _Styled? get body;
+}
+
+extension type _Styled._(JSObject _) implements JSObject {
+  external _Style get style;
+}
+
+extension type _Style._(JSObject _) implements JSObject {
+  external set backgroundColor(String value);
 }
 
 extension type _Element._(JSObject _) implements JSObject {}
@@ -155,3 +166,16 @@ Widget? versionFrame(String url) {
 /// URL sem hash: `usePathUrlStrategy` é do SDK (flutter_web_plugins), não é
 /// dependência nova.
 void usePrettyUrls() => usePathUrlStrategy();
+
+/// Fundo do `<html>` e do `<body>`: é o que o navegador mostra fora do canvas
+/// do Flutter — no Safari do iPhone, atrás da barra de status e da barra de
+/// baixo. E a `theme-color` própria (`#mare-theme`, do index.html), que pinta
+/// a barra do Chrome no Android: a do engine (`#flutterweb-theme`) é apagada
+/// pelo MaterialApp a cada build, que manda um estilo de barra sem cor.
+void setPageColor(String css) {
+  _document.documentElement?.style.backgroundColor = css;
+  _document.body?.style.backgroundColor = css;
+  _document
+      .querySelector('meta#mare-theme')
+      ?.setProperty('content'.toJS, css.toJS);
+}

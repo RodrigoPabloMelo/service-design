@@ -20,9 +20,24 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Studio App">
 
+  <!--
+    Barras do navegador na cor do app (s0 da Maré, #F2F2F5). No celular o
+    Safari pinta a barra de status e a faixa da barra de baixo com o fundo da
+    página, e o Chrome do Android pinta a barra dele com a theme-color — em
+    branco, pareciam cortar o app. O Flutter troca as duas quando o tema muda
+    (setPageColor, em design_browser.dart). A meta tem id próprio e vem antes
+    de tudo: a do engine (#flutterweb-theme) é apagada pelo MaterialApp, e com
+    duas o navegador usa a primeira.
+  -->
+  <meta id="mare-theme" name="theme-color" content="#F2F2F5">
+  <style>
+    html, body { background-color: #F2F2F5; }
+  </style>
+
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <!-- Na tela de início: barra de status clara, como o app (era preta). -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Studio App">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
