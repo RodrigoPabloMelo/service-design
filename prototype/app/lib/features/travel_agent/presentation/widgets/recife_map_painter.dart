@@ -373,21 +373,32 @@ class RecifeMapPainter extends CustomPainter {
   void _streetGrid(Canvas canvas) {
     final paint = Paint()
       ..color = p.road.withValues(alpha: p.isDark ? 0.5 : 0.75)
+      ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2;
     // Malhas com ângulos diferentes por região dão textura de cidade.
+    // Um path por direção em vez de ~860 drawLine (no navegador a pintura
+    // do mapa é refeita a cada quadro). Mesmo desenho: dentro de um path as
+    // paralelas não se tocam, e o cruzamento das duas direções continua
+    // somando alfa como antes.
     void grid(Rect area, double angle, double gap) {
+      final r = area.longestSide;
+      final across = Path(), down = Path();
+      for (var d = -r; d < r; d += gap) {
+        across
+          ..moveTo(-r, d)
+          ..lineTo(r, d);
+        down
+          ..moveTo(d, -r)
+          ..lineTo(d, r);
+      }
       canvas
         ..save()
         ..clipRect(area)
         ..translate(area.center.dx, area.center.dy)
-        ..rotate(angle);
-      final r = area.longestSide;
-      for (var d = -r; d < r; d += gap) {
-        canvas
-          ..drawLine(Offset(-r, d), Offset(r, d), paint)
-          ..drawLine(Offset(d, -r), Offset(d, r), paint);
-      }
-      canvas.restore();
+        ..rotate(angle)
+        ..drawPath(across, paint)
+        ..drawPath(down, paint)
+        ..restore();
     }
 
     const w = RecifeProjection.width, h = RecifeProjection.height;
@@ -407,13 +418,17 @@ class RecifeMapPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round;
+    // Traços num path só (um desenho em vez de centenas); eles não se
+    // tocam, então o resultado é o mesmo.
+    final dashes = Path();
     for (final m in path.computeMetrics()) {
       var d = 0.0;
       while (d < m.length) {
-        canvas.drawPath(m.extractPath(d, d + 14), paint);
+        dashes.addPath(m.extractPath(d, d + 14), Offset.zero);
         d += 22;
       }
     }
+    canvas.drawPath(dashes, paint);
   }
 
   void _label(
