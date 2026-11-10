@@ -16,6 +16,8 @@ Na jornada atual ([jornada.md](jornada.md)), ela responde principalmente a `E-05
 cd prototype/app && fvm flutter run -d chrome -t lib/main_design.dart
 ```
 
+Publicado em <https://rodrigopablomelo.github.io/service-design/agente>. O deploy é automático a cada push na `main` que mexe em `prototype/app/` ([`deploy-prototipo.yml`](../.github/workflows/deploy-prototipo.yml)): roda analyze e testes, builda e substitui a branch `gh-pages`. Também dá para disparar à mão em Actions → "Deploy do protótipo".
+
 Abra `/agente`. Cenários do mock (`TravelAgentScenario`): `padrao` (8 rolês salvos), `vazio` (começo do zero), `erro`, `carregando`.
 
 **No celular** (navegador), os efeitos caros entram sozinhos em **modo leve**: vidro sem refração, desfoque do topo em 3 faixas, frost sem blur e aurora a ~15 fps (regra 14 da skill `mare-design`). As barras do navegador (status e a de baixo no Safari, a barra do Chrome no Android) seguem o fundo do app. Para comparar no aparelho:
