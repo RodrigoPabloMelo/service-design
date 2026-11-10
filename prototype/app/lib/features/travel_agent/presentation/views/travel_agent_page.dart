@@ -20,7 +20,7 @@ import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tok
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/usage_sheet.dart';
 
-/// Etapa 05 do blueprint — "Organiza locais com o agente".
+/// Etapa 04 do blueprint — "Organiza locais com o agente".
 ///
 /// Começa como conversa em tela cheia. O mapa só aparece quando a pessoa
 /// pede (menu ⋯, "Ver no mapa" ou pedindo ao agente): o sheet desce e revela
@@ -1153,6 +1153,10 @@ class _SheetBodyState extends State<_SheetBody> {
                                   s.phase != AgentPhase.error,
                               used: s.messagesUsed,
                               autofocus: s.itineraryOpen,
+                              above: s.phase == AgentPhase.idle &&
+                                      !s.itineraryOpen
+                                  ? AgentSuggestions(onTap: cubit.send)
+                                  : null,
                               onSend: (text) {
                                 if (_askOpen) setState(() => _askOpen = false);
                                 cubit.send(text);
