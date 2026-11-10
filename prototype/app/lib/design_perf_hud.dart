@@ -98,9 +98,10 @@ class _DesignPerfHudState extends State<DesignPerfHud> {
         fit: StackFit.expand,
         children: [
           widget.child,
+          // Logo abaixo da barra do topo (voltar / ⋯ ficam livres).
           Positioned(
-            top: top + 4,
-            right: 4,
+            top: top + 58,
+            right: 8,
             child: IgnorePointer(
               child: RepaintBoundary(
                 child: DecoratedBox(
