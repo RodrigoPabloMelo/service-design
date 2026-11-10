@@ -86,9 +86,34 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
   bool _userDrag = false;
 
   /// 0 = sheet sobre o mapa, 1 = conversa em tela cheia (morfa no arraste).
-  double get _chatT => _chatLocked
+  double get _chatT => _chatTFor(_extent);
+
+  double _chatTFor(double extent) => _chatLocked
       ? 1
-      : ((_extent - _snaps[2]) / (_full - _snaps[2])).clamp(0.0, 1.0);
+      : ((extent - _snaps[2]) / (_full - _snaps[2])).clamp(0.0, 1.0);
+
+  /// Tamanho do sheet quadro a quadro. Só os controles do mapa acompanham
+  /// cada quadro (por aqui); a página reconstrói só quando muda algo que a
+  /// árvore lê ([_visualKey]) — antes a conversa inteira era refeita a cada
+  /// quadro do arraste.
+  late final ValueNotifier<double> _extentN = ValueNotifier(_initialSize);
+
+  /// O que a árvore lê do tamanho do sheet: a morfose conversa↔mapa
+  /// (`_chatT`, só varia entre 0,92 e 1), a opacidade dos controles do mapa
+  /// (> 0,7), o véu do mapa (> 0,8) e o topo (≥ 0,999).
+  (double, bool, bool, bool) _visualKey(double extent) => (
+        _chatTFor(extent),
+        extent > 0.7,
+        extent > 0.8,
+        extent >= 0.999,
+      );
+
+  void _setExtent(double extent) {
+    final before = _visualKey(_extent);
+    _extent = extent;
+    _extentN.value = extent;
+    if (_visualKey(extent) != before) setState(() {});
+  }
 
   /// Vídeo aberto: rolê, índice e retângulo do tile (origem da expansão).
   (Role, int, Rect?)? _player;
@@ -117,6 +142,7 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
   @override
   void dispose() {
     _sheet.dispose();
+    _extentN.dispose();
     super.dispose();
   }
 
@@ -301,7 +327,6 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
           backgroundColor: p.s0,
           body: LayoutBuilder(
             builder: (context, box) {
-              final sheetPx = _extent * box.maxHeight;
               final mapMode =
                   s.hasItinerary ? MapMode.itinerary : MapMode.explore;
               final chatT = _chatT;
@@ -343,12 +368,18 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
                                     : const SizedBox.shrink(),
                               ),
                             ),
-                            // Controles do mapa (vidro, sobre o mapa).
+                            // Controles do mapa (vidro, sobre o mapa). Seguem
+                            // o sheet quadro a quadro sem reconstruir a página.
                             if (!s.isBlankStart)
-                              AnimatedPositioned(
-                                duration: const Duration(milliseconds: 120),
-                                right: 12,
-                                bottom: sheetPx + 12,
+                              ValueListenableBuilder<double>(
+                                valueListenable: _extentN,
+                                builder: (context, extent, child) =>
+                                    AnimatedPositioned(
+                                  duration: const Duration(milliseconds: 120),
+                                  right: 12,
+                                  bottom: extent * box.maxHeight + 12,
+                                  child: child!,
+                                ),
                                 child: AnimatedOpacity(
                                   duration: const Duration(milliseconds: 200),
                                   opacity: _extent > 0.7 ? 0 : 1,
@@ -417,10 +448,7 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
                         child: NotificationListener<
                             DraggableScrollableNotification>(
                           onNotification: (n) {
-                            if ((n.extent - _extent).abs() > 0.004 ||
-                                (n.extent >= 0.999) != (_extent >= 0.999)) {
-                              setState(() => _extent = n.extent);
-                            }
+                            _setExtent(n.extent);
                             // Arrastou o sheet até o topo: volta pra conversa.
                             if (cubit.state.mapOpen &&
                                 _userDrag &&
