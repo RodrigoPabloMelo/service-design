@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studio_app/core/components/page_scrim.dart';
 import 'package:studio_app/core/components/glass/app_glass.dart';
 import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
@@ -1393,10 +1394,34 @@ class _ModalState extends State<_Modal> {
   /// Fechado e com a saída concluída.
   late bool _parked = !widget.open;
 
+  static const _scrim = Color(0x73000000);
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.open) _syncPageScrim();
+  }
+
   @override
   void didUpdateWidget(_Modal old) {
     super.didUpdateWidget(old);
     if (widget.open) _parked = false;
+    if (widget.open != old.open) _syncPageScrim();
+  }
+
+  @override
+  void dispose() {
+    setPageScrim(this, null);
+    super.dispose();
+  }
+
+  /// O véu vale também fora do canvas (barra de status no iPhone/web).
+  /// Depois do frame: mexe num notifier que outro State escuta.
+  void _syncPageScrim() {
+    final open = widget.open;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setPageScrim(this, open ? _scrim : null);
+    });
   }
 
   @override
@@ -1414,7 +1439,7 @@ class _ModalState extends State<_Modal> {
               child: AnimatedOpacity(
                 duration: d,
                 opacity: open ? 1 : 0,
-                child: const ColoredBox(color: Color(0x73000000)),
+                child: const ColoredBox(color: _scrim),
               ),
             ),
           ),
