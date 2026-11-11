@@ -163,6 +163,64 @@ Widget? versionFrame(String url) {
   return HtmlElementView(viewType: id);
 }
 
+@JS('getComputedStyle')
+external _Computed _getComputedStyle(JSObject element);
+
+extension type _Computed._(JSObject _) implements JSObject {
+  external String get paddingTop;
+  external String get paddingRight;
+  external String get paddingBottom;
+  external String get paddingLeft;
+}
+
+/// `viewport-fit=cover` na meta viewport: sem ele o Safari do iPhone devolve
+/// zero em `env(safe-area-inset-*)`. Tem que ser aqui e não no index.html — o
+/// engine apaga qualquer meta viewport da página e cria a dele (`flt-viewport`)
+/// antes do `main()`.
+void enableSafeArea() {
+  final meta = _document.querySelector('meta[name="viewport"]');
+  if (meta == null) return;
+  final atual = meta.getProperty<JSString?>('content'.toJS)?.toDart ?? '';
+  if (atual.contains('viewport-fit')) return;
+  meta.setProperty('content'.toJS, '$atual, viewport-fit=cover'.toJS);
+}
+
+JSObject? _safeAreaProbe;
+
+/// Safe area do navegador (notch, barra de gestos do iPhone). O engine web do
+/// Flutter não lê `env(safe-area-inset-*)` — o `MediaQuery.padding` chega
+/// zerado —, então medimos num elemento invisível que usa os `env()` como
+/// padding.
+EdgeInsets safeAreaInsets() {
+  try {
+    var probe = _safeAreaProbe;
+    if (probe == null) {
+      probe = _document.createElement('div');
+      probe.setProperty(
+        'style'.toJS,
+        'position:fixed;top:0;left:0;width:0;height:0;visibility:hidden;'
+                'pointer-events:none;'
+                'padding:env(safe-area-inset-top) env(safe-area-inset-right) '
+                'env(safe-area-inset-bottom) env(safe-area-inset-left)'
+            .toJS,
+      );
+      (_document.body as JSObject?)
+          ?.callMethod<JSAny?>('appendChild'.toJS, probe);
+      _safeAreaProbe = probe;
+    }
+    final s = _getComputedStyle(probe);
+    double px(String v) => double.tryParse(v.replaceAll('px', '')) ?? 0;
+    return EdgeInsets.fromLTRB(
+      px(s.paddingLeft),
+      px(s.paddingTop),
+      px(s.paddingRight),
+      px(s.paddingBottom),
+    );
+  } catch (_) {
+    return EdgeInsets.zero;
+  }
+}
+
 /// URL sem hash: `usePathUrlStrategy` é do SDK (flutter_web_plugins), não é
 /// dependência nova.
 void usePrettyUrls() => usePathUrlStrategy();

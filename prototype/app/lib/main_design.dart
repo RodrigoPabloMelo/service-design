@@ -15,6 +15,7 @@ import 'package:studio_app/design_tokens.dart';
 import 'package:studio_app/features/feature_registry.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/core/components/glass/app_glass.dart';
+import 'package:studio_app/core/components/page_scrim.dart';
 
 // Entry point do loop de design (branch `design` — build web hospedado).
 // NÃO importa bootstrap.dart nem nada com dart:io: este arquivo precisa
@@ -31,6 +32,9 @@ const _hubPageKey = ValueKey('docs-hub');
 
 final _router = GoRouter(
   initialLocation: '/',
+  // Barreira de sheet/dialog também escurece o fundo da página (barra de
+  // status do iPhone) — ver page_scrim.dart.
+  observers: [PageScrimObserver()],
   routes: [
     // Raiz = o app de verdade: abre direto na primeira tela registrada.
     // O catálogo de fluxos (antigo hub) mora em /docs.
@@ -118,6 +122,8 @@ void main() async {
   final perfHud = DesignPerfHud.requested();
   // `/docs/fluxo/onboarding` em vez de `/#/docs?flow=Onboarding`.
   usePrettyUrls();
+  // Safe area do iPhone (barra de gestos): o engine web não pede nem lê.
+  enableSafeArea();
   await setupDesignDependencies();
   // Liquid Glass: pré-aquece shaders (sem isso, 1º frame pisca).
   await initAppGlass();
@@ -153,6 +159,7 @@ class _DesignRootState extends State<_DesignRoot> {
     super.initState();
     _router.routerDelegate.addListener(_onRoute);
     designThemeMode.addListener(_syncPageColor);
+    pageScrims.addListener(_syncPageColor);
     _syncPageColor();
   }
 
@@ -160,10 +167,15 @@ class _DesignRootState extends State<_DesignRoot> {
   void dispose() {
     _router.routerDelegate.removeListener(_onRoute);
     designThemeMode.removeListener(_syncPageColor);
+    pageScrims.removeListener(_syncPageColor);
     super.dispose();
   }
 
-  void _syncPageColor() => setPageColor(_pageColor(designThemeMode.value));
+  /// Cor do app com os véus abertos por cima: com um modal na tela, a barra
+  /// de status do iPhone (pintada com o fundo da página, fora do canvas)
+  /// escurece junto em vez de sobrar clara acima do overlay.
+  void _syncPageColor() =>
+      setPageColor(withPageScrims(_pageColor(designThemeMode.value)));
 
   /// `/docs` é documentação — sem moldura de device. As rotas de tela são o
   /// protótipo e ganham o device_preview em volta.
@@ -196,6 +208,28 @@ class _DesignRootState extends State<_DesignRoot> {
     // dele refaz o build quando a janela muda de largura.
     final isMobile = MediaQuery.sizeOf(context).width < _mobileBreakpoint;
     final showPreview = kIsWeb && !isDocs && !isMobile;
+    // Sem moldura o app ocupa a tela de verdade do aparelho: soma a safe area
+    // do navegador, que o Flutter web entrega zerada. Lido no build — girar o
+    // aparelho muda a largura e refaz este build. Com moldura, quem dá a safe
+    // area é o device_preview.
+    final mq = MediaQuery.of(context);
+    final safe = showPreview ? EdgeInsets.zero : safeAreaInsets();
+    EdgeInsets comSafe(EdgeInsets e) => EdgeInsets.fromLTRB(
+          e.left > safe.left ? e.left : safe.left,
+          e.top > safe.top ? e.top : safe.top,
+          e.right > safe.right ? e.right : safe.right,
+          e.bottom > safe.bottom ? e.bottom : safe.bottom,
+        );
+    return MediaQuery(
+      data: mq.copyWith(
+        padding: comSafe(mq.padding),
+        viewPadding: comSafe(mq.viewPadding),
+      ),
+      child: _buildRoot(isDocs: isDocs, showPreview: showPreview),
+    );
+  }
+
+  Widget _buildRoot({required bool isDocs, required bool showPreview}) {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Stack(

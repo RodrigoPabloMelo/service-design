@@ -71,6 +71,15 @@ Widget? versionFrame(String url) => impl.versionFrame(url);
 void setPageColor(Color color) => impl.setPageColor(
     '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}');
 
+/// Pede ao navegador a safe area de verdade (`viewport-fit=cover`). Chame uma
+/// vez no `main()`, depois do binding. No-op fora do web.
+void enableSafeArea() => impl.enableSafeArea();
+
+/// Safe area do navegador — notch e barra de gestos do iPhone. O Flutter web
+/// não a entrega no `MediaQuery`; quem monta o app soma isto ao padding.
+/// Zero fora do web.
+EdgeInsets safeAreaInsets() => impl.safeAreaInsets();
+
 /// Tira o `#` da URL (`/#/docs` vira `/docs`).
 ///
 /// Depende de o servidor devolver o index em qualquer caminho — o dev server
