@@ -15,6 +15,8 @@ feedback do designer; não reabra sem ele pedir.
 
 1. **Sem sombra, sem borda de separação, sem "linha de pixel".** Separe por
    camada sólida (`s0` fundo → `s1` card → `s2` grupo) e espaço.
+   Exceção: cards de sugestão da abertura — sem fundo, só borda fina
+   (`ink` 10%), raio do composer (ver patterns.md).
 2. **Neutros cinza** (nada de areia/bege). **Uma** cor de contraste: azul
    `accent #006FD6`. Tiffany `#0ABAB5` é só marca (símbolo, água, aurora).
    Tiffany também nos bichos da maré em pixels (são água).
@@ -63,7 +65,17 @@ feedback do designer; não reabra sem ele pedir.
 13. **Botão acessível:** `Semantics(button: true, excludeSemantics: true)`
     sempre com `onTap:` (o mesmo do `Pressable` filho) — sem ele o leitor
     de tela anuncia um botão que não faz nada. Lint D11.
-14. **Selecionado em chip/tile = branco com anel azul**, não tint: fundo
+14. **Celular no navegador = efeitos leves** (`AppEffects.lite`, em
+    `core/components/glass/app_glass.dart`). O Flutter web redesenha a cena
+    inteira a cada quadro e cada desfoque custa caro na GPU do celular. Lá,
+    o vidro é minimal (tinte + aro, sem refração), o desfoque progressivo
+    usa 3 faixas (cortes onde o véu já é denso), frost e vidro do roteiro
+    ficam sem blur (véu mais denso), os vizinhos do carrossel de conectores
+    só apagam (sem blur) e a aurora anda a ~15 fps. Desfoque novo passa por
+    `AppBackdropBlur`.
+    Fade de borda sobre fundo sólido = véu na cor do fundo por cima, nunca
+    `ShaderMask`. `?efeitos=completo` força o visual cheio, `?fps=1` mede.
+15. **Selecionado em chip/tile = branco com anel azul**, não tint: fundo
     `s1` + borda `accent` 1,5 (`selectionDecoration`); o `accentSoft`
     inteiro se misturava com o fundo. Anel = estado, não divisor.
     Ícone de tile de filtro leve: regular, 20, `inkMuted`, com respiro de

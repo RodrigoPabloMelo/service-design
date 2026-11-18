@@ -43,8 +43,9 @@
 | [Q-33](#q-33) | Rolês em grupo só com mulheres | Receita/Segurança | alta | aberta |
 | [Q-34](#q-34) | Origem e curadoria dos vídeos curtos | Conteúdo/Confiança | alta | aberta |
 | [Q-35](#q-35) | Limite de mensagens do agente durante a viagem | IA/Receita | alta | aberta |
-| [Q-36](#q-36) | Salvos em pastas | UX/Ecossistema | média | aberta |
-| [Q-37](#q-37) | Categorias da home x categorias do agente | Conteúdo | média | aberta |
+| [Q-36](#q-36) | Prestadores podem pedir para entrar na plataforma? | Curadoria/Confiança | alta | aberta |
+| [Q-37](#q-37) | Salvos em pastas | UX/Ecossistema | média | aberta |
+| [Q-38](#q-38) | Categorias da home x categorias do agente | Conteúdo | média | aberta |
 
 ---
 
@@ -153,7 +154,7 @@ Ref.: [UX.md](../UX.md) §6. A hipótese atual é um tom "de amiga local": diret
 <a id="q-25"></a>
 ### Q-25 · Plataforma, conectividade e acessibilidade
 App nativo (iOS/Android), PWA ou os dois? **2026-11-04 (D-15, D-16):** a entrada é pela **web** (buscador → site, rolês abertos sem login); falta decidir se existe app nativo além do site. Precisa funcionar offline ou com pouca conexão no "durante" (roteiro e entorno salvos)? Quais requisitos de acessibilidade (contraste no sol, uso com uma mão, leitor de tela)?
-**2026-11-18 (D-23):** o protótipo ganhou uma home com tab bar, cara de app nativo **(hipótese)**. Se a entrada for só web, a tab bar vira navegação do site?
+**2026-11-18 (D-24):** o protótipo ganhou uma home com tab bar, cara de app nativo **(hipótese)**. Se a entrada for só web, a tab bar vira navegação do site?
 
 <a id="q-26"></a>
 ### Q-26 · Identidade visual / DESIGN.md
@@ -198,10 +199,14 @@ Ref.: D-18, D-03, `Q-08`. Quem grava os vídeos do showcase: criadoras locais, o
 Ref.: D-17, D-07, [UX.md §5](../UX.md). O agente grátis tem mensagens limitadas, mas o reajuste "durante" (clima, noite, volta) é justamente quando ela mais precisa e quando o UX.md proíbe upsell em momento de tensão. O limite vale igual durante a viagem? Reajustes ligados a segurança ou volta ficam fora do limite? O que ela vê quando o limite acaba na rua?
 
 <a id="q-36"></a>
-### Q-36 · Salvos em pastas
-Ref.: D-23, D-16, `Q-22`, `F-11`, `F-12`. A aba Salvos organiza rolês em pastas (estilo Pinterest). Quem cria as pastas: ela, o agente (por dia, por bairro) ou os dois? A pasta é compartilhável com a companhia e editável a duas? Salvar pede conta (D-16) — o que acontece com o que ela salvou antes de entrar? Uma pasta pode virar roteiro no agente com um toque?
+### Q-36 · Prestadores podem pedir para entrar na plataforma?
+Ref.: D-03, D-05, D-23, `Q-06`, `Q-08`. Hoje um rolê entra pela indicação de um local (A-1) e passa pela curadoria do grupo (A-2), que faz a análise de qualidade. Um prestador (bar, agência, guia) pode pedir para entrar por conta própria? Se puder, como isso convive com a promessa de "não é publi" (`E-04`)? Proposta **(hipótese)**: o prestador não entra sozinho; só reivindica a página de um rolê já aprovado e mantém horários e preços atualizados (ajuda na info desatualizada de `Q-06`). E no piloto, o grupo semeia a base inicial antes de haver indicações suficientes **(hipótese)**?
 
 <a id="q-37"></a>
-### Q-37 · Categorias da home x categorias do agente
-Ref.: D-23, D-07. A home usa 6 categorias (restaurantes, café, museu, cultura, arte, história); o agente e o mapa usam 5 tipos (comida, cultura, noite, natureza, praia). Qual é a taxonomia do serviço? Um rolê pode ter várias? "Noite", "praia" e "natureza" entram na home? Hoje não há **café** curado no mock: a categoria aparece vazia, de propósito (D-07).
+### Q-37 · Salvos em pastas
+Ref.: D-24, D-16, `Q-22`, `F-11`, `F-12`. A aba Salvos organiza rolês em pastas (estilo Pinterest). Quem cria as pastas: ela, o agente (por dia, por bairro) ou os dois? A pasta é compartilhável com a companhia e editável a duas? Salvar pede conta (D-16) — o que acontece com o que ela salvou antes de entrar? Uma pasta pode virar roteiro no agente com um toque?
+
+<a id="q-38"></a>
+### Q-38 · Categorias da home x categorias do agente
+Ref.: D-24, D-07. A home usa 6 categorias (restaurantes, café, museu, cultura, arte, história); o agente e o mapa usam 5 tipos (comida, cultura, noite, natureza, praia). Qual é a taxonomia do serviço? Um rolê pode ter várias? "Noite", "praia" e "natureza" entram na home? Hoje não há **café** curado no mock: a categoria aparece vazia, de propósito (D-07).
 

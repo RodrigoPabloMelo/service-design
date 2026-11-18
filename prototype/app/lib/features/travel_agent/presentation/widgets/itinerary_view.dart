@@ -1,9 +1,9 @@
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:studio_app/core/components/glass/app_glass.dart';
 import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 import 'package:studio_app/features/travel_agent/presentation/view_models/travel_agent_cubit.dart';
@@ -185,7 +185,8 @@ class ItineraryHeader extends StatelessWidget {
 }
 
 /// Vidro (estilo Liquid Glass): desfoque do que está atrás + véu `s1` e
-/// brilho fino na borda. Sem sombra.
+/// brilho fino na borda. Sem sombra. No modo leve (celular no navegador),
+/// sem desfoque e com véu mais denso.
 class _Glass extends StatelessWidget {
   const _Glass({required this.child, this.radius = TravelSpace.rPill});
 
@@ -196,33 +197,32 @@ class _Glass extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
     final r = BorderRadius.circular(radius);
-    return ClipRRect(
+    return AppBackdropBlur(
+      sigma: 14,
       borderRadius: r,
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+      liteColor: p.s1.withValues(alpha: 0.6),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: r,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              p.s1.withValues(alpha: p.isDark ? 0.62 : 0.78),
+              p.s1.withValues(alpha: p.isDark ? 0.42 : 0.58),
+            ],
+          ),
+        ),
         child: DecoratedBox(
+          position: DecorationPosition.foreground,
           decoration: BoxDecoration(
             borderRadius: r,
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                p.s1.withValues(alpha: p.isDark ? 0.62 : 0.78),
-                p.s1.withValues(alpha: p.isDark ? 0.42 : 0.58),
-              ],
+            border: Border.all(
+              color: Colors.white.withValues(alpha: p.isDark ? 0.14 : 0.7),
+              width: 0.8,
             ),
           ),
-          child: DecoratedBox(
-            position: DecorationPosition.foreground,
-            decoration: BoxDecoration(
-              borderRadius: r,
-              border: Border.all(
-                color: Colors.white.withValues(alpha: p.isDark ? 0.14 : 0.7),
-                width: 0.8,
-              ),
-            ),
-            child: child,
-          ),
+          child: child,
         ),
       ),
     );

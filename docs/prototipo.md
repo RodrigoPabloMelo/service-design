@@ -6,7 +6,7 @@
 
 ## De onde vem
 
-A tela `/agente` materializa a **etapa 05 "Organiza locais com o agente"** do blueprint de serviço (PDF de 2026-11-04, viajante mulher, rolês em Recife). O blueprint **ainda não está no repo** — quando entrar em `diagrams/`, linkar aqui.
+A tela `/agente` materializa a **etapa 04 "Organiza locais com o agente"** do [blueprint de serviço](../diagrams/blueprint.html) (viajante mulher, rolês em Recife). Na v1 do blueprint (PDF de 2026-11-04) era a etapa 05; a renumeração veio com D-23.
 
 Na jornada atual ([jornada.md](jornada.md)), ela responde principalmente a `E-05` (montagem do roteiro: "IA erra rotas, horários e endereços") e `E-06` (ajustes na estadia: clima, cansaço, perto de onde está), e traz para dentro do app as provas que a viajante buscaria fora em `E-04` (validação e confiança).
 
@@ -16,16 +16,23 @@ Na jornada atual ([jornada.md](jornada.md)), ela responde principalmente a `E-05
 cd prototype/app && fvm flutter run -d chrome -t lib/main_design.dart
 ```
 
-Abra `/explorar` (home) ou `/agente`. Cenários da home (`ExploreScenario`): `padrao`, `carregando`, `erro`. Cenários do agente (`TravelAgentScenario`): `padrao` (8 rolês salvos), `vazio` (começo do zero), `erro`, `carregando`.
+Publicado na Vercel em <https://service-design-three.vercel.app/agente>. A Vercel builda sozinha a cada push na `main` ([`vercel.json`](../vercel.json) chama [`tool/vercel_build.sh`](../prototype/app/tool/vercel_build.sh)). O script baixa o Flutter do `.fvmrc`, roda analyze e testes e gera o build web. Ramos que não são a `main` ganham um preview.
+
+Abra `/explorar` (home, abre por padrão) ou `/agente`. Cenários da home (`ExploreScenario`): `padrao`, `carregando`, `erro`. Cenários do agente (`TravelAgentScenario`): `padrao` (8 rolês salvos), `vazio` (começo do zero), `erro`, `carregando`.
+
+**No celular** (navegador), os efeitos caros entram sozinhos em **modo leve**: vidro sem refração, desfoque do topo em 3 faixas, frost sem blur e aurora a ~15 fps (regra 14 da skill `mare-design`). As barras do navegador (status e a de baixo no Safari, a barra do Chrome no Android) seguem o fundo do app. Para comparar no aparelho:
+
+- `/agente?fps=1` mostra fps, o pior quadro e os tempos de build/raster;
+- `?efeitos=completo` força o visual cheio, e `?efeitos=leve` força o leve no desktop.
 
 ## Telas e componentes ↔ docs
 
 | Parte do protótipo | O que faz | Etapa | Personas | Decisões que aplica | Questões que toca |
 | --- | --- | --- | --- | --- | --- |
-| **Explorar (home)** (busca no topo, botão da Maré à direita, "Explore rolês" com as categorias, seções curtas: "Pra esta tarde/noite", "Pra ir sozinha", "Mais perto do hotel", "Se chover") | Porta de entrada: rolês curados com quem indicou e por quê, sem feed infinito | `E-01`, `E-03`, `E-04` | todas; seção da companhia segue o perfil (mock: Camila, sozinha, `P-CAMILA`) | D-23, D-03, D-21 | [Q-25](questoes-em-aberto.md#q-25), [Q-36](questoes-em-aberto.md#q-36) |
-| **Categorias** (foto de lugar de Recife + véu de cor + ícone ilustrado: restaurantes, café, museu, cultura, arte, história) | Atalho por tipo de rolê; abre os resultados já filtrados | `E-03` | — | D-23 | [Q-37](questoes-em-aberto.md#q-37) (café sem rolê curado: vazio honesto) |
-| **Busca guiada + filtros** (onde, quando, com quem, que tipo; depois coberto, grátis, perto do hotel, período, preço) | Ela diz o que precisa; o resultado é curto e só da base curada | `E-03`, `E-04`, `E-06` | `P-CAMILA` (sozinha), `P-JULIA` (amiga), `P-MARINA` (parceiro(a)) | D-24, D-07, D-11 | [Q-10](questoes-em-aberto.md#q-10) (sem filtro de segurança), [Q-22](questoes-em-aberto.md#q-22) ("com quem" ainda não muda o resultado) |
-| **Tab bar** (Explorar, Salvos, Perfil; Salvos e Perfil ainda placeholder) | Navegação do app | — | — | D-23 | [Q-36](questoes-em-aberto.md#q-36) |
+| **Explorar (home)** (busca no topo, botão da Maré à direita, "Explore rolês" com as categorias, seções curtas: "Pra esta tarde/noite", "Pra ir sozinha", "Mais perto do hotel", "Se chover") | Porta de entrada: rolês curados com quem indicou e por quê, sem feed infinito | `E-01`, `E-03`, `E-04` | todas; seção da companhia segue o perfil (mock: Camila, sozinha, `P-CAMILA`) | D-24, D-03, D-21 | [Q-25](questoes-em-aberto.md#q-25), [Q-37](questoes-em-aberto.md#q-37) |
+| **Categorias** (foto de lugar de Recife + véu de cor + ícone ilustrado: restaurantes, café, museu, cultura, arte, história) | Atalho por tipo de rolê; abre os resultados já filtrados | `E-03` | — | D-24 | [Q-38](questoes-em-aberto.md#q-38) (café sem rolê curado: vazio honesto) |
+| **Busca guiada + filtros** (onde, quando, com quem, que tipo; depois coberto, grátis, perto do hotel, período, preço) | Ela diz o que precisa; o resultado é curto e só da base curada | `E-03`, `E-04`, `E-06` | `P-CAMILA` (sozinha), `P-JULIA` (amiga), `P-MARINA` (parceiro(a)) | D-25, D-07, D-11 | [Q-10](questoes-em-aberto.md#q-10) (sem filtro de segurança), [Q-22](questoes-em-aberto.md#q-22) ("com quem" ainda não muda o resultado) |
+| **Tab bar** (Explorar, Salvos, Perfil; Salvos e Perfil ainda placeholder) | Navegação do app | — | — | D-24 | [Q-37](questoes-em-aberto.md#q-37) |
 | **Conversa com o agente** (abertura em tela cheia, sugestões "Organizar meus 8 rolês", "Noite com as amigas", "Perto do hotel") | A viajante pede em linguagem natural; o agente responde com rolês ou roteiro | `E-05`, `E-06` | todas; "Noite com as amigas" → `P-JULIA` | D-07 (IA usa só a base curada) | [Q-11](questoes-em-aberto.md#q-11) escopo da IA |
 | **"Pensando" com passos** | Mostra o que o agente está fazendo antes de responder | `E-05` | — | — | Q-11 (hipótese: transparência do porquê da recomendação) |
 | **Começo do zero** (cenário `vazio`: mapa com pontos da curadoria sem nome + saudação) | Primeira visita, nada salvo | `E-01`, `E-03` | — | D-05 (curadoria) | — |

@@ -229,7 +229,7 @@ final designScreens = <RegisteredScreen>[
       ),
     ],
   ),
-  // ── Agente de roteiros "Maré" (etapa 05 do blueprint) ──
+  // ── Agente de roteiros "Maré" (etapa 04 do blueprint) ──
   RegisteredScreen(
     title: 'Agente de roteiros',
     route: '/agente',
@@ -297,7 +297,7 @@ const designReleases = [
     label: 'R1',
     date: '2026-12-05',
     flows: ['Agente'],
-    note: 'Agente de roteiros Maré (etapa 05 do blueprint).',
+    note: 'Agente de roteiros Maré (etapa 04 do blueprint).',
   ),
 ];
 

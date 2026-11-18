@@ -2,15 +2,18 @@
 
 ## Fluxo da tela
 
-- Abertura da conversa: bloco-resumo azul e, logo abaixo, só 3 sugestões
-  de maior valor (organizar, noite com as amigas, perto do hotel).
+- Abertura da conversa: bloco-resumo azul e só 3 sugestões de maior valor
+  (organizar, noite com as amigas, perto do hotel), presas em cima do
+  composer.
   Sem carrossel de salvos nem outros cards ali (polui); eles entram quando
   o agente responde.
 - Aurora (`Aurora`, azul `accent` + `piscina`) atrás do composer, presa ao
   rodapé, **só enquanto nada foi enviado**. Na primeira mensagem se esvai
   devagar e desliga o ticker. Tem que aparecer no claro também
   (intensidade 0.6 claro / 0.8 escuro). Fica por baixo de tudo — nunca
-  sobre o composer nem entre bloco e sugestões.
+  sobre o composer nem entre bloco e sugestões. Na prática é pintada sobre
+  o véu `s0` do rodapé, recortada pela mesma rampa: só aparece onde o véu
+  esconde a lista, nunca tingindo mensagens. Com o mapa aberto não anima.
 - **Começo do zero** (nada salvo, sem datas — cenário Vazio): abre **no
   mapa**, sem sheet e sem bloco azul (`BlankStartHero`). No centro, véu
   radial `s0`, `MareMark` 28, "Oi, {nome}." em `inkMuted` + pergunta em
@@ -35,6 +38,16 @@
 - Volta: botão voltar no mapa, ou arrastar o sheet até o topo.
 - Detents sobre o mapa: 0.2 / 0.52 / 0.92. Card do rolê e roteiro completo
   abrem dentro do sheet (0.92 no mapa), sem empilhar sheets.
+
+## Sugestões da abertura
+
+**Sem título, presas logo acima do composer** (`AgentInputBar.above`, 8 px
+de respiro), só enquanto a Maré está ociosa e fora do roteiro.
+Linha rolável na horizontal (sangra até a borda), cards de 148×76 **sem
+fundo, só borda de 1 px** (`ink` 10%), raio `rComposer` 28 — nada de
+canto quadrado (ref. Claude, mas mais redondo). Texto em até 2 linhas:
+primeira palavra em `subheadStrong` `ink`, resto em `subhead` `inkMuted`.
+Todos iguais, nenhum em `accent`.
 
 ## Sheets modais (todos)
 

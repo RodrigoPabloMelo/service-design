@@ -19,7 +19,7 @@ class ExploreState extends Equatable {
   final List<ExploreSection> sections;
   final ExploreTab tab;
 
-  /// Rolês salvos nesta sessão (a aba Salvos ainda não existe — Q-36).
+  /// Rolês salvos nesta sessão (a aba Salvos ainda não existe — Q-37).
   final Set<String> saved;
 
   ExploreState copyWith({

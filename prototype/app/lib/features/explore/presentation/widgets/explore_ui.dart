@@ -419,11 +419,14 @@ class TextAction extends StatelessWidget {
 
 /// Fade suave (rampa senoidal) nas pontas de uma lista vertical que corre
 /// entre uma barra fixa e um rodapé fixo — sem borda dura (regra 11).
+/// Véus na cor do fundo por cima, nunca `ShaderMask` (regra 14: custo no
+/// celular).
 class VerticalEdgeFade extends StatelessWidget {
   const VerticalEdgeFade({
     required this.child,
     this.top = 16,
     this.bottom = 28,
+    this.background,
     super.key,
   });
 
@@ -431,33 +434,49 @@ class VerticalEdgeFade extends StatelessWidget {
   final double top;
   final double bottom;
 
+  /// Cor do fundo por trás da lista (padrão `s0`).
+  final Color? background;
+
   static double _smooth(double t) => 0.5 - 0.5 * math.cos(math.pi * t);
 
+  Widget _veil(Color bg, double h, {required bool fromTop}) {
+    const steps = 10;
+    final colors = [
+      for (var i = 0; i <= steps; i++)
+        bg.withValues(alpha: 1 - _smooth(i / steps)),
+    ];
+    return IgnorePointer(
+      child: SizedBox(
+        height: h,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: fromTop ? Alignment.topCenter : Alignment.bottomCenter,
+              end: fromTop ? Alignment.bottomCenter : Alignment.topCenter,
+              colors: colors,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) => ShaderMask(
-        blendMode: BlendMode.dstIn,
-        shaderCallback: (rect) {
-          final h = rect.height;
-          const steps = 10;
-          return LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              for (var i = 0; i <= steps; i++)
-                Colors.black.withValues(alpha: _smooth(i / steps)),
-              for (var i = 0; i <= steps; i++)
-                Colors.black.withValues(alpha: 1 - _smooth(i / steps)),
-            ],
-            stops: [
-              for (var i = 0; i <= steps; i++)
-                (top * i / steps / h).clamp(0.0, 1.0),
-              for (var i = 0; i <= steps; i++)
-                ((h - bottom + bottom * i / steps) / h).clamp(0.0, 1.0),
-            ],
-          ).createShader(rect);
-        },
-        child: child,
-      );
+  Widget build(BuildContext context) {
+    final bg = background ?? TravelPalette.of(context).s0;
+    return Stack(
+      children: [
+        child,
+        Positioned(
+            top: 0, left: 0, right: 0, child: _veil(bg, top, fromTop: true)),
+        Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: _veil(bg, bottom, fromTop: false)),
+      ],
+    );
+  }
 }
 
 /// Scroll edge effect do iOS 26 (estilo soft) no rodapé: o conteúdo que

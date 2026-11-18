@@ -5,7 +5,7 @@ import 'package:studio_app/features/travel_agent/domain/entities/travel_entities
 
 /// Categorias da home (Explorar). Taxonomia própria, separada de
 /// [RoleCategory] (a do agente, com 5 tipos) — a conciliação está em
-/// `docs/questoes-em-aberto.md` (Q-37).
+/// `docs/questoes-em-aberto.md` (Q-38).
 enum ExploreCategory { restaurantes, cafe, museu, cultura, arte, historia }
 
 /// Com quem ela vai (D-11). Vem do perfil e é editável na busca.

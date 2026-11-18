@@ -1,6 +1,6 @@
 # Docs do serviço — índice
 
-> **Status:** ciclo 1 concluído (pesquisa + personas + jornada + ecossistema). Blueprint feito (PDF 2026-11-04, ainda fora do repo) e protótipo da etapa 05 em [`prototype/app/`](../prototype/app/README.md) — ver [prototipo.md](prototipo.md).
+> **Status:** ciclo 1 concluído (pesquisa + personas + jornada + ecossistema). Blueprint v2 em [`diagrams/blueprint.html`](../diagrams/blueprint.html) (D-23) e protótipo da etapa 04 em [`prototype/app/`](../prototype/app/README.md) — ver [prototipo.md](prototipo.md).
 > **Atualizado:** 2026-11-09 · **Nome do serviço:** ainda sem nome (ver [Q-01](questoes-em-aberto.md#q-01)) — nos docs usamos "o app" / "o serviço"; o protótipo usa **Maré** como nome de trabalho.
 
 ## Resumo em 30 segundos

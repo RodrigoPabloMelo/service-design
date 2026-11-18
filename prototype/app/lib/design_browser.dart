@@ -7,7 +7,7 @@ import 'package:studio_app/design_browser_stub.dart'
     as impl;
 
 // Fronteira única com as APIs do browser usadas pelo chrome de design:
-// clipboard de imagem, localStorage e abrir link. Web-only via
+// clipboard de imagem, localStorage, abrir link e fundo da página. Web-only via
 // `dart:js_interop` (SDK, sem dependência nova — Inviolável #4), atrás de
 // import condicional para o build mobile continuar compilando.
 
@@ -61,6 +61,24 @@ Future<bool> versionExists(String commit) => impl.versionExists(commit);
 /// Um iframe com a URL, para mostrar o build de uma versão antiga dentro da
 /// doc. Fora do web devolve null — quem chama mostra a ficha da versão.
 Widget? versionFrame(String url) => impl.versionFrame(url);
+
+/// Pinta o fundo da página (fora do canvas do Flutter) com [color].
+///
+/// No celular o navegador mostra esse fundo atrás das próprias barras (a de
+/// status em cima e a de navegação embaixo, no Safari do iPhone): com a cor
+/// do app, as barras seguem o app em vez de cortá-lo com faixas brancas.
+/// Opaca; o alfa é ignorado. No-op fora do web.
+void setPageColor(Color color) => impl.setPageColor(
+    '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}');
+
+/// Pede ao navegador a safe area de verdade (`viewport-fit=cover`). Chame uma
+/// vez no `main()`, depois do binding. No-op fora do web.
+void enableSafeArea() => impl.enableSafeArea();
+
+/// Safe area do navegador — notch e barra de gestos do iPhone. O Flutter web
+/// não a entrega no `MediaQuery`; quem monta o app soma isto ao padding.
+/// Zero fora do web.
+EdgeInsets safeAreaInsets() => impl.safeAreaInsets();
 
 /// Tira o `#` da URL (`/#/docs` vira `/docs`).
 ///

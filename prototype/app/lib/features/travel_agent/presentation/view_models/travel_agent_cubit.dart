@@ -8,7 +8,7 @@ import 'package:studio_app/features/travel_agent/domain/entities/travel_entities
 
 part 'travel_agent_state.dart';
 
-/// Agente "Maré" — etapa 05 do blueprint (organiza locais com o agente).
+/// Agente "Maré" — etapa 04 do blueprint (organiza locais com o agente).
 ///
 /// Loop de design: respostas scriptadas com [Timer]s (cancelados no
 /// [close]). No loop de dev, troca-se só a injeção (mock → repositório).
