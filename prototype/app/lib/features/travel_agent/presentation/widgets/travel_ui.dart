@@ -268,6 +268,18 @@ abstract final class TravelIcons {
       fontFamily: _solid,
       fontPackage: _pkg,
       fontFamilyFallback: _keep)); // sliders — filtros
+  static const cloud = FaIconData(IconData(0xf0c2,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // cloud — filtro "Coberto"
+  static const money = FaIconData(IconData(0xf3d1,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // moneyBill1 — filtro "Grátis"
+  static const moon = FaIconData(IconData(0xf186,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // moon — período noite
   static const bookmarkSolid = FaIconData(IconData(0xf02e,
       fontFamily: _solid,
       fontPackage: _pkg,

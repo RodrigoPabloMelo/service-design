@@ -10,6 +10,7 @@ import 'package:studio_app/features/explore/presentation/views/role_page.dart';
 import 'package:studio_app/features/explore/presentation/views/search_page.dart';
 import 'package:studio_app/features/explore/presentation/widgets/explore_cards.dart';
 import 'package:studio_app/features/explore/presentation/widgets/explore_ui.dart';
+import 'package:studio_app/features/explore/presentation/widgets/filter_pickers.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
@@ -317,13 +318,8 @@ class _Empty extends StatelessWidget {
 class FilterSheet extends StatelessWidget {
   const FilterSheet({super.key});
 
-  static const _periods = [
-    null,
-    StopPeriod.manha,
-    StopPeriod.tarde,
-    StopPeriod.noite
-  ];
-  static const _prices = [null, PriceBand.gratis, PriceBand.um, PriceBand.dois];
+  /// Respiro entre as seções do sheet.
+  static const _gap = 40.0;
 
   @override
   Widget build(BuildContext context) {
@@ -359,7 +355,7 @@ class FilterSheet extends StatelessWidget {
                           children: [
                             Expanded(
                               child: _ToggleTile(
-                                icon: TravelIcons.rain,
+                                icon: TravelIcons.cloud,
                                 label: 'Coberto',
                                 selected: f.covered,
                                 onTap: cubit.toggleCovered,
@@ -368,7 +364,7 @@ class FilterSheet extends StatelessWidget {
                             const SizedBox(width: TravelSpace.sm),
                             Expanded(
                               child: _ToggleTile(
-                                icon: TravelIcons.ticket,
+                                icon: TravelIcons.money,
                                 label: 'Grátis',
                                 selected: f.free,
                                 onTap: cubit.toggleFree,
@@ -377,7 +373,7 @@ class FilterSheet extends StatelessWidget {
                             const SizedBox(width: TravelSpace.sm),
                             Expanded(
                               child: _ToggleTile(
-                                icon: TravelIcons.place,
+                                icon: TravelIcons.home,
                                 label: 'Perto do hotel',
                                 selected: f.nearHotel,
                                 onTap: cubit.toggleNearHotel,
@@ -385,27 +381,24 @@ class FilterSheet extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: TravelSpace.xl),
+                        const SizedBox(height: _gap),
                         const _Label('Período'),
-                        PillSegmented(
-                          labels: const ['Qualquer', 'Manhã', 'Tarde', 'Noite'],
-                          index: _periods.indexOf(f.period),
-                          onChanged: (i) => cubit.setPeriod(_periods[i]),
+                        DayArcPicker(
+                          value: f.period,
+                          onChanged: cubit.setPeriod,
                         ),
-                        const SizedBox(height: TravelSpace.xl),
-                        const _Label('Preço'),
-                        PillSegmented(
-                          labels: const ['Qualquer', 'Grátis', r'$', r'$$'],
-                          semanticLabels: const [
-                            'Qualquer preço',
-                            'Grátis',
-                            'Barato',
-                            'Médio'
+                        const SizedBox(height: _gap),
+                        const _Label('Preço por pessoa'),
+                        PriceRangePicker(
+                          prices: [
+                            for (final t in ExploreMock.tags.values)
+                              t.priceFrom,
                           ],
-                          index: _prices.indexOf(f.price),
-                          onChanged: (i) => cubit.setPrice(_prices[i]),
+                          min: f.priceMin,
+                          max: f.priceMax,
+                          onChanged: cubit.setPriceRange,
                         ),
-                        const SizedBox(height: TravelSpace.xl),
+                        const SizedBox(height: _gap),
                         const _Label('Tipo de rolê'),
                         Wrap(
                           spacing: TravelSpace.sm,
@@ -460,14 +453,15 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(
-            TravelSpace.cardPad, 0, TravelSpace.cardPad, TravelSpace.sm),
+            TravelSpace.cardPad, 0, TravelSpace.cardPad, TravelSpace.md),
         child: Text(text,
             style: TravelType.section
                 .copyWith(color: TravelPalette.of(context).inkMuted)),
       );
 }
 
-/// Tile de "Pra você": ícone + rótulo, selecionado em `accentSoft`.
+/// Tile de "Pra você": ícone leve (regular, cinza) + rótulo. Selecionado
+/// continua branco, só com o anel `accent` (tint azul se misturava).
 class _ToggleTile extends StatelessWidget {
   const _ToggleTile({
     required this.icon,
@@ -495,20 +489,19 @@ class _ToggleTile extends StatelessWidget {
         child: AnimatedContainer(
           duration: exploreMotion(context, 150),
           curve: kExploreEase,
-          height: 88,
-          padding: const EdgeInsets.all(TravelSpace.cardPad),
-          decoration: BoxDecoration(
-            color: selected ? p.accentSoft : p.s1,
-            borderRadius: BorderRadius.circular(TravelSpace.rCard),
-          ),
+          height: 104,
+          padding: const EdgeInsets.fromLTRB(
+              TravelSpace.lg, 18, TravelSpace.lg, TravelSpace.lg),
+          decoration: selectionDecoration(p,
+              selected: selected, fill: p.s1, radius: TravelSpace.rCard),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              FaIcon(icon, size: 18, color: p.ink),
+              FaIcon(icon, size: 20, color: p.inkMuted),
               Text(
                 label,
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TravelType.footnoteStrong.copyWith(color: p.ink),
               ),

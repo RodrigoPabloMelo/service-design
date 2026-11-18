@@ -24,6 +24,8 @@ atualizada.
 - Categorias da home (`ExploreCategoryTones`, véu sobre foto, alfa 0.74,
   iguais no claro/escuro): restaurantes #B4410E, café #6E4326, museu
   #9E1F4C, cultura #5636B8, arte #8E5F00, história #0D646B. Branco por cima.
+- Arco do dia (`DayArcTones`): noite #0C1230 / chão #060918; brilho
+  manhã #FFB547, tarde #7CC4FF, noite #3B4CFF.
 - Mapa monocromático (ref. Uber): terra #E8E8EB, água #D8DEE2, parque
   #DDE3DC, ruas brancas; pins `inverse`, selecionado `accent`.
 - Preto/branco com alfa (scrim, véus) podem ir direto no widget.

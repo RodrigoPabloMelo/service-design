@@ -118,7 +118,8 @@ class CategoryIcon extends StatelessWidget {
       );
 }
 
-/// Chip de escolha: pílula sem borda; selecionado ganha tint `accentSoft`.
+/// Chip de escolha: pílula sem borda; selecionado fica branco (`s1`) com
+/// anel `accent` — o tint azul se misturava com o fundo.
 class ExploreChip extends StatelessWidget {
   const ExploreChip({
     required this.label,
@@ -153,10 +154,10 @@ class ExploreChip extends StatelessWidget {
           curve: kExploreEase,
           height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
-            color: selected ? p.accentSoft : (onCard ? p.s2 : p.s1),
-            borderRadius: BorderRadius.circular(TravelSpace.rPill),
-          ),
+          decoration: selectionDecoration(p,
+              selected: selected,
+              fill: onCard ? p.s2 : p.s1,
+              radius: TravelSpace.rPill),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -471,3 +472,21 @@ class ProgressiveBlurBottom extends StatelessWidget {
   Widget build(BuildContext context) =>
       RotatedBox(quarterTurns: 2, child: ProgressiveBlurTop(height: height));
 }
+
+/// Estado selecionado de chip/tile: fundo `s1` + anel `accent` de 1,5. O
+/// anel existe sempre (transparente quando não selecionado) pra não mexer
+/// no layout. É estado, não divisor — a regra 1 segue valendo.
+BoxDecoration selectionDecoration(
+  TravelPalette p, {
+  required bool selected,
+  required Color fill,
+  required double radius,
+}) =>
+    BoxDecoration(
+      color: selected ? p.s1 : fill,
+      borderRadius: BorderRadius.circular(radius),
+      border: Border.all(
+        color: selected ? p.accent : p.accent.withValues(alpha: 0),
+        width: 1.5,
+      ),
+    );

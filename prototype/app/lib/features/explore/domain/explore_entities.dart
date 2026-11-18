@@ -11,9 +11,6 @@ enum ExploreCategory { restaurantes, cafe, museu, cultura, arte, historia }
 /// Com quem ela vai (D-11). Vem do perfil e é editável na busca.
 enum Company { sozinha, amiga, parceiro }
 
-/// Faixa de preço do filtro (mesmos valores de [Role.price]).
-enum PriceBand { gratis, um, dois }
-
 /// Etiquetas do rolê usadas só pela home e pela busca.
 class ExploreTags extends Equatable {
   const ExploreTags({
@@ -21,6 +18,7 @@ class ExploreTags extends Equatable {
     required this.periods,
     required this.days,
     required this.reason,
+    required this.priceFrom,
   });
 
   final Set<ExploreCategory> categories;
@@ -32,8 +30,12 @@ class ExploreTags extends Equatable {
   /// Por que pra você — uma linha (F-13).
   final String reason;
 
+  /// Gasto estimado por pessoa, em reais (mock; 0 = grátis). Alimenta o
+  /// histograma do filtro de preço.
+  final int priceFrom;
+
   @override
-  List<Object?> get props => [categories, periods, days, reason];
+  List<Object?> get props => [categories, periods, days, reason, priceFrom];
 }
 
 /// O que ela respondeu na busca guiada (onde, quando, com quem, que tipo).
@@ -79,17 +81,23 @@ class ExploreFilters extends Equatable {
     this.free = false,
     this.nearHotel = false,
     this.period,
-    this.price,
+    this.priceMin = 0,
+    this.priceMax = kPriceCap,
   });
 
   final bool covered;
   final bool free;
   final bool nearHotel;
   final StopPeriod? period;
-  final PriceBand? price;
+
+  /// Faixa de preço por pessoa (R$). [kPriceCap] no máximo = sem teto.
+  final int priceMin;
+  final int priceMax;
+
+  bool get hasPrice => priceMin > 0 || priceMax < kPriceCap;
 
   /// Quantos filtros estão ligados (contador do botão).
-  int get count => [covered, free, nearHotel, period != null, price != null]
+  int get count => [covered, free, nearHotel, period != null, hasPrice]
       .where((on) => on)
       .length;
 
@@ -98,18 +106,21 @@ class ExploreFilters extends Equatable {
     bool? free,
     bool? nearHotel,
     StopPeriod? Function()? period,
-    PriceBand? Function()? price,
+    int? priceMin,
+    int? priceMax,
   }) =>
       ExploreFilters(
         covered: covered ?? this.covered,
         free: free ?? this.free,
         nearHotel: nearHotel ?? this.nearHotel,
         period: period == null ? this.period : period(),
-        price: price == null ? this.price : price(),
+        priceMin: priceMin ?? this.priceMin,
+        priceMax: priceMax ?? this.priceMax,
       );
 
   @override
-  List<Object?> get props => [covered, free, nearHotel, period, price];
+  List<Object?> get props =>
+      [covered, free, nearHotel, period, priceMin, priceMax];
 }
 
 /// Uma seção da home: título curto + poucos rolês (sem feed infinito, F-06).
@@ -152,12 +163,11 @@ String formatKm(double km) =>
 /// Até onde conta como "perto do hotel".
 const kNearHotelKm = 4.0;
 
-PriceBand? priceBandOf(Role r) => switch (r.price) {
-      'Grátis' => PriceBand.gratis,
-      r'$' => PriceBand.um,
-      r'$$' => PriceBand.dois,
-      _ => null,
-    };
+/// Teto do filtro de preço (R$ por pessoa); acima disso conta como "+".
+const kPriceCap = 60;
+
+/// Largura de cada barra do histograma de preço (R$).
+const kPriceStep = 5;
 
 /// Filtra os rolês curados pela busca + filtros. Só a base curada (D-07):
 /// sem resultado, a tela diz isso em vez de completar.
@@ -195,6 +205,7 @@ bool _matches(
   if (f.free && r.price != 'Grátis') return false;
   if (f.nearHotel && !isNear) return false;
   if (f.period != null && !t.periods.contains(f.period)) return false;
-  if (f.price != null && priceBandOf(r) != f.price) return false;
+  if (t.priceFrom < f.priceMin) return false;
+  if (f.priceMax < kPriceCap && t.priceFrom > f.priceMax) return false;
   return true;
 }

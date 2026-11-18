@@ -63,6 +63,11 @@ feedback do designer; não reabra sem ele pedir.
 13. **Botão acessível:** `Semantics(button: true, excludeSemantics: true)`
     sempre com `onTap:` (o mesmo do `Pressable` filho) — sem ele o leitor
     de tela anuncia um botão que não faz nada. Lint D11.
+14. **Selecionado em chip/tile = branco com anel azul**, não tint: fundo
+    `s1` + borda `accent` 1,5 (`selectionDecoration`); o `accentSoft`
+    inteiro se misturava com o fundo. Anel = estado, não divisor.
+    Ícone de tile de filtro leve: regular, 20, `inkMuted`, com respiro de
+    16–18 da borda.
 
 Valores exatos: [tokens.md](tokens.md). Padrões de componente e de fluxo
 (conversa→mapa, menu ⋯, composer, sheet de limites, card do rolê, player,

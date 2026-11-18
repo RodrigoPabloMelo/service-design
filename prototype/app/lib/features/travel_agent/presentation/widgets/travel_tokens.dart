@@ -388,3 +388,14 @@ abstract final class ExploreCategoryTones {
   static const arte = Color(0xFF8E5F00); // ocre (Brennand)
   static const historia = Color(0xFF0D646B); // verde-petróleo
 }
+
+/// Card do período no filtro (arco do dia, ref. card de nascer/pôr do sol):
+/// claro de dia, azul-tinta à noite (escurece mesmo no tema claro), com o
+/// brilho atrás do sol/lua mudando de quente (manhã) a azul (noite).
+abstract final class DayArcTones {
+  static const night = Color(0xFF0C1230);
+  static const nightGround = Color(0xFF060918);
+  static const warmGlow = Color(0xFFFFB547);
+  static const noonGlow = Color(0xFF7CC4FF);
+  static const nightGlow = Color(0xFF3B4CFF);
+}

@@ -219,14 +219,25 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
   e chips; fechado, rótulo à esquerda e valor à direita (linha de 60).
   Escolha única avança sozinha pro próximo card (220 ms). Ordem: Onde?,
   Quando?, Com quem?, Que tipo?. Rodapé: só o primário "Buscar".
-- **Chip:** pílula 40 sem borda; dentro de card `s2`, solto `s1`;
-  selecionado `accentSoft`. Chip de categoria leva o ícone SVG em `ink`.
+- **Chip:** pílula 40, padding 14/14; dentro de card `s2`, solto `s1`;
+  selecionado branco + anel `accent` 1,5. Chip de categoria leva o ícone SVG em `ink`.
 - **Resultados:** três containers `s1` de 56, separados por 8: voltar
   (círculo), resumo da busca (pílula raio 28, reabre a busca) e filtrar
   (círculo, contador `accent`); "N rolês" em `title1` + "Pra ir com…"; lista curta.
   Vazio diz que a base curada não cobre (D-07) e oferece um secundário.
-- **Filtros** (sheet `s0` raio 36): tiles "Pra você" (88, raio 24, ícone
-  sólido + rótulo), `PillSegmented` de período e preço, chips de tipo.
-  Aplica ao vivo; primário "Mostrar N rolês" com o número animando. Sem
-  filtro de segurança (Q-10).
+- **Filtros** (sheet `s0` raio 36), seções separadas por 40:
+  - "Pra você": tiles 104 (raio 24, padding 16/18), ícone regular 20
+    `inkMuted`, rótulo até 2 linhas; selecionado branco + anel `accent`.
+  - **Período = arco do dia** (`DayArcPicker`, ref. card de nascer/pôr do
+    sol): card claro com cúpula e arco; arrasta o sol (manhã à esquerda,
+    tarde no alto, noite à direita). Indo pra noite o card escurece
+    (`DayArcTones.night`), o sol vira lua e o brilho vai de quente a azul.
+    Solta → encaixa no período mais perto (mola 420/32), haptic ao cruzar.
+    Rótulos no chão tocáveis; "Qualquer" no topo limpa.
+  - **Preço por pessoa = histograma + faixa** (`PriceRangePicker`, ref.
+    Airbnb): barras dos rolês por preço (R$ 5 por barra, até R$ 60+) em
+    `accent` dentro da faixa e cinza fora; range slider na base (polegar
+    `s1` com anel fino, sem sombra); mínimo e máximo em pílulas `s1`.
+  - Chips de tipo. Aplica ao vivo; primário "Mostrar N rolês" com o número
+    animando. Sem filtro de segurança (Q-10).
 

@@ -270,7 +270,7 @@ abstract final class ExploreMock {
 
   static const _all = {0, 1, 2};
 
-  /// Etiquetas por rolê. Café fica vazio de propósito: ainda não há café
+  /// Etiquetas por rolê. `priceFrom` é gasto estimado por pessoa (mock). Café fica vazio de propósito: ainda não há café
   /// curado — a busca diz isso (D-07) em vez de inventar.
   static const tags = <String, ExploreTags>{
     'mercado-boa-vista': ExploreTags(
@@ -278,72 +278,84 @@ abstract final class ExploreMock {
       periods: {StopPeriod.manha, StopPeriod.tarde},
       days: _all,
       reason: 'Caldinho de sábado sem preço de turista',
+      priceFrom: 30,
     ),
     'cinema-sao-luiz': ExploreTags(
       categories: {ExploreCategory.cultura, ExploreCategory.historia},
       periods: {StopPeriod.tarde, StopPeriod.noite},
       days: _all,
       reason: 'Sessão de cinema e pôr do sol na beira do rio',
+      priceFrom: 12,
     ),
     'casa-de-bamba': ExploreTags(
       categories: {ExploreCategory.cultura},
       periods: {StopPeriod.noite},
       days: _all,
       reason: 'Roda de samba de quem é daqui, boa pra ir em dupla',
+      priceFrom: 35,
     ),
     'casa-astral': ExploreTags(
       categories: {ExploreCategory.cultura},
       periods: {StopPeriod.noite},
       days: {0, 1},
       reason: 'Forró de raiz, cheio de gente da cidade',
+      priceFrom: 45,
     ),
     'poco-da-panela': ExploreTags(
       categories: {ExploreCategory.historia},
       periods: {StopPeriod.manha, StopPeriod.tarde},
       days: _all,
       reason: 'Casario antigo e caminhada tranquila de tarde',
+      priceFrom: 0,
     ),
     'sitio-trindade': ExploreTags(
       categories: {ExploreCategory.cultura, ExploreCategory.historia},
       periods: {StopPeriod.manha, StopPeriod.tarde},
       days: _all,
       reason: 'Fim de tarde verde, de graça',
+      priceFrom: 0,
     ),
     'mercado-encruzilhada': ExploreTags(
       categories: {ExploreCategory.restaurantes},
       periods: {StopPeriod.manha},
       days: {0, 1},
       reason: 'Feira de bairro, comida boa e barata',
+      priceFrom: 20,
     ),
     'dona-lindu': ExploreTags(
       categories: {ExploreCategory.arte},
       periods: {StopPeriod.tarde, StopPeriod.noite},
       days: _all,
       reason: 'Pôr do sol na praia, pertinho do hotel',
+      priceFrom: 0,
     ),
     'mercado-casa-amarela': ExploreTags(
       categories: {ExploreCategory.restaurantes},
       periods: {StopPeriod.tarde},
       days: {0, 1},
       reason: 'Petisco de mercado com quem é do bairro',
+      priceFrom: 25,
     ),
     'paco-do-frevo': ExploreTags(
       categories: {ExploreCategory.museu, ExploreCategory.cultura},
       periods: {StopPeriod.manha, StopPeriod.tarde},
       days: _all,
       reason: 'Museu do frevo com aula de passo',
+      priceFrom: 15,
     ),
     'parque-esculturas': ExploreTags(
       categories: {ExploreCategory.arte},
       periods: {StopPeriod.manha, StopPeriod.tarde},
       days: _all,
       reason: 'Esculturas do Brennand de frente pro Marco Zero',
+      priceFrom: 0,
     ),
     'rua-do-bom-jesus': ExploreTags(
       categories: {ExploreCategory.historia},
       periods: {StopPeriod.manha, StopPeriod.tarde, StopPeriod.noite},
       days: _all,
       reason: 'Rua mais antiga do Recife, com feira no domingo',
+      priceFrom: 0,
     ),
   };
 

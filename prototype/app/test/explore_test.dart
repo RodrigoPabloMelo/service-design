@@ -7,6 +7,7 @@ import 'package:studio_app/features/explore/presentation/view_models/explore_cub
 import 'package:studio_app/features/explore/presentation/view_models/explore_state.dart';
 import 'package:studio_app/features/explore/presentation/view_models/search_cubit.dart';
 import 'package:studio_app/features/explore/presentation/views/explore_page.dart';
+import 'package:studio_app/features/explore/presentation/widgets/filter_pickers.dart';
 import 'package:studio_app/features/explore/presentation/widgets/glass_tab_bar.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
@@ -102,6 +103,19 @@ void main() {
       expect(cubit.state.results.length, ExploreMock.roles.length);
     });
 
+    test('faixa de preço filtra pelo gasto por pessoa', () {
+      final cubit = SearchCubit()..setPriceRange(10, 20);
+      addTearDown(cubit.close);
+      expect(cubit.state.filters.count, 1);
+      expect(cubit.state.results, isNotEmpty);
+      for (final r in cubit.state.results) {
+        final v = ExploreMock.tags[r.id]!.priceFrom;
+        expect(v, inInclusiveRange(10, 20));
+      }
+      cubit.setPriceRange(0, kPriceCap);
+      expect(cubit.state.filters.count, 0);
+    });
+
     test('perto do hotel só traz rolês a até 4 km', () {
       final cubit = SearchCubit()..setPlace(SearchQuery.nearHotel);
       addTearDown(cubit.close);
@@ -156,5 +170,29 @@ void main() {
     await tester.dragFrom(start, end - start);
     await tester.pumpAndSettle();
     expect(picked, 2);
+  });
+
+  testWidgets('arco do dia: tocar em Noite escolhe a noite', (tester) async {
+    StopPeriod? picked;
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: SizedBox(
+            width: 360,
+            child: StatefulBuilder(
+              builder: (context, setState) => DayArcPicker(
+                value: picked,
+                onChanged: (v) => setState(() => picked = v),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ));
+    expect(find.text('Qualquer horário'), findsOneWidget);
+    await tester.tap(find.text('Noite'));
+    await tester.pumpAndSettle();
+    expect(picked, StopPeriod.noite);
+    expect(find.text('À noite'), findsOneWidget);
   });
 }

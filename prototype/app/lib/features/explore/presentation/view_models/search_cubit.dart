@@ -103,8 +103,8 @@ class SearchCubit extends Cubit<SearchState> {
   void setPeriod(StopPeriod? period) => emit(
       state.copyWith(filters: state.filters.copyWith(period: () => period)));
 
-  void setPrice(PriceBand? price) =>
-      emit(state.copyWith(filters: state.filters.copyWith(price: () => price)));
+  void setPriceRange(int min, int max) => emit(state.copyWith(
+      filters: state.filters.copyWith(priceMin: min, priceMax: max)));
 
   void clearFilters() => emit(state.copyWith(filters: const ExploreFilters()));
 
