@@ -236,7 +236,8 @@ final designScreens = <RegisteredScreen>[
     title: 'Agente de roteiros',
     route: '/agente',
     flow: 'Agente',
-    descricao: 'Maré organiza os rolês de local salvos por dia e distância, '
+    descricao: 'Abre numa conversa nova, com as anteriores na gaveta (☰). '
+        'Maré organiza os rolês de local salvos por dia e distância, '
         'mostra o roteiro no mapa, salva na Google Agenda e oferece extras.',
     builder: (_) => const TravelAgentPage(),
     variants: [

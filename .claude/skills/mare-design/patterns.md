@@ -2,11 +2,16 @@
 
 ## Fluxo da tela
 
-- Abertura da conversa: bloco-resumo azul e só 3 sugestões de maior valor
-  (organizar, noite com as amigas, perto do hotel), presas em cima do
-  composer.
-  Sem carrossel de salvos nem outros cards ali (polui); eles entram quando
-  o agente responde.
+- **Conversa nova** (abertura padrão, com rolês salvos): tela cheia, fundo
+  liso, **sem bloco azul e sem mapa**. Saudação centrada no espaço acima do
+  rodapé (`AgentGreeting`: `MareMark` 28, "Oi, {nome}." em `inkMuted` +
+  pergunta sorteada em `title1`), composer "Pergunte à Maré…" e só 3
+  sugestões de maior valor (organizar, noite com as amigas, perto do
+  hotel) presas em cima do composer. Sem `PixelTide` (só no começo do
+  zero). Sem carrossel de salvos nem outros cards ali (polui); eles entram
+  quando o agente responde. Depois do primeiro envio o composer volta a
+  "Peça um ajuste à Maré…".
+- Bloco-resumo azul: só em conversa que já tem roteiro ou erro (`showSummary`).
 - Aurora (`Aurora`, azul `accent` + `piscina`) atrás do composer, presa ao
   rodapé, **só enquanto nada foi enviado**. Na primeira mensagem se esvai
   devagar e desliga o ticker. Tem que aparecer no claro também
@@ -26,10 +31,12 @@
   (em Boa Viagem é aviso de perigo). Reduce Motion = quadro parado; o
   ticker morre no primeiro envio. Mapa com pontinhos apagados da curadoria
   (`ghostSpots`) até haver pins. No primeiro envio o sheet entra deslizando
-  até 0.52, **o mapa fica aberto** e os rolês sugeridos caem como pins;
-  voltar na abertura sai da tela.
+  até 0.52, **o mapa fica aberto** e os rolês sugeridos caem como pins.
+  No topo, ☰ (vidro) no lugar do voltar.
 - **Começa na conversa em tela cheia** (com rolês salvos) (sheet a 100%, sem alça, raio 0,
-  cabeçalho `voltar · Maré · ⋯`). O mapa não aparece até a pessoa pedir.
+  cabeçalho `☰ · Maré · ⋯`). O mapa não aparece até a pessoa pedir.
+  O ☰ (`TravelIcons.sidebar`, "Conversas") substitui o voltar **só onde o
+  voltar saía da tela**; no mapa, o voltar volta pra conversa.
 - Mapa abre por: menu ⋯ → "Ver no mapa", botão "Ver no mapa" (prévia do
   roteiro, card do rolê) ou pedindo ao agente ("me mostra no mapa").
 - Transição: o sheet desce até o detent médio (0.52), o raio cresce até 36,
@@ -38,6 +45,24 @@
 - Volta: botão voltar no mapa, ou arrastar o sheet até o topo.
 - Detents sobre o mapa: 0.2 / 0.52 / 0.92. Card do rolê e roteiro completo
   abrem dentro do sheet (0.92 no mapa), sem empilhar sheets.
+
+## Gaveta de conversas (☰)
+
+Ref. ChatGPT, no nosso sistema (`ConversationDrawer`):
+- A página **desliza pra direita** (gaveta = min(82% da tela, 320)), a
+  gaveta entra com parallax curto, cantos da página crescem até 36 e um
+  **véu preto 12%** cobre a página. **Sem sombra.** No `AppEffects.lite`,
+  sem o recorte arredondado. Tocar no véu, arrastar pra esquerda ou o
+  voltar do sistema fecham.
+- Gaveta em `s0`: "Maré" em `title2` na altura do cabeçalho (44); linha
+  "Explorar" (bússola) que sai do agente; `SectionHeader` "Fixadas" e
+  "Recentes"; linhas de 48 **só texto**, 1 linha com reticências, sem
+  divisores; aberta/pressionada em `s2` raio 16 (igual ao menu ⋯).
+  Recentes vazia: "Nenhuma conversa ainda" em `inkMuted`.
+- Rodapé: `PrimaryButton` "Nova conversa" com `pen` (único primário), sobre
+  fade `s0` da lista.
+- **Não copiar do ChatGPT:** sombra na página, busca, engrenagem e itens de
+  navegação que o protótipo não tem.
 
 ## Sugestões da abertura
 
