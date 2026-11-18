@@ -35,7 +35,7 @@ class SearchPage extends StatelessWidget {
       Navigator.of(context).pop();
     } else {
       Navigator.of(context).pushReplacement(
-        exploreRoute(withExplore(context, const SearchResultsPage())),
+        exploreRoute(context, withExplore(context, const SearchResultsPage())),
       );
     }
   }
@@ -63,97 +63,103 @@ class SearchPage extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(TravelSpace.gutter,
-                        TravelSpace.sm, TravelSpace.gutter, TravelSpace.lg),
-                    children: [
-                      _StepCard(
-                        hero: true,
-                        question: 'Onde?',
-                        label: 'Onde',
-                        value: placeLabel(q),
-                        open: s.step == SearchStep.onde,
-                        onOpen: () => cubit.openStep(SearchStep.onde),
-                        child: _Chips(children: [
-                          for (final place in [
-                            null,
-                            SearchQuery.nearHotel,
-                            ...ExploreMock.neighborhoods,
-                          ])
-                            ExploreChip(
-                              label: place ?? 'Qualquer lugar',
-                              selected: q.place == place,
-                              onTap: () {
-                                cubit.setPlace(place);
-                                _advance(cubit, SearchStep.onde);
-                              },
-                            ),
-                        ]),
-                      ),
-                      const SizedBox(height: TravelSpace.sm),
-                      _StepCard(
-                        question: 'Quando?',
-                        label: 'Quando',
-                        value: dayLabel(q),
-                        open: s.step == SearchStep.quando,
-                        onOpen: () => cubit.openStep(SearchStep.quando),
-                        child: _Chips(children: [
-                          for (final day in [null, 0, 1, 2])
-                            ExploreChip(
-                              label: day == null
-                                  ? 'Qualquer dia'
-                                  : ExploreMock.tripDays[day],
-                              selected: q.day == day,
-                              onTap: () {
-                                cubit.setDay(day);
-                                _advance(cubit, SearchStep.quando);
-                              },
-                            ),
-                        ]),
-                      ),
-                      const SizedBox(height: TravelSpace.sm),
-                      _StepCard(
-                        question: 'Com quem?',
-                        label: 'Com quem',
-                        value: companyLabel(q.company),
-                        open: s.step == SearchStep.quem,
-                        onOpen: () => cubit.openStep(SearchStep.quem),
-                        child: _Chips(children: [
-                          for (final c in Company.values)
-                            ExploreChip(
-                              label: companyLabel(c),
-                              selected: q.company == c,
-                              onTap: () {
-                                cubit.setCompany(c);
-                                _advance(cubit, SearchStep.quem);
-                              },
-                            ),
-                        ]),
-                      ),
-                      const SizedBox(height: TravelSpace.sm),
-                      _StepCard(
-                        question: 'Que tipo?',
-                        label: 'Tipo',
-                        value: categoriesLabel(q.categories),
-                        open: s.step == SearchStep.tipo,
-                        onOpen: () => cubit.openStep(SearchStep.tipo),
-                        child: _Chips(children: [
-                          for (final info in ExploreMock.categories)
-                            ExploreChip(
-                              label: info.label,
-                              selected: q.categories.contains(info.category),
-                              leading: CategoryIcon(info.category,
-                                  color: p.ink, size: 22),
-                              onTap: () => cubit.toggleCategory(info.category),
-                            ),
-                        ]),
-                      ),
-                    ],
+                  child: VerticalEdgeFade(
+                    child: ListView(
+                      padding: const EdgeInsets.fromLTRB(TravelSpace.gutter,
+                          TravelSpace.sm, TravelSpace.gutter, TravelSpace.lg),
+                      children: [
+                        _StepCard(
+                          hero: true,
+                          question: 'Onde?',
+                          label: 'Onde',
+                          value: placeLabel(q),
+                          open: s.step == SearchStep.onde,
+                          onOpen: () => cubit.openStep(SearchStep.onde),
+                          child: _Chips(children: [
+                            for (final place in [
+                              null,
+                              SearchQuery.nearHotel,
+                              ...ExploreMock.neighborhoods,
+                            ])
+                              ExploreChip(
+                                label: place ?? 'Qualquer lugar',
+                                selected: q.place == place,
+                                onTap: () {
+                                  cubit.setPlace(place);
+                                  _advance(cubit, SearchStep.onde);
+                                },
+                              ),
+                          ]),
+                        ),
+                        const SizedBox(height: TravelSpace.sm),
+                        _StepCard(
+                          question: 'Quando?',
+                          label: 'Quando',
+                          value: dayLabel(q),
+                          open: s.step == SearchStep.quando,
+                          onOpen: () => cubit.openStep(SearchStep.quando),
+                          child: _Chips(children: [
+                            for (final day in [null, 0, 1, 2])
+                              ExploreChip(
+                                label: day == null
+                                    ? 'Qualquer dia'
+                                    : ExploreMock.tripDays[day],
+                                selected: q.day == day,
+                                onTap: () {
+                                  cubit.setDay(day);
+                                  _advance(cubit, SearchStep.quando);
+                                },
+                              ),
+                          ]),
+                        ),
+                        const SizedBox(height: TravelSpace.sm),
+                        _StepCard(
+                          question: 'Com quem?',
+                          label: 'Com quem',
+                          value: companyLabel(q.company),
+                          open: s.step == SearchStep.quem,
+                          onOpen: () => cubit.openStep(SearchStep.quem),
+                          child: _Chips(children: [
+                            for (final c in Company.values)
+                              ExploreChip(
+                                label: companyLabel(c),
+                                selected: q.company == c,
+                                onTap: () {
+                                  cubit.setCompany(c);
+                                  _advance(cubit, SearchStep.quem);
+                                },
+                              ),
+                          ]),
+                        ),
+                        const SizedBox(height: TravelSpace.sm),
+                        _StepCard(
+                          question: 'Que tipo?',
+                          label: 'Tipo',
+                          value: categoriesLabel(q.categories),
+                          open: s.step == SearchStep.tipo,
+                          onOpen: () => cubit.openStep(SearchStep.tipo),
+                          child: _Chips(children: [
+                            for (final info in ExploreMock.categories)
+                              ExploreChip(
+                                label: info.label,
+                                selected: q.categories.contains(info.category),
+                                leading: CategoryIcon(info.category,
+                                    color: p.ink, size: 22),
+                                onTap: () =>
+                                    cubit.toggleCategory(info.category),
+                              ),
+                          ]),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(TravelSpace.gutter,
-                      TravelSpace.sm, TravelSpace.gutter, TravelSpace.md + bottom),
+                  padding: EdgeInsets.fromLTRB(
+                      TravelSpace.gutter,
+                      TravelSpace.sm,
+                      TravelSpace.gutter,
+                      TravelSpace.md + bottom),
                   child: PrimaryButton(
                     label: 'Buscar',
                     onPressed: () => _submit(context),
@@ -174,8 +180,8 @@ class _Chips extends StatelessWidget {
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) =>
-      Wrap(spacing: TravelSpace.sm, runSpacing: TravelSpace.sm, children: children);
+  Widget build(BuildContext context) => Wrap(
+      spacing: TravelSpace.sm, runSpacing: TravelSpace.sm, children: children);
 }
 
 /// Card da sanfona: fechado mostra rótulo + valor; aberto, a pergunta e as
@@ -244,7 +250,8 @@ class _StepCard extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(label,
-                          style: TravelType.subhead.copyWith(color: p.inkMuted)),
+                          style:
+                              TravelType.subhead.copyWith(color: p.inkMuted)),
                       const SizedBox(width: TravelSpace.lg),
                       Expanded(
                         child: Text(

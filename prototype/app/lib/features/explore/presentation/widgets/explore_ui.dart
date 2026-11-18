@@ -20,10 +20,12 @@ Duration exploreMotion(BuildContext context, int ms) =>
         : Duration(milliseconds: ms);
 
 /// Rota com fade + escala a partir de [origin] (420 ms ida, 320 volta).
-Route<void> exploreRoute(Widget page, {Alignment origin = Alignment.center}) =>
+/// Com Reduce Motion a rota troca na hora (sem voo de Hero).
+Route<void> exploreRoute(BuildContext context, Widget page,
+        {Alignment origin = Alignment.center}) =>
     PageRouteBuilder<void>(
-      transitionDuration: const Duration(milliseconds: 420),
-      reverseTransitionDuration: const Duration(milliseconds: 320),
+      transitionDuration: exploreMotion(context, 420),
+      reverseTransitionDuration: exploreMotion(context, 320),
       pageBuilder: (_, __, ___) => page,
       transitionsBuilder: (context, animation, _, child) {
         if (MediaQuery.disableAnimationsOf(context)) return child;
@@ -150,7 +152,7 @@ class ExploreChip extends StatelessWidget {
           duration: exploreMotion(context, 150),
           curve: kExploreEase,
           height: 40,
-          padding: EdgeInsets.only(left: leading == null ? 16 : 12, right: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             color: selected ? p.accentSoft : (onCard ? p.s2 : p.s1),
             borderRadius: BorderRadius.circular(TravelSpace.rPill),
@@ -187,7 +189,8 @@ class Reveal extends StatelessWidget {
       curve: Interval(math.min(0.6, index * 0.12), 1, curve: kExploreEase),
       builder: (context, t, child) => Opacity(
         opacity: t,
-        child: Transform.translate(offset: Offset(0, 16 * (1 - t)), child: child),
+        child:
+            Transform.translate(offset: Offset(0, 16 * (1 - t)), child: child),
       ),
       child: child,
     );
@@ -288,7 +291,8 @@ class ExploreSectionTitle extends StatelessWidget {
           header: true,
           child: Text(
             title,
-            style: TravelType.title3.copyWith(color: TravelPalette.of(context).ink),
+            style: TravelType.title3
+                .copyWith(color: TravelPalette.of(context).ink),
           ),
         ),
       );
@@ -352,10 +356,12 @@ class RoundButton extends StatelessWidget {
                         BoxDecoration(color: p.accent, shape: BoxShape.circle),
                     child: Text(
                       '$n',
-                      style: TravelType.caption.weight(FontWeight.w500).copyWith(
-                          color: p.onAccent,
-                          height: 1.2,
-                          fontFeatures: TravelType.tabular),
+                      style: TravelType.caption
+                          .weight(FontWeight.w500)
+                          .copyWith(
+                              color: p.onAccent,
+                              height: 1.2,
+                              fontFeatures: TravelType.tabular),
                     ),
                   ),
                 ),
@@ -399,4 +405,60 @@ class TextAction extends StatelessWidget {
           ),
         ),
       );
+}
+
+/// Fade suave (rampa senoidal) nas pontas de uma lista vertical que corre
+/// entre uma barra fixa e um rodapé fixo — sem borda dura (regra 11).
+class VerticalEdgeFade extends StatelessWidget {
+  const VerticalEdgeFade({
+    required this.child,
+    this.top = 16,
+    this.bottom = 28,
+    super.key,
+  });
+
+  final Widget child;
+  final double top;
+  final double bottom;
+
+  static double _smooth(double t) => 0.5 - 0.5 * math.cos(math.pi * t);
+
+  @override
+  Widget build(BuildContext context) => ShaderMask(
+        blendMode: BlendMode.dstIn,
+        shaderCallback: (rect) {
+          final h = rect.height;
+          const steps = 10;
+          return LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              for (var i = 0; i <= steps; i++)
+                Colors.black.withValues(alpha: _smooth(i / steps)),
+              for (var i = 0; i <= steps; i++)
+                Colors.black.withValues(alpha: 1 - _smooth(i / steps)),
+            ],
+            stops: [
+              for (var i = 0; i <= steps; i++)
+                (top * i / steps / h).clamp(0.0, 1.0),
+              for (var i = 0; i <= steps; i++)
+                ((h - bottom + bottom * i / steps) / h).clamp(0.0, 1.0),
+            ],
+          ).createShader(rect);
+        },
+        child: child,
+      );
+}
+
+/// Scroll edge effect do iOS 26 (estilo soft) no rodapé: o conteúdo que
+/// rola sob a tab bar desfoca aos poucos e se dissolve num véu `s0` —
+/// [ProgressiveBlurTop] espelhado. Fica atrás do vidro (no fundo amostrado).
+class ProgressiveBlurBottom extends StatelessWidget {
+  const ProgressiveBlurBottom({required this.height, super.key});
+
+  final double height;
+
+  @override
+  Widget build(BuildContext context) =>
+      RotatedBox(quarterTurns: 2, child: ProgressiveBlurTop(height: height));
 }

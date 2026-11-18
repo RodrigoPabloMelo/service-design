@@ -43,7 +43,8 @@ class CategoryCard extends StatelessWidget {
                   cacheWidth: (width * dpr * 1.6).round(),
                 ),
                 ColoredBox(
-                  color: tone.withValues(alpha: ExploreCategoryTones.overlayAlpha),
+                  color:
+                      tone.withValues(alpha: ExploreCategoryTones.overlayAlpha),
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -129,20 +130,32 @@ class RoleCard extends StatelessWidget {
                     decoration: imageOutline(p, TravelSpace.rCard)),
               ),
               Positioned(
-                top: 8,
-                right: 8,
-                child: AppFrostButton(
-                  size: 36,
-                  semanticLabel: saved ? 'Tirar dos salvos' : 'Salvar',
-                  onPressed: onToggleSave,
-                  icon: AnimatedSwitcher(
-                    duration: exploreMotion(context, 150),
-                    transitionBuilder: (child, a) =>
-                        ScaleTransition(scale: a, child: child),
-                    child: FaIcon(
-                      saved ? TravelIcons.bookmarkSolid : TravelIcons.bookmark,
-                      key: ValueKey(saved),
-                      size: 15,
+                top: 4,
+                right: 4,
+                // Botão visível de 36 num alvo de 44 (HIG).
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: onToggleSave,
+                  child: SizedBox.square(
+                    dimension: TravelSpace.tap,
+                    child: Center(
+                      child: AppFrostButton(
+                        size: 36,
+                        semanticLabel: saved ? 'Tirar dos salvos' : 'Salvar',
+                        onPressed: onToggleSave,
+                        icon: AnimatedSwitcher(
+                          duration: exploreMotion(context, 150),
+                          transitionBuilder: (child, a) =>
+                              ScaleTransition(scale: a, child: child),
+                          child: FaIcon(
+                            saved
+                                ? TravelIcons.bookmarkSolid
+                                : TravelIcons.bookmark,
+                            key: ValueKey(saved),
+                            size: 15,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -151,50 +164,52 @@ class RoleCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                role.shortName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TravelType.cardTitle.copyWith(color: p.ink),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                meta ?? '${role.neighborhood}, ${role.price}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TravelType.footnote
-                    .copyWith(color: p.inkMuted, fontFeatures: TravelType.tabular),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  RecommenderAvatar(role.recommender, size: 20),
-                  const SizedBox(width: 6),
-                  Flexible(
-                    child: Text(
-                      'Indicado por $firstName',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TravelType.footnoteStrong.copyWith(color: p.ink),
+        ExcludeSemantics(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  role.shortName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TravelType.cardTitle.copyWith(color: p.ink),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  meta ?? '${role.neighborhood}, ${role.price}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TravelType.footnote.copyWith(
+                      color: p.inkMuted, fontFeatures: TravelType.tabular),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    RecommenderAvatar(role.recommender, size: 20),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        'Indicado por $firstName',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TravelType.footnoteStrong.copyWith(color: p.ink),
+                      ),
                     ),
+                  ],
+                ),
+                if (reason != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    reason,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TravelType.footnote.copyWith(color: p.inkMuted),
                   ),
                 ],
-              ),
-              if (reason != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  reason,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TravelType.footnote.copyWith(color: p.inkMuted),
-                ),
               ],
-            ],
+            ),
           ),
         ),
       ],

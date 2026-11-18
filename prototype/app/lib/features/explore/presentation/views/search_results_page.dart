@@ -33,6 +33,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
   }
 
   void _editSearch() => Navigator.of(context).push(exploreRoute(
+        context,
         withExplore(context, const SearchPage(editing: true)),
         origin: Alignment.topCenter,
       ));
@@ -87,12 +88,6 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                                   fontFeatures: TravelType.tabular),
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            companyPhrase(s.query.company),
-                            style:
-                                TravelType.subhead.copyWith(color: p.inkMuted),
-                          ),
                         ],
                       ),
                     ),
@@ -113,7 +108,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                         child: results.isEmpty
                             ? _Empty(
                                 key: const ValueKey('vazio'),
-                                hasFilters: s.filters.count > 0,
+                                hasFilters: s.filters.count +
+                                        s.query.categories.length >
+                                    0,
                               )
                             : _ResultList(
                                 key: ValueKey(results.map((r) => r.id).join()),
@@ -148,7 +145,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                     const SizedBox(width: TravelSpace.sm),
                     RoundButton(
                       label: 'Filtros',
-                      badge: s.filters.count,
+                      badge: s.filters.count + s.query.categories.length,
                       onTap: _openFilters,
                       icon: const FaIcon(TravelIcons.sliders),
                     ),
@@ -195,7 +192,7 @@ class _Summary extends StatelessWidget {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: p.s1,
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(TravelSpace.rCard),
                     ),
                   ),
                 ),
@@ -290,8 +287,9 @@ class _Empty extends StatelessWidget {
           SecondaryButton(
             label: hasFilters ? 'Limpar filtros' : 'Mudar a busca',
             onPressed: hasFilters
-                ? cubit.clearFilters
+                ? cubit.clearFiltersAndTypes
                 : () => Navigator.of(context).push(exploreRoute(
+                      context,
                       withExplore(context, const SearchPage(editing: true)),
                     )),
           ),
@@ -306,7 +304,12 @@ class _Empty extends StatelessWidget {
 class FilterSheet extends StatelessWidget {
   const FilterSheet({super.key});
 
-  static const _periods = [null, StopPeriod.manha, StopPeriod.tarde, StopPeriod.noite];
+  static const _periods = [
+    null,
+    StopPeriod.manha,
+    StopPeriod.tarde,
+    StopPeriod.noite
+  ];
   static const _prices = [null, PriceBand.gratis, PriceBand.um, PriceBand.dois];
 
   @override
@@ -327,86 +330,90 @@ class FilterSheet extends StatelessWidget {
               const SizedBox(height: TravelSpace.sm),
               SheetBar(
                 title: 'Filtros',
-                leading: TextAction('Limpar', onTap: cubit.clearFilters),
+                leading:
+                    TextAction('Limpar', onTap: cubit.clearFiltersAndTypes),
                 onClose: () => Navigator.of(context).maybePop(),
               ),
               Flexible(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.only(top: TravelSpace.md),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const _Label('Pra você'),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _ToggleTile(
-                              icon: TravelIcons.rain,
-                              label: 'Coberto',
-                              selected: f.covered,
-                              onTap: cubit.toggleCovered,
+                child: VerticalEdgeFade(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.only(top: TravelSpace.md),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const _Label('Pra você'),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _ToggleTile(
+                                icon: TravelIcons.rain,
+                                label: 'Coberto',
+                                selected: f.covered,
+                                onTap: cubit.toggleCovered,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: TravelSpace.sm),
-                          Expanded(
-                            child: _ToggleTile(
-                              icon: TravelIcons.ticket,
-                              label: 'Grátis',
-                              selected: f.free,
-                              onTap: cubit.toggleFree,
+                            const SizedBox(width: TravelSpace.sm),
+                            Expanded(
+                              child: _ToggleTile(
+                                icon: TravelIcons.ticket,
+                                label: 'Grátis',
+                                selected: f.free,
+                                onTap: cubit.toggleFree,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: TravelSpace.sm),
-                          Expanded(
-                            child: _ToggleTile(
-                              icon: TravelIcons.place,
-                              label: 'Perto do hotel',
-                              selected: f.nearHotel,
-                              onTap: cubit.toggleNearHotel,
+                            const SizedBox(width: TravelSpace.sm),
+                            Expanded(
+                              child: _ToggleTile(
+                                icon: TravelIcons.place,
+                                label: 'Perto do hotel',
+                                selected: f.nearHotel,
+                                onTap: cubit.toggleNearHotel,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: TravelSpace.xl),
-                      const _Label('Período'),
-                      PillSegmented(
-                        labels: const ['Qualquer', 'Manhã', 'Tarde', 'Noite'],
-                        index: _periods.indexOf(f.period),
-                        onChanged: (i) => cubit.setPeriod(_periods[i]),
-                      ),
-                      const SizedBox(height: TravelSpace.xl),
-                      const _Label('Preço'),
-                      PillSegmented(
-                        labels: const ['Qualquer', 'Grátis', r'$', r'$$'],
-                        semanticLabels: const [
-                          'Qualquer preço',
-                          'Grátis',
-                          'Barato',
-                          'Médio'
-                        ],
-                        index: _prices.indexOf(f.price),
-                        onChanged: (i) => cubit.setPrice(_prices[i]),
-                      ),
-                      const SizedBox(height: TravelSpace.xl),
-                      const _Label('Tipo de rolê'),
-                      Wrap(
-                        spacing: TravelSpace.sm,
-                        runSpacing: TravelSpace.sm,
-                        children: [
-                          for (final info in ExploreMock.categories)
-                            ExploreChip(
-                              label: info.label,
-                              onCard: false,
-                              selected:
-                                  s.query.categories.contains(info.category),
-                              leading: CategoryIcon(info.category,
-                                  color: p.ink, size: 22),
-                              onTap: () => cubit.toggleCategory(info.category),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: TravelSpace.xl),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: TravelSpace.xl),
+                        const _Label('Período'),
+                        PillSegmented(
+                          labels: const ['Qualquer', 'Manhã', 'Tarde', 'Noite'],
+                          index: _periods.indexOf(f.period),
+                          onChanged: (i) => cubit.setPeriod(_periods[i]),
+                        ),
+                        const SizedBox(height: TravelSpace.xl),
+                        const _Label('Preço'),
+                        PillSegmented(
+                          labels: const ['Qualquer', 'Grátis', r'$', r'$$'],
+                          semanticLabels: const [
+                            'Qualquer preço',
+                            'Grátis',
+                            'Barato',
+                            'Médio'
+                          ],
+                          index: _prices.indexOf(f.price),
+                          onChanged: (i) => cubit.setPrice(_prices[i]),
+                        ),
+                        const SizedBox(height: TravelSpace.xl),
+                        const _Label('Tipo de rolê'),
+                        Wrap(
+                          spacing: TravelSpace.sm,
+                          runSpacing: TravelSpace.sm,
+                          children: [
+                            for (final info in ExploreMock.categories)
+                              ExploreChip(
+                                label: info.label,
+                                onCard: false,
+                                selected:
+                                    s.query.categories.contains(info.category),
+                                leading: CategoryIcon(info.category,
+                                    color: p.ink, size: 22),
+                                onTap: () =>
+                                    cubit.toggleCategory(info.category),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: TravelSpace.xl),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -418,9 +425,7 @@ class FilterSheet extends StatelessWidget {
                   duration: exploreMotion(context, 260),
                   curve: kExploreEase,
                   builder: (context, v, _) => PrimaryButton(
-                    label: n == 0
-                        ? 'Nenhum rolê com esses filtros'
-                        : 'Mostrar ${rolesCount(v.round())}',
+                    label: 'Mostrar ${rolesCount(v.round())}',
                     onPressed:
                         n == 0 ? null : () => Navigator.of(context).maybePop(),
                   ),

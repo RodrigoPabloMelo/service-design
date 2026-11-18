@@ -102,6 +102,7 @@ class _RolePageState extends State<RolePage> {
 /// Abre o detalhe com a rota da home (Hero da foto).
 void openRole(BuildContext context, Role role, Object heroTag) {
   Navigator.of(context).push(exploreRoute(
+    context,
     withExplore(context, RolePage(role: role, heroTag: heroTag)),
   ));
 }

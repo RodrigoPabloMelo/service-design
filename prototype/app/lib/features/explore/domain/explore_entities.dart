@@ -139,12 +139,15 @@ double distanceKm(GeoPoint a, GeoPoint b) {
   final dLat = rad(b.lat - a.lat);
   final dLng = rad(b.lng - a.lng);
   final h = math.pow(math.sin(dLat / 2), 2) +
-      math.cos(rad(a.lat)) * math.cos(rad(b.lat)) * math.pow(math.sin(dLng / 2), 2);
+      math.cos(rad(a.lat)) *
+          math.cos(rad(b.lat)) *
+          math.pow(math.sin(dLng / 2), 2);
   return 2 * r * math.asin(math.sqrt(h));
 }
 
 /// "2,1 km".
-String formatKm(double km) => '${km.toStringAsFixed(1).replaceAll('.', ',')} km';
+String formatKm(double km) =>
+    '${km.toStringAsFixed(1).replaceAll('.', ',')} km';
 
 /// Até onde conta como "perto do hotel".
 const kNearHotelKm = 4.0;
@@ -172,8 +175,8 @@ List<Role> searchRoles({
   ];
 }
 
-bool _matches(Role r, ExploreTags? t, SearchQuery q, ExploreFilters f,
-    bool isNear) {
+bool _matches(
+    Role r, ExploreTags? t, SearchQuery q, ExploreFilters f, bool isNear) {
   if (t == null) return false;
   final place = q.place;
   if (place != null) {

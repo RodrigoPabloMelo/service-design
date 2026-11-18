@@ -88,8 +88,8 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   /// "Limpar" da busca: volta ao padrão, mantém o card aberto.
-  void clearQuery() =>
-      emit(SearchState(query: defaultQuery, filters: state.filters));
+  void clearQuery() => emit(SearchState(
+      query: defaultQuery, filters: state.filters, step: state.step));
 
   void toggleCovered() => emit(state.copyWith(
       filters: state.filters.copyWith(covered: !state.filters.covered)));
@@ -100,11 +100,18 @@ class SearchCubit extends Cubit<SearchState> {
   void toggleNearHotel() => emit(state.copyWith(
       filters: state.filters.copyWith(nearHotel: !state.filters.nearHotel)));
 
-  void setPeriod(StopPeriod? period) => emit(state.copyWith(
-      filters: state.filters.copyWith(period: () => period)));
+  void setPeriod(StopPeriod? period) => emit(
+      state.copyWith(filters: state.filters.copyWith(period: () => period)));
 
-  void setPrice(PriceBand? price) => emit(
-      state.copyWith(filters: state.filters.copyWith(price: () => price)));
+  void setPrice(PriceBand? price) =>
+      emit(state.copyWith(filters: state.filters.copyWith(price: () => price)));
 
   void clearFilters() => emit(state.copyWith(filters: const ExploreFilters()));
+
+  /// "Limpar" do sheet de filtros: zera também o tipo de rolê (que aparece
+  /// no sheet).
+  void clearFiltersAndTypes() => emit(state.copyWith(
+        filters: const ExploreFilters(),
+        query: state.query.copyWith(categories: const {}),
+      ));
 }

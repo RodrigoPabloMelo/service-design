@@ -7,6 +7,8 @@ import 'package:studio_app/features/explore/presentation/view_models/explore_cub
 import 'package:studio_app/features/explore/presentation/view_models/explore_state.dart';
 import 'package:studio_app/features/explore/presentation/view_models/search_cubit.dart';
 import 'package:studio_app/features/explore/presentation/views/explore_page.dart';
+import 'package:studio_app/features/explore/presentation/widgets/glass_tab_bar.dart';
+import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 
 void main() {
@@ -36,8 +38,8 @@ void main() {
     });
 
     test('perto do hotel vem ordenado pela distância', () {
-      final perto = ExploreCubit.buildSections(15)
-          .firstWhere((s) => s.id == 'perto');
+      final perto =
+          ExploreCubit.buildSections(15).firstWhere((s) => s.id == 'perto');
       final stay = ExploreMock.profile.stayLocation;
       final kms = [
         for (final id in perto.roleIds)
@@ -126,5 +128,34 @@ void main() {
     expect(find.text('Explorar'), findsOneWidget);
     expect(find.text('Salvos'), findsWidgets);
     expect(find.text('Museu'), findsOneWidget);
+  });
+
+  testWidgets('arrastar a seleção da tab bar troca a aba', (tester) async {
+    var picked = 0;
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: SizedBox(
+            width: 330,
+            child: StatefulBuilder(
+              builder: (context, setState) => GlassTabBar(
+                items: const [
+                  GlassTabItem(TravelIcons.compass, 'Explorar'),
+                  GlassTabItem(TravelIcons.bookmark, 'Salvos'),
+                  GlassTabItem(TravelIcons.user, 'Perfil'),
+                ],
+                index: picked,
+                onChanged: (i) => setState(() => picked = i),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ));
+    final start = tester.getCenter(find.text('Explorar'));
+    final end = tester.getCenter(find.text('Perfil'));
+    await tester.dragFrom(start, end - start);
+    await tester.pumpAndSettle();
+    expect(picked, 2);
   });
 }

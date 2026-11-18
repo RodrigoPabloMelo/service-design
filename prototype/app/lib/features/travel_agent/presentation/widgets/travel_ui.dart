@@ -1262,6 +1262,9 @@ class SheetBar extends StatelessWidget {
                     ),
                   ),
           ),
+          // Equilibra o "Limpar" (88) com o X (44): título no centro e o X
+          // encostado na direita, como nos outros sheets.
+          if (lead != null) const SizedBox(width: 88 - TravelSpace.tap),
           Semantics(
             button: true,
             label: 'Fechar',
@@ -1286,8 +1289,6 @@ class SheetBar extends StatelessWidget {
               ),
             ),
           ),
-          // Equilibra o "Limpar" (88) com o X (44): título no centro.
-          if (lead != null) const SizedBox(width: 88 - TravelSpace.tap),
         ],
       ),
     );

@@ -202,8 +202,14 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
 - **Tab bar** (ref. Yelp): pílula de Liquid Glass 64 (raio 32, padding 6),
   3 itens ícone regular + rótulo (Explorar, Salvos, Perfil); ativo com
   pílula de tint sólido `ink` 8% (escuro 14%) que desliza na mola do
-  segmented. Recolhe ao rolar pra baixo, volta ao rolar pra cima. Troca de
-  aba em fade-through (opacidade + escala 0.98, 220 ms).
+  segmented. **Arrastável** (iOS 26/27): a pílula segue o dedo, cresce 6%
+  enquanto segura, tique de haptic ao cruzar aba, encaixa ao soltar
+  projetando a velocidade. Vidro com **véu claro** por cima (branco 58% no
+  claro, `s1` 42% no escuro). Atrás dela, **scroll edge effect** soft:
+  `ProgressiveBlurBottom` (desfoque progressivo + véu `s0` subindo do
+  rodapé), no fundo amostrado pelo vidro. Recolhe ao rolar pra baixo, volta
+  ao rolar pra cima. Troca de aba em fade-through (opacidade + escala 0.98,
+  220 ms).
 
 ## Busca guiada e filtros (ref. Airbnb, no nosso sistema)
 

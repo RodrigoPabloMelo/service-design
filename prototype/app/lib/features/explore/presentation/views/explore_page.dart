@@ -60,8 +60,8 @@ class _ExploreViewState extends State<_ExploreView> {
 
   bool _onScroll(UserScrollNotification n) {
     if (n.metrics.axis != Axis.vertical) return false;
-    final show = n.direction == ScrollDirection.forward ||
-        n.metrics.pixels <= 0;
+    final show =
+        n.direction == ScrollDirection.forward || n.metrics.pixels <= 0;
     final hide = n.direction == ScrollDirection.reverse;
     if (show && !_barVisible) setState(() => _barVisible = true);
     if (hide && _barVisible) setState(() => _barVisible = false);
@@ -105,6 +105,13 @@ class _ExploreViewState extends State<_ExploreView> {
                           ),
                       },
                     ),
+                  // Scroll edge effect atrás da tab bar.
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: ProgressiveBlurBottom(height: 112 + bottom),
+                  ),
                 ],
               ),
             ),
@@ -187,6 +194,7 @@ class _HomeTabState extends State<_HomeTab> {
   void _openSearch() {
     context.read<SearchCubit>().start();
     Navigator.of(context).push(exploreRoute(
+      context,
       withExplore(context, const SearchPage()),
       origin: Alignment.topCenter,
     ));
@@ -195,12 +203,14 @@ class _HomeTabState extends State<_HomeTab> {
   void _openCategory(ExploreCategory c) {
     context.read<SearchCubit>().startWithCategory(c);
     Navigator.of(context).push(exploreRoute(
+      context,
       withExplore(context, const SearchResultsPage()),
     ));
   }
 
   void _openAgent() {
     Navigator.of(context).push(exploreRoute(
+      context,
       const TravelAgentPage(),
       origin: Alignment.topRight,
     ));
@@ -219,8 +229,8 @@ class _HomeTabState extends State<_HomeTab> {
       builder: (context, s) {
         final Widget content = switch (s.status) {
           ExploreStatus.loading => _Skeleton(top: top),
-          ExploreStatus.error => _ErrorView(
-              onRetry: context.read<ExploreCubit>().retry),
+          ExploreStatus.error =>
+            _ErrorView(onRetry: context.read<ExploreCubit>().retry),
           ExploreStatus.ready => _content(context, s, top, bottom),
         };
         return Stack(
@@ -373,8 +383,8 @@ class _Header extends StatelessWidget {
                                   'Recife e Olinda, ${profile.dates}',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TravelType.caption.copyWith(
-                                      color: p.inkMuted, height: 1.3),
+                                  style: TravelType.caption
+                                      .copyWith(color: p.inkMuted, height: 1.3),
                                 ),
                               ],
                             ),
@@ -438,7 +448,8 @@ class _Skeleton extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: TravelSpace.gutter),
               itemCount: 4,
-              separatorBuilder: (_, __) => const SizedBox(width: TravelSpace.sm),
+              separatorBuilder: (_, __) =>
+                  const SizedBox(width: TravelSpace.sm),
               itemBuilder: (_, __) => const SkeletonBox(
                 width: CategoryCard.width,
                 height: CategoryCard.height,
@@ -456,14 +467,15 @@ class _Skeleton extends StatelessWidget {
           ),
           const SizedBox(height: TravelSpace.md),
           SizedBox(
-            height: 340,
+            height: _HomeTabState._rowH,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               physics: const NeverScrollableScrollPhysics(),
               padding:
                   const EdgeInsets.symmetric(horizontal: TravelSpace.gutter),
               itemCount: 2,
-              separatorBuilder: (_, __) => const SizedBox(width: TravelSpace.md),
+              separatorBuilder: (_, __) =>
+                  const SizedBox(width: TravelSpace.md),
               itemBuilder: (_, __) => const RoleCardSkeleton(),
             ),
           ),
