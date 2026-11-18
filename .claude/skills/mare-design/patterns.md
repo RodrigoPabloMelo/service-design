@@ -206,6 +206,11 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
   pesquisa" centralizados, ref. Airbnb) e, à direita, botão circular `s1` 56 com `MareMark` que
   abre o agente como página separada (fade + escala do canto). O agente
   **não é aba**. Conteúdo rola sob `ProgressiveBlurTop`.
+- **Busca compacta ao rolar** (ref. busca compacta do iOS): rolando pra
+  baixo, a pílula encolhe (56 → 44) pra só lupa + "Pesquisar"
+  (`calloutStrong`), com largura do conteúdo e **centrada na tela inteira**
+  — ignora o botão da Maré à direita. Maré vai junto (56 → 44). Rolando pra
+  cima ou no topo, volta. Mesmo controle da tab bar: tudo anda junto.
 - Sem saudação (o designer tirou): logo abaixo da busca, título de seção "Explore rolês" e as categorias em carrossel (cards 116×148,
   raio 24); seções curtas (até 5) em carrossel com título `title3`. A
   seção da hora vem primeiro. Nada de feed infinito.
@@ -220,8 +225,9 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
   projetando a velocidade. Vidro com **véu claro** por cima (branco 58% no
   claro, `s1` 42% no escuro). Atrás dela, **scroll edge effect** soft:
   `ProgressiveBlurBottom` (desfoque progressivo + véu `s0` subindo do
-  rodapé), no fundo amostrado pelo vidro. Recolhe ao rolar pra baixo, volta
-  ao rolar pra cima. Troca de aba em fade-through (opacidade + escala 0.98,
+  rodapé), no fundo amostrado pelo vidro. Recolhe ao rolar pra baixo
+  **saindo inteira da tela, e o blur do rodapé desce junto** (mesma curva,
+  320 ms); volta ao rolar pra cima. Troca de aba em fade-through (opacidade + escala 0.98,
   220 ms).
 
 ## Busca guiada e filtros (ref. Airbnb, no nosso sistema)

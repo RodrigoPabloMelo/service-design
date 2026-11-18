@@ -1,5 +1,6 @@
+import 'dart:ui' show lerpDouble;
+
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studio_app/core/components/glass/app_glass.dart';
@@ -54,8 +55,17 @@ class _ExploreView extends StatefulWidget {
   State<_ExploreView> createState() => _ExploreViewState();
 }
 
-class _ExploreViewState extends State<_ExploreView> {
-  bool _barVisible = true;
+class _ExploreViewState extends State<_ExploreView>
+    with SingleTickerProviderStateMixin {
+  /// 0 = expandido (tab bar à vista, busca larga); 1 = recolhido (tab bar e
+  /// blur do rodapé fora da tela, busca compacta). Um controle só pra tudo
+  /// andar junto, na mesma curva.
+  late final AnimationController _collapse =
+      AnimationController(vsync: this, duration: _kCollapseDuration);
+  late final Animation<double> _collapseT =
+      CurvedAnimation(parent: _collapse, curve: kExploreEase);
+
+  static const _kCollapseDuration = Duration(milliseconds: 320);
 
   static const _tabs = [
     GlassTabItem(TravelIcons.compass, 'Explorar'),
@@ -63,13 +73,49 @@ class _ExploreViewState extends State<_ExploreView> {
     GlassTabItem(TravelIcons.user, 'Perfil'),
   ];
 
-  bool _onScroll(UserScrollNotification n) {
-    if (n.metrics.axis != Axis.vertical) return false;
-    final show =
-        n.direction == ScrollDirection.forward || n.metrics.pixels <= 0;
-    final hide = n.direction == ScrollDirection.reverse;
-    if (show && !_barVisible) setState(() => _barVisible = true);
-    if (hide && _barVisible) setState(() => _barVisible = false);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _collapse.duration = exploreMotion(context, 320);
+  }
+
+  @override
+  void dispose() {
+    _collapse.dispose();
+    super.dispose();
+  }
+
+  void _expand() {
+    if (_collapse.status != AnimationStatus.dismissed &&
+        _collapse.status != AnimationStatus.reverse) {
+      _collapse.reverse();
+    }
+  }
+
+  /// Rolagem acumulada na mesma direção; só troca de estado depois de
+  /// [_kFlipAfter] px, pra tremidinha do dedo não piscar a barra.
+  double _drift = 0;
+  static const _kFlipAfter = 8.0;
+
+  // Pelo delta (e não por `UserScrollNotification`): vale pra toque,
+  // trackpad e roda do mouse.
+  bool _onScroll(ScrollUpdateNotification n) {
+    if (n.metrics.axis != Axis.vertical || n.depth != 0) return false;
+    final delta = n.scrollDelta ?? 0;
+    if (n.metrics.pixels <= 0) {
+      _drift = 0;
+      _expand();
+      return false;
+    }
+    if (delta == 0) return false;
+    _drift = (_drift.sign == delta.sign ? _drift : 0) + delta;
+    if (_drift > _kFlipAfter &&
+        _collapse.status != AnimationStatus.completed &&
+        _collapse.status != AnimationStatus.forward) {
+      _collapse.forward();
+    } else if (_drift < -_kFlipAfter) {
+      _expand();
+    }
     return false;
   }
 
@@ -94,9 +140,9 @@ class _ExploreViewState extends State<_ExploreView> {
                       active: s.tab == tab,
                       child: switch (tab) {
                         ExploreTab.explorar =>
-                          NotificationListener<UserScrollNotification>(
+                          NotificationListener<ScrollUpdateNotification>(
                             onNotification: _onScroll,
-                            child: const _HomeTab(),
+                            child: _HomeTab(collapse: _collapseT),
                           ),
                         ExploreTab.salvos => SavedTab(
                             onExplore: () =>
@@ -108,12 +154,20 @@ class _ExploreViewState extends State<_ExploreView> {
                         ExploreTab.perfil => const ProfileTab(),
                       },
                     ),
-                  // Scroll edge effect atrás da tab bar.
+                  // Scroll edge effect atrás da tab bar; desce e sai junto
+                  // com ela.
                   Positioned(
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    child: ProgressiveBlurBottom(height: 112 + bottom),
+                    child: AnimatedBuilder(
+                      animation: _collapseT,
+                      builder: (context, child) => Transform.translate(
+                        offset: Offset(0, _collapseT.value * (112 + bottom)),
+                        child: child,
+                      ),
+                      child: ProgressiveBlurBottom(height: 112 + bottom),
+                    ),
                   ),
                 ],
               ),
@@ -123,19 +177,28 @@ class _ExploreViewState extends State<_ExploreView> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                     TravelSpace.xl, 0, TravelSpace.xl, TravelSpace.md + bottom),
-                child: AnimatedSlide(
-                  offset: _barVisible || s.tab != ExploreTab.explorar
-                      ? Offset.zero
-                      : const Offset(0, 1.6),
-                  duration: exploreMotion(context, 320),
-                  curve: kExploreEase,
+                // Recolhida, a barra desce a própria altura + a margem até a
+                // borda + folga do brilho do vidro: sai inteira da tela.
+                child: AnimatedBuilder(
+                  animation: _collapseT,
+                  builder: (context, child) => Transform.translate(
+                    offset: Offset(
+                      0,
+                      _collapseT.value *
+                          (GlassTabBar.height +
+                              TravelSpace.md +
+                              bottom +
+                              TravelSpace.lg),
+                    ),
+                    child: child,
+                  ),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 340),
                     child: GlassTabBar(
                       items: _tabs,
                       index: s.tab.index,
                       onChanged: (i) {
-                        setState(() => _barVisible = true);
+                        _expand();
                         cubit.selectTab(ExploreTab.values[i]);
                       },
                     ),
@@ -184,7 +247,10 @@ class _FadeThrough extends StatelessWidget {
 // ── Aba Explorar ─────────────────────────────────────────────────────────
 
 class _HomeTab extends StatefulWidget {
-  const _HomeTab();
+  const _HomeTab({required this.collapse});
+
+  /// 0 = busca larga; 1 = pílula compacta (ver `_ExploreViewState`).
+  final Animation<double> collapse;
 
   @override
   State<_HomeTab> createState() => _HomeTabState();
@@ -246,13 +312,24 @@ class _HomeTabState extends State<_HomeTab> {
               top: 0,
               left: 0,
               right: 0,
-              child: ProgressiveBlurTop(height: top + 84),
+              child: AnimatedBuilder(
+                animation: widget.collapse,
+                builder: (context, _) => ProgressiveBlurTop(
+                  height: top +
+                      lerpDouble(84, 84 - (_Header.hFull - _Header.hCompact),
+                          widget.collapse.value)!,
+                ),
+              ),
             ),
             Positioned(
               top: top + 8,
               left: TravelSpace.gutter,
               right: TravelSpace.gutter,
-              child: _Header(onSearch: _openSearch, onAgent: _openAgent),
+              child: _Header(
+                collapse: widget.collapse,
+                onSearch: _openSearch,
+                onAgent: _openAgent,
+              ),
             ),
           ],
         );
@@ -339,55 +416,135 @@ class _HomeTabState extends State<_HomeTab> {
   }
 }
 
-/// Topo: pílula de busca no meio e a Maré à direita.
+/// Topo: pílula de busca e a Maré à direita. Ao rolar pra baixo a pílula
+/// encolhe pra lupa + "Pesquisar", centrada na **tela inteira** — ignora o
+/// botão da Maré, como a busca compacta do iOS.
 class _Header extends StatelessWidget {
-  const _Header({required this.onSearch, required this.onAgent});
+  const _Header({
+    required this.collapse,
+    required this.onSearch,
+    required this.onAgent,
+  });
 
+  final Animation<double> collapse;
   final VoidCallback onSearch;
   final VoidCallback onAgent;
+
+  static const hFull = 56.0;
+  static const hCompact = TravelSpace.tap;
+  static const _iconSize = 16.0;
+  static const _iconGap = 10.0;
+  static const _compactPad = TravelSpace.lg;
 
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
-    return Row(
-      children: [
-        Expanded(
-          child: Semantics(
-            button: true,
-            label: 'Inicie sua pesquisa',
-            excludeSemantics: true,
-            onTap: onSearch,
-            child: Pressable(
-              onTap: onSearch,
-              child: SizedBox(
-                height: 56,
-                child: Stack(
+    final fullStyle = TravelType.headline.copyWith(color: p.ink, height: 1.2);
+    final compactStyle =
+        TravelType.calloutStrong.copyWith(color: p.ink, height: 1.2);
+    final labelW = (TextPainter(
+      text: TextSpan(text: 'Pesquisar', style: compactStyle),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout())
+        .width;
+    final compactW = _compactPad * 2 + _iconSize + _iconGap + labelW + 1;
+
+    return LayoutBuilder(
+      builder: (context, box) => AnimatedBuilder(
+        animation: collapse,
+        builder: (context, _) {
+          final t = collapse.value;
+          final w = box.maxWidth;
+          final h = lerpDouble(hFull, hCompact, t)!;
+          // Centro da tela: o header começa no gutter, então o centro do
+          // header é o centro da tela.
+          final fullW = w - hFull - TravelSpace.sm;
+          final pillW = lerpDouble(fullW, compactW, t)!;
+          final pillLeft = lerpDouble(0, (w - compactW) / 2, t)!;
+          return SizedBox(
+            height: h,
+            child: Stack(
+              children: [
+                Positioned(
+                  left: pillLeft,
+                  top: 0,
+                  width: pillW,
+                  height: h,
+                  child: _pill(p, h, t, fullStyle, compactStyle),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  width: h,
+                  height: h,
+                  child: _agentButton(p, h),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _pill(
+    TravelPalette p,
+    double h,
+    double t,
+    TextStyle fullStyle,
+    TextStyle compactStyle,
+  ) {
+    return Semantics(
+      button: true,
+      label: 'Inicie sua pesquisa',
+      excludeSemantics: true,
+      onTap: onSearch,
+      child: Pressable(
+        onTap: onSearch,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Hero(
+                tag: kSearchHero,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: p.s1,
+                    borderRadius: BorderRadius.circular(h / 2),
+                  ),
+                ),
+              ),
+            ),
+            // Ref. Airbnb: lupa + rótulo no centro. Rótulo longo some e o
+            // curto entra no mesmo lugar, em cross-fade com o encolher.
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: _compactPad),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Positioned.fill(
-                      child: Hero(
-                        tag: kSearchHero,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: p.s1,
-                            borderRadius:
-                                BorderRadius.circular(TravelSpace.rComposer),
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Ref. Airbnb: lupa + "Inicie sua pesquisa" no centro.
-                    Center(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                    FaIcon(TravelIcons.search, size: _iconSize, color: p.ink),
+                    const SizedBox(width: _iconGap),
+                    Flexible(
+                      child: Stack(
+                        alignment: Alignment.centerLeft,
                         children: [
-                          FaIcon(TravelIcons.search, size: 16, color: p.ink),
-                          const SizedBox(width: 10),
-                          Flexible(
+                          Opacity(
+                            opacity: (1 - t * 2).clamp(0.0, 1.0),
                             child: Text('Inicie sua pesquisa',
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TravelType.headline
-                                    .copyWith(color: p.ink, height: 1.2)),
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: fullStyle),
+                          ),
+                          Opacity(
+                            opacity: (t * 2 - 1).clamp(0.0, 1.0),
+                            child: Text('Pesquisar',
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: compactStyle),
                           ),
                         ],
                       ),
@@ -396,26 +553,26 @@ class _Header extends StatelessWidget {
                 ),
               ),
             ),
-          ),
+          ],
         ),
-        const SizedBox(width: TravelSpace.sm),
-        Semantics(
-          button: true,
-          label: 'Abrir a Maré',
-          excludeSemantics: true,
-          onTap: onAgent,
-          child: Pressable(
-            onTap: onAgent,
-            child: Container(
-              width: 56,
-              height: 56,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(color: p.s1, shape: BoxShape.circle),
-              child: const MareMark(size: 28),
-            ),
-          ),
+      ),
+    );
+  }
+
+  Widget _agentButton(TravelPalette p, double h) {
+    return Semantics(
+      button: true,
+      label: 'Abrir a Maré',
+      excludeSemantics: true,
+      onTap: onAgent,
+      child: Pressable(
+        onTap: onAgent,
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(color: p.s1, shape: BoxShape.circle),
+          child: MareMark(size: h / 2),
         ),
-      ],
+      ),
     );
   }
 }
