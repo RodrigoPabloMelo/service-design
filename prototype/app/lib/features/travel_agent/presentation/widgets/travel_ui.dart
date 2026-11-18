@@ -321,6 +321,38 @@ abstract final class TravelIcons {
       fontFamily: _brands,
       fontPackage: _pkg,
       fontFamilyFallback: _keep)); // google
+  static const apple = FaIconData(IconData(0xf179,
+      fontFamily: _brands,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // apple
+  static const envelope = FaIconData(IconData(0xf0e0,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // envelope
+  static const bell = FaIconData(IconData(0xf0f3,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // bell
+  static const thumbsUp = FaIconData(IconData(0xf164,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // thumbs-up
+  static const thumbsDown = FaIconData(IconData(0xf165,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // thumbs-down
+  static const wallet = FaIconData(IconData(0xf555,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // wallet
+  static const creditCard = FaIconData(IconData(0xf09d,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // credit-card
+  static const arrowUpRight = FaIconData(IconData(0xf08e,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // arrow-up-right-from-square
 }
 
 // ── Categoria: mesma cor + glifo + rótulo em todo lugar (similaridade) ─────

@@ -161,9 +161,13 @@ class PlaceDetail extends StatelessWidget {
         // Selo e entorno.
         const SizedBox(height: TravelSpace.xl),
         _g(const SectionHeader('Selo e entorno')),
-        _g(_SealBlock(verifiedAt: role.verifiedAt)),
+        _g(_SealBlock(seal: role.seal, verifiedAt: role.verifiedAt)),
         const SizedBox(height: TravelSpace.sm),
         _g(_GroupedChecks(items: role.surroundings)),
+        if (role.access != null) ...[
+          const SizedBox(height: TravelSpace.sm),
+          _g(RouteAccessBlock(access: role.access!)),
+        ],
 
         // Fotos — carrossel M3 Expressive (multi-browse).
         const SizedBox(height: TravelSpace.xl),
@@ -211,6 +215,7 @@ class DetailHeader extends StatelessWidget {
     required this.title,
     required this.onBack,
     this.backLabel = 'Voltar pra conversa',
+    this.trailing,
     super.key,
   });
 
@@ -218,6 +223,9 @@ class DetailHeader extends StatelessWidget {
   final String title;
   final VoidCallback onBack;
   final String backLabel;
+
+  /// Ação à direita (ex.: salvar), no mesmo círculo de 44 do voltar.
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -296,6 +304,8 @@ class DetailHeader extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (trailing != null)
+                  Align(alignment: Alignment.centerRight, child: trailing),
               ],
             ),
           );
@@ -445,10 +455,13 @@ class _TipCard extends StatelessWidget {
   }
 }
 
-/// "Rolê seguro" — bloco próprio, separado da lista de checks.
+/// Selo de segurança — bloco próprio, separado da lista de checks. Diz
+/// quem avaliou, para que situações e quando; não promete segurança.
+/// Nome e critérios são hipótese (Q-10).
 class _SealBlock extends StatelessWidget {
-  const _SealBlock({required this.verifiedAt});
+  const _SealBlock({required this.seal, required this.verifiedAt});
 
+  final RoleSeal seal;
   final String verifiedAt;
 
   @override
@@ -456,6 +469,7 @@ class _SealBlock extends StatelessWidget {
     final p = TravelPalette.of(context);
     return SolidBlock(
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const _RowIcon(TravelIcons.safety),
           const SizedBox(width: TravelSpace.md),
@@ -463,10 +477,51 @@ class _SealBlock extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Rolê seguro',
+                Text('Selo Rolê Seguro',
                     style: TravelType.subheadStrong.copyWith(color: p.ink)),
+                const SizedBox(height: 2),
                 Text(
-                  'Dados verificados em $verifiedAt',
+                  'Avaliado para: ${seal.checks.join(', ').toLowerCase()}',
+                  style: TravelType.footnote.copyWith(color: p.ink),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${seal.by}, em $verifiedAt',
+                  style: TravelType.footnote.copyWith(color: p.inkMuted),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Acesso no trajeto sugerido (chuva): descreve a rota com fonte e data.
+class RouteAccessBlock extends StatelessWidget {
+  const RouteAccessBlock({required this.access, super.key});
+
+  final RouteAccess access;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    return SolidBlock(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _RowIcon(TravelIcons.route),
+          const SizedBox(width: TravelSpace.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(access.text,
+                    style: TravelType.subheadStrong.copyWith(color: p.ink)),
+                const SizedBox(height: 2),
+                Text(
+                  '${access.source}, em ${access.checkedAt}',
                   style: TravelType.footnote.copyWith(color: p.inkMuted),
                 ),
               ],

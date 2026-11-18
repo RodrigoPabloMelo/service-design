@@ -48,15 +48,6 @@ void main() {
     });
 
     blocTest<ExploreCubit, ExploreState>(
-      'salvar e tirar dos salvos',
-      build: ExploreCubit.new,
-      act: (c) => c
-        ..toggleSaved('paco-do-frevo')
-        ..toggleSaved('paco-do-frevo'),
-      verify: (c) => expect(c.state.saved, isEmpty),
-    );
-
-    blocTest<ExploreCubit, ExploreState>(
       'erro → tentar de novo → carrega',
       build: () => ExploreCubit(scenario: ExploreScenario.erro),
       act: (c) => c.retry(),

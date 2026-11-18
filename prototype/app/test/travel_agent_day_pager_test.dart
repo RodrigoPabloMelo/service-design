@@ -26,6 +26,8 @@ void main() {
     }
 
     cubit.send('Organizar meus 8 rolês');
+    // Etapa 04: datas e hospedagem antes do roteiro.
+    cubit.submitTrip(dates: '14 a 16 nov', stayId: 'boa-viagem');
     cubit.skipThinking();
     await frames();
     cubit.openItinerary();

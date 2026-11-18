@@ -8,7 +8,9 @@ import 'package:studio_app/features/explore/domain/explore_entities.dart';
 import 'package:studio_app/features/explore/presentation/view_models/explore_cubit.dart';
 import 'package:studio_app/features/explore/presentation/view_models/explore_state.dart';
 import 'package:studio_app/features/explore/presentation/view_models/search_cubit.dart';
+import 'package:studio_app/features/explore/presentation/views/profile_tab.dart';
 import 'package:studio_app/features/explore/presentation/views/role_page.dart';
+import 'package:studio_app/features/explore/presentation/views/saved_tab.dart';
 import 'package:studio_app/features/explore/presentation/views/search_page.dart';
 import 'package:studio_app/features/explore/presentation/views/search_results_page.dart';
 import 'package:studio_app/features/explore/presentation/widgets/explore_cards.dart';
@@ -18,6 +20,9 @@ import 'package:studio_app/features/travel_agent/presentation/views/travel_agent
 import 'package:studio_app/features/travel_agent/presentation/widgets/mare_mark.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
+import 'package:studio_app/features/traveler/presentation/view_models/traveler_cubit.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/account_sheet.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/transfer_sheets.dart';
 
 /// Tela inicial "Explorar": busca guiada + Maré no topo, categorias e
 /// seções curtas que mudam com a hora e o perfil. Tab bar de vidro com
@@ -93,16 +98,14 @@ class _ExploreViewState extends State<_ExploreView> {
                             onNotification: _onScroll,
                             child: const _HomeTab(),
                           ),
-                        ExploreTab.salvos => const _Placeholder(
-                            icon: TravelIcons.bookmark,
-                            title: 'Salvos',
-                            line: 'Suas pastas de rolês vão ficar aqui.',
+                        ExploreTab.salvos => SavedTab(
+                            onExplore: () =>
+                                cubit.selectTab(ExploreTab.explorar),
+                            onOrganize: () => Navigator.of(context).push(
+                              exploreRoute(context, const TravelAgentPage()),
+                            ),
                           ),
-                        ExploreTab.perfil => const _Placeholder(
-                            icon: TravelIcons.user,
-                            title: 'Perfil',
-                            line: 'Em breve.',
-                          ),
+                        ExploreTab.perfil => const ProfileTab(),
                       },
                     ),
                   // Scroll edge effect atrás da tab bar.
@@ -223,8 +226,7 @@ class _HomeTabState extends State<_HomeTab> {
     return BlocBuilder<ExploreCubit, ExploreState>(
       buildWhen: (a, b) =>
           a.status != b.status ||
-          a.sections != b.sections ||
-          a.saved != b.saved,
+          a.sections != b.sections,
       builder: (context, s) {
         final Widget content = switch (s.status) {
           ExploreStatus.loading => _Skeleton(top: top),
@@ -260,11 +262,23 @@ class _HomeTabState extends State<_HomeTab> {
 
   Widget _content(
       BuildContext context, ExploreState s, double top, double bottom) {
-    final cubit = context.read<ExploreCubit>();
     final stay = ExploreMock.profile.stayLocation;
-    return ListView(
+    return BlocBuilder<TravelerCubit, TravelerState>(
+      bloc: travelerCubit(),
+      buildWhen: (a, b) => a.saved != b.saved ||
+          a.transfer != b.transfer ||
+          a.outingDone != b.outingDone,
+      builder: (context, traveler) => ListView(
       padding: EdgeInsets.only(top: top + 80, bottom: 120 + bottom),
       children: [
+        // Cena 6: no dia, o transfer pago vira atalho no topo (D-26).
+        if (traveler.transfer != null && !traveler.outingDone) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: TravelSpace.gutter),
+            child: TransferBookedCard(today: true),
+          ),
+          const SizedBox(height: TravelSpace.xl),
+        ],
         Reveal(
           index: 0,
           child: Column(
@@ -305,13 +319,13 @@ class _HomeTabState extends State<_HomeTab> {
                       role: role,
                       width: _cardW,
                       heroTag: tag,
-                      saved: s.saved.contains(role.id),
+                      saved: traveler.saved.contains(role.id),
                       meta: section.showDistance
                           ? 'a ${formatKm(distanceKm(stay, role.location))} '
                               'do hotel'
                           : null,
                       onTap: () => openRole(context, role, tag),
-                      onToggleSave: () => cubit.toggleSaved(role.id),
+                      onToggleSave: () => saveRole(context, role.id),
                     );
                   },
                 ),
@@ -320,6 +334,7 @@ class _HomeTabState extends State<_HomeTab> {
           ),
         ],
       ],
+      ),
     );
   }
 }
@@ -489,35 +504,6 @@ class _ErrorView extends StatelessWidget {
             SecondaryButton(label: 'Tentar de novo', onPressed: onRetry),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Placeholder extends StatelessWidget {
-  const _Placeholder({
-    required this.icon,
-    required this.title,
-    required this.line,
-  });
-
-  final FaIconData icon;
-  final String title;
-  final String line;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = TravelPalette.of(context);
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FaIcon(icon, size: 28, color: p.inkMuted),
-          const SizedBox(height: TravelSpace.md),
-          Text(title, style: TravelType.title2.copyWith(color: p.ink)),
-          const SizedBox(height: TravelSpace.xs),
-          Text(line, style: TravelType.subhead.copyWith(color: p.inkMuted)),
-        ],
       ),
     );
   }

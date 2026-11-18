@@ -21,6 +21,8 @@ import 'package:studio_app/features/travel_agent/presentation/widgets/short_vide
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/usage_sheet.dart';
+import 'package:studio_app/features/traveler/presentation/view_models/traveler_cubit.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/mare_notification.dart';
 
 /// Etapa 04 do blueprint — "Organiza locais com o agente".
 ///
@@ -45,8 +47,25 @@ class TravelAgentPage extends StatelessWidget {
     return Theme(
       data: travelTheme(context),
       child: BlocProvider(
-        create: (_) => TravelAgentCubit(scenario: scenario),
-        child: const _TravelAgentView(),
+        create: (_) {
+          // Cena 5: já em Recife, conta e viagem existem.
+          if (scenario == TravelAgentScenario.chuva) {
+            travelerCubit().ensureMoment();
+          }
+          return TravelAgentCubit(scenario: scenario);
+        },
+        child: scenario == TravelAgentScenario.chuva
+            ? Builder(
+                builder: (context) => MareNotificationOverlay(
+                  title: 'Chuva às ${TravelMock.rainAt} em Casa Forte',
+                  body: 'O '
+                      '${TravelMock.roleById(TravelMock.swapFromId).shortName}'
+                      ' é ao ar livre. Tenho uma troca coberta pra você.',
+                  onTap: context.read<TravelAgentCubit>().startRainAlert,
+                  child: const _TravelAgentView(),
+                ),
+              )
+            : const _TravelAgentView(),
       ),
     );
   }

@@ -7,6 +7,7 @@ import 'package:studio_app/features/travel_agent/presentation/widgets/place_deta
 import 'package:studio_app/features/travel_agent/presentation/widgets/short_video_player.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/account_sheet.dart';
 
 /// Detalhe do rolê aberto a partir da home ou da busca. Reaproveita o card
 /// do rolê do agente ([PlaceDetail]) em tela cheia, com a foto em Hero.
@@ -77,6 +78,7 @@ class _RolePageState extends State<RolePage> {
                 title: 'Rolê de local',
                 backLabel: 'Voltar',
                 onBack: () => Navigator.of(context).maybePop(),
+                trailing: SaveRoleButton(roleId: role.id),
               ),
             ),
             if (player != null)

@@ -197,6 +197,14 @@ class RoleCard extends StatelessWidget {
                         style: TravelType.footnoteStrong.copyWith(color: p.ink),
                       ),
                     ),
+                    // Selo de segurança visível já no card (UX.md §5, Q-10).
+                    const SizedBox(width: TravelSpace.sm),
+                    FaIcon(TravelIcons.safety, size: 11, color: p.inkMuted),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Selo',
+                      style: TravelType.footnote.copyWith(color: p.inkMuted),
+                    ),
                   ],
                 ),
                 if (reason != null) ...[
@@ -217,7 +225,7 @@ class RoleCard extends StatelessWidget {
     return Semantics(
       button: true,
       label: '${role.shortName}, ${role.neighborhood}. '
-          'Indicado por $firstName. ${reason ?? ''}',
+          'Indicado por $firstName. Com selo Rolê Seguro. ${reason ?? ''}',
       onTap: onTap,
       child: Pressable(
         onTap: onTap,

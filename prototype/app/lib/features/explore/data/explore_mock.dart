@@ -336,6 +336,20 @@ abstract final class ExploreMock {
       reason: 'Petisco de mercado com quem é do bairro',
       priceFrom: 25,
     ),
+    'box-vitoria-regia': ExploreTags(
+      categories: {ExploreCategory.cultura},
+      periods: {StopPeriod.tarde, StopPeriod.noite},
+      days: _all,
+      reason: 'Bar de bairro ao ar livre, na praça do Burle Marx',
+      priceFrom: 10,
+    ),
+    'parraxaxa-casa-forte': ExploreTags(
+      categories: {ExploreCategory.restaurantes},
+      periods: {StopPeriod.tarde, StopPeriod.noite},
+      days: _all,
+      reason: 'Comida pernambucana em salão coberto',
+      priceFrom: 45,
+    ),
     'paco-do-frevo': ExploreTags(
       categories: {ExploreCategory.museu, ExploreCategory.cultura},
       periods: {StopPeriod.manha, StopPeriod.tarde},

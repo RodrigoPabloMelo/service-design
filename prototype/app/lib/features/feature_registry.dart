@@ -6,6 +6,8 @@ import 'package:studio_app/features/explore/data/explore_mock.dart';
 import 'package:studio_app/features/explore/presentation/views/explore_page.dart';
 import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/travel_agent/presentation/views/travel_agent_page.dart';
+import 'package:studio_app/features/traveler/presentation/views/rating_moment_page.dart';
+import 'package:studio_app/features/traveler/presentation/views/wallet_page.dart';
 
 /// Registro das telas visíveis no loop de design.
 ///
@@ -261,6 +263,34 @@ final designScreens = <RegisteredScreen>[
         ),
       ),
     ],
+  ),
+  // ── Narrativa: momentos durante e depois da viagem ──
+  RegisteredScreen(
+    title: 'Alerta de chuva',
+    route: '/agente/chuva',
+    flow: 'Durante a viagem',
+    descricao: 'Cena 5: já em Recife, chega a notificação de chuva. A Maré '
+        'propõe trocar o bar ao ar livre por um coberto (com acesso sem '
+        'alagamento conhecido) e oferece o transfer pago no app (D-26).',
+    builder: (_) =>
+        const TravelAgentPage(scenario: TravelAgentScenario.chuva),
+  ),
+  RegisteredScreen(
+    title: 'Avaliar a saída',
+    route: '/avaliar',
+    flow: 'Depois da viagem',
+    next: const ['/carteira'],
+    descricao: 'Cena 8: notificação pede avaliação; rolê e transfer em 1 ou '
+        '2 toques; pontos pelo ato de avaliar (hipótese, Q-27).',
+    builder: (_) => const RatingMomentPage(),
+  ),
+  RegisteredScreen(
+    title: 'Carteira de pontos',
+    route: '/carteira',
+    flow: 'Depois da viagem',
+    descricao: 'Saldo, cupons do próprio serviço e histórico (hipótese, '
+        'Q-27/Q-28).',
+    builder: (_) => const WalletPage(),
   ),
 ];
 

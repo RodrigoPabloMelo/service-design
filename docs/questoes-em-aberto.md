@@ -1,6 +1,6 @@
 # Questões em aberto
 
-> **Atualizado:** 2026-11-09 · **Origem:** levantadas na documentação do ciclo 1 (conversa com Rodrigo, 2026-10-16); `Q-27` a `Q-32` no rascunho do blueprint (2026-11-04)
+> **Atualizado:** 2026-11-18 · **Origem:** levantadas na documentação do ciclo 1 (conversa com Rodrigo, 2026-10-16); `Q-27` a `Q-32` no rascunho do blueprint (2026-11-04)
 > **Status:** `aberta` · `em discussão` · `resolvida` (→ registrar em [decisoes.md](decisoes.md) com o `D-xx`)
 > **Prioridade:** **alta** = bloqueia ideação/blueprint · **média** = precisa antes do protótipo · **baixa** = pode esperar
 
@@ -46,6 +46,7 @@
 | [Q-36](#q-36) | Prestadores podem pedir para entrar na plataforma? | Curadoria/Confiança | alta | aberta |
 | [Q-37](#q-37) | Salvos em pastas | UX/Ecossistema | média | aberta |
 | [Q-38](#q-38) | Categorias da home x categorias do agente | Conteúdo | média | aberta |
+| [Q-39](#q-39) | Dado de alagamento no trajeto sugerido | Segurança/Dados | média | aberta |
 
 ---
 
@@ -91,6 +92,7 @@ Ref.: D-02, D-08. Qual percentual/modelo? Quando o rolê é pago **direto no loc
 ### Q-05 · O que se paga no app x no local
 Ref.: D-08. Quais tipos de rolê entram como pacote/reserva no app e quais ficam avulsos? Bares e cafés têm comissão?
 **2026-11-04 (D-13):** não há reserva integrada no app. Resta saber: o que ainda se paga no app (só os planos?) e como fica o benefício "reservas pré-feitas" de D-01 (feito à mão pelo grupo? sai do plano?).
+**2026-11-18 (D-26):** o transfer com motorista parceira se paga no app. Segue aberto o resto (planos, rolês em grupo, meio de pagamento).
 
 <a id="q-06"></a>
 ### Q-06 · Curadoria: critérios e operação
@@ -112,6 +114,7 @@ Ref.: D-03. A pesquisa diz que **avaliações de outras mulheres** são as mais 
 <a id="q-10"></a>
 ### Q-10 · Selo de segurança
 Ref.: D-06. O selo é dado pela comunidade, pela curadoria ou pelos dois? Quais critérios (sozinha, em dupla, à noite, transporte de volta)? É por lugar, por horário ou por trajeto? Como evitar estigmatizar bairros periféricos (conflito com ODS 8.9 / 11.7)?
+**2026-11-18 — protótipo (hipótese):** o selo aparece no card ("Selo") e no detalhe como "Selo Rolê Seguro", dizendo quem avaliou (moradoras e curadoria), para quais situações (ir sozinha, chegar e sair à noite) e a data. Nome, quem concede e critérios seguem em aberto.
 
 <a id="q-11"></a>
 ### Q-11 · IA de roteiro
@@ -183,6 +186,7 @@ Não há identidade visual. Quando houver, registrar num `DESIGN.md` na raiz (to
 <a id="q-27"></a>
 ### Q-27 · Programa de pontos/moedas da viajante
 Ref.: [blueprint rascunho](../diagrams/2026-11-04-blueprint-rascunho.md) etapas 8–9, D-04, `Q-07`, `Q-17`. No panorama, os descontos funcionam como pontos/moedas trocáveis por serviços e cupons. Falta definir: o que gera pontos (visitar, avaliar, indicar amiga, completar roteiro?); quanto vale cada ação; se expiram; quem financia o desconto (app, parceiro, os dois); se locais e viajantes usam a mesma moeda. Risco: premiar a avaliação pode enviesar notas ou gerar avaliações falsas (`Q-13`). Premiar o ato de avaliar, não a nota?
+**2026-11-18 — protótipo (hipótese):** 20 pontos por resposta (rolê e transfer), boa ou ruim; carteira com cupons do próprio serviço (R$ 5 no transfer, 10% num rolê em grupo). Valores de mock.
 
 <a id="q-28"></a>
 ### Q-28 · Parceiros de benefício
@@ -191,6 +195,7 @@ Ref.: blueprint etapa 9. O panorama cita cupons em 99/Uber, restaurantes locais 
 <a id="q-29"></a>
 ### Q-29 · Agente de IA: calendário e notificações
 Ref.: `D-07`, `Q-11`, blueprint etapas 4 e 6. No panorama, o agente trabalha com mapa e calendário integrados e manda notificações durante a viagem. O calendário é exportado (.ics) ou sincronizado (Google/Apple)? Quais gatilhos de reajuste ("necessidades multifatoriais": clima, horário, distância, noite/volta, cansaço, orçamento)? O ajuste é automático ou sempre pede confirmação? Qual o limite de notificações por dia?
+**2026-11-18 — protótipo (hipótese):** duas notificações simuladas: alerta de chuva no dia do rolê (abre a troca no chat) e pedido de avaliação depois da saída.
 
 <a id="q-30"></a>
 ### Q-30 · Como o app sabe que ela foi ao rolê
@@ -228,3 +233,6 @@ Ref.: D-24, D-16, `Q-22`, `F-11`, `F-12`. A aba Salvos organiza rolês em pastas
 ### Q-38 · Categorias da home x categorias do agente
 Ref.: D-24, D-07. A home usa 6 categorias (restaurantes, café, museu, cultura, arte, história); o agente e o mapa usam 5 tipos (comida, cultura, noite, natureza, praia). Qual é a taxonomia do serviço? Um rolê pode ter várias? "Noite", "praia" e "natureza" entram na home? Hoje não há **café** curado no mock: a categoria aparece vazia, de propósito (D-07).
 
+<a id="q-39"></a>
+### Q-39 · Alagamento no trajeto sugerido
+Ref.: D-06, D-07, `Q-11`, `Q-10`, narrativa do serviço (momento 5). Na troca por chuva, a Maré diz que o trajeto sugerido não tem pontos de alagamento conhecidos. De onde vem esse dado (relatos de moradoras, curadoria, Defesa Civil/Prefeitura, app de trânsito)? Com que frequência é atualizado? Como dizer isso sem prometer segurança e sem rotular bairro (UX.md §6)? No protótipo o texto descreve a rota com **fonte e data** ("Relatos de moradoras, em 05 nov") — **(hipótese)**.

@@ -5,6 +5,9 @@ import 'package:equatable/equatable.dart';
 import 'package:studio_app/core/utils/extensions/cubit_extension.dart';
 import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
+import 'package:studio_app/features/traveler/data/traveler_mock.dart';
+import 'package:studio_app/features/traveler/domain/traveler_entities.dart';
+import 'package:studio_app/features/traveler/presentation/view_models/traveler_cubit.dart';
 
 part 'travel_agent_state.dart';
 
@@ -13,8 +16,14 @@ part 'travel_agent_state.dart';
 /// Loop de design: respostas scriptadas com [Timer]s (cancelados no
 /// [close]). No loop de dev, troca-se só a injeção (mock → repositório).
 class TravelAgentCubit extends Cubit<TravelAgentState> {
-  TravelAgentCubit({TravelAgentScenario scenario = TravelAgentScenario.padrao})
-      : super(_initial(scenario));
+  TravelAgentCubit({
+    TravelAgentScenario scenario = TravelAgentScenario.padrao,
+    TravelerCubit? traveler,
+  })  : traveler = traveler ?? travelerCubit(),
+        super(_initial(scenario));
+
+  /// Conta, viagem e transfer da viajante (compartilhado com o app).
+  final TravelerCubit traveler;
 
   final List<Timer> _timers = [];
   int _seq = 0;
@@ -67,6 +76,29 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
             ),
           ],
         );
+      case TravelAgentScenario.chuva:
+        return TravelAgentState(
+          scenario: scenario,
+          phase: AgentPhase.itinerary,
+          savedRoleIds: saved,
+          days: TravelMock.itinerary,
+          dayIndex: TravelMock.itinerary
+              .indexWhere((d) => d.id == TravelMock.swapDayId),
+          calendarStatus: CalendarStatus.connected,
+          messages: const [
+            AgentMessage(
+              id: 'c0',
+              author: MessageAuthor.agent,
+              kind: MessageKind.text,
+              text: 'Seu roteiro de 14 a 16 nov, salvo na agenda.',
+            ),
+            AgentMessage(
+              id: 'c1',
+              author: MessageAuthor.agent,
+              kind: MessageKind.itinerary,
+            ),
+          ],
+        );
       case TravelAgentScenario.carregando:
         return TravelAgentState(
           scenario: scenario,
@@ -111,6 +143,55 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
   void send(String text) {
     if (state.phase == AgentPhase.thinking || text.trim().isEmpty) return;
     if (state.messagesLeft <= 0) return;
+    final user = AgentMessage(
+      id: _id(),
+      author: MessageAuthor.user,
+      kind: MessageKind.text,
+      text: text.trim(),
+    );
+    // Etapa 04: o roteiro precisa das datas e da hospedagem dela. Pergunta
+    // antes (D-23) — sem gastar mensagem.
+    if (_willBuildItinerary(text) && traveler.state.trip == null) {
+      _pending = text;
+      safeEmit(state.copyWith(
+        clearDetail: true,
+        messages: _with([
+          user,
+          AgentMessage(
+            id: _id(),
+            author: MessageAuthor.agent,
+            kind: MessageKind.text,
+            text: 'Antes de montar: quando você vai e onde vai ficar?',
+          ),
+          AgentMessage(
+            id: _id(),
+            author: MessageAuthor.agent,
+            kind: MessageKind.tripInfo,
+          ),
+        ]),
+      ));
+      return;
+    }
+    _think(text, user);
+  }
+
+  /// Datas e hospedagem respondidas no card: segue montando o roteiro.
+  void submitTrip({required String dates, required String stayId}) {
+    if (state.phase == AgentPhase.thinking) return;
+    final stay = TravelerMock.stayById(stayId);
+    traveler.setTrip(TripInfo(dates: dates, stay: stay));
+    _think(
+      _pending ?? _organize,
+      AgentMessage(
+        id: _id(),
+        author: MessageAuthor.user,
+        kind: MessageKind.text,
+        text: '$dates, ${stay.name}',
+      ),
+    );
+  }
+
+  void _think(String text, AgentMessage user) {
     final kind =
         _willBuildItinerary(text) ? ThinkingKind.collect : ThinkingKind.quick;
     _pending = text;
@@ -120,14 +201,7 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
       thinkingKind: kind,
       messagesUsed: state.messagesUsed + 1,
       clearDetail: true,
-      messages: _with([
-        AgentMessage(
-          id: _id(),
-          author: MessageAuthor.user,
-          kind: MessageKind.text,
-          text: text.trim(),
-        ),
-      ]),
+      messages: _with([user]),
     ));
     // Doherty: feedback imediato; cada passo entra no seu tempo.
     final marks = kind == ThinkingKind.collect
@@ -441,15 +515,52 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
               id: _id(),
               author: MessageAuthor.agent,
               kind: MessageKind.swapProposal,
-              text: 'Chuva prevista sábado às 15h. Troco o Sítio da '
-                  'Trindade pelo Mercado de Casa Amarela? É coberto e fica '
-                  'a 900 m.',
+              text: _swapProposalText,
             ),
           ]),
         ));
       });
     });
   }
+
+  /// Alerta de chuva já em Recife (cena 5): a notificação abre a conversa
+  /// com a proposta de troca. Independe da agenda.
+  void startRainAlert() {
+    if (!state.hasItinerary || state.swapStatus != SwapStatus.none) return;
+    safeEmit(state.copyWith(
+      swapStatus: SwapStatus.proposed,
+      mapOpen: false,
+      itineraryOpen: false,
+      clearDetail: true,
+      messages: _with([
+        AgentMessage(
+          id: _id(),
+          author: MessageAuthor.agent,
+          kind: MessageKind.swapProposal,
+          text: _swapProposalText,
+        ),
+      ]),
+    ));
+  }
+
+  /// Transfer pago na folha de checkout (D-26).
+  void transferBooked() {
+    safeEmit(state.copyWith(
+      messages: _with([
+        AgentMessage(
+          id: _id(),
+          author: MessageAuthor.agent,
+          kind: MessageKind.transferBooked,
+        ),
+      ]),
+    ));
+  }
+
+  static final _swapProposalText =
+      'Chuva prevista sábado a partir das ${TravelMock.rainAt}. O '
+      '${TravelMock.roleById(TravelMock.swapFromId).shortName} é ao ar '
+      'livre. Troco pelo ${TravelMock.roleById(TravelMock.swapToId).shortName}'
+      '? É coberto, comida pernambucana, no mesmo bairro.';
 
   void acceptSwap() {
     if (state.swapStatus != SwapStatus.proposed) return;
@@ -475,9 +586,16 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
           id: _id(),
           author: MessageAuthor.agent,
           kind: MessageKind.swapDone,
-          text: 'Troquei. Sábado 15h: Mercado de Casa Amarela. '
-              'Calendário atualizado.',
+          text: 'Troquei. Sábado ${TravelMock.swapTime}: '
+              '${TravelMock.roleById(TravelMock.swapToId).shortName}. '
+              'Mapa e calendário atualizados.',
         ),
+        if (traveler.state.transfer == null)
+          AgentMessage(
+            id: _id(),
+            author: MessageAuthor.agent,
+            kind: MessageKind.transferOffer,
+          ),
       ]),
     ));
   }
@@ -491,8 +609,9 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
           id: _id(),
           author: MessageAuthor.agent,
           kind: MessageKind.text,
-          text: 'Mantive o Sítio da Trindade. Te aviso se a previsão '
-              'piorar até sábado.',
+          text: 'Mantive o '
+              '${TravelMock.roleById(TravelMock.swapFromId).shortName}. '
+              'Te aviso se a previsão piorar.',
         ),
       ]),
     ));

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studio_app/features/traveler/presentation/view_models/traveler_cubit.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/account_sheet.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studio_app/features/explore/data/explore_mock.dart';
 import 'package:studio_app/features/explore/domain/explore_entities.dart';
-import 'package:studio_app/features/explore/presentation/view_models/explore_cubit.dart';
-import 'package:studio_app/features/explore/presentation/view_models/explore_state.dart';
 import 'package:studio_app/features/explore/presentation/view_models/search_cubit.dart';
 import 'package:studio_app/features/explore/presentation/views/role_page.dart';
 import 'package:studio_app/features/explore/presentation/views/search_page.dart';
@@ -247,7 +247,8 @@ class _ResultList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stay = ExploreMock.profile.stayLocation;
-    return BlocSelector<ExploreCubit, ExploreState, Set<String>>(
+    return BlocSelector<TravelerCubit, TravelerState, List<String>>(
+      bloc: travelerCubit(),
       selector: (s) => s.saved,
       builder: (context, saved) => Column(
         children: [
@@ -264,8 +265,7 @@ class _ResultList extends StatelessWidget {
                     'a ${formatKm(distanceKm(stay, roles[i].location))} do hotel',
                 onTap: () =>
                     openRole(context, roles[i], 'busca-${roles[i].id}'),
-                onToggleSave: () =>
-                    context.read<ExploreCubit>().toggleSaved(roles[i].id),
+                onToggleSave: () => saveRole(context, roles[i].id),
               ),
             ),
           ],

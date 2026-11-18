@@ -47,12 +47,6 @@ class ExploreCubit extends Cubit<ExploreState> {
     if (tab != state.tab) emit(state.copyWith(tab: tab));
   }
 
-  void toggleSaved(String roleId) {
-    final saved = {...state.saved};
-    if (!saved.remove(roleId)) saved.add(roleId);
-    emit(state.copyWith(saved: saved));
-  }
-
   static StopPeriod periodOf(int hour) => hour >= 5 && hour < 12
       ? StopPeriod.manha
       : hour >= 12 && hour < 18

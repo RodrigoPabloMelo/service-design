@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/transfer_sheets.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/trip_info_card.dart';
 import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 import 'package:studio_app/features/travel_agent/presentation/view_models/travel_agent_cubit.dart';
@@ -446,6 +448,15 @@ class _MessageView extends StatelessWidget {
           onAccept: cubit.acceptSwap,
           onDecline: cubit.declineSwap,
         ),
+      MessageKind.tripInfo => TripInfoCard(
+          onSubmit: (dates, stayId) =>
+              cubit.submitTrip(dates: dates, stayId: stayId),
+        ),
+      MessageKind.transferOffer => TransferOfferCard(
+          roleId: TravelMock.swapToId,
+          onBooked: cubit.transferBooked,
+        ),
+      MessageKind.transferBooked => const TransferBookedCard(),
       MessageKind.error => _Error(text: message.text, onRetry: cubit.retry),
     };
   }
@@ -1053,6 +1064,36 @@ class _Swap extends StatelessWidget {
               ],
             ),
           ),
+          if (to.access != null) ...[
+            const SizedBox(height: TravelSpace.md),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 3),
+                  child: FaIcon(TravelIcons.route, size: 13, color: p.ink),
+                ),
+                const SizedBox(width: TravelSpace.sm),
+                Expanded(
+                  child: Text.rich(
+                    TextSpan(children: [
+                      TextSpan(
+                        text: '${to.access!.text}. ',
+                        style: TravelType.footnoteStrong
+                            .copyWith(color: p.ink),
+                      ),
+                      TextSpan(
+                        text: '${to.access!.source}, em '
+                            '${to.access!.checkedAt}.',
+                        style: TravelType.footnote
+                            .copyWith(color: p.inkMuted),
+                      ),
+                    ]),
+                  ),
+                ),
+              ],
+            ),
+          ],
           if (status == SwapStatus.proposed) ...[
             const SizedBox(height: TravelSpace.md),
             // Dois botões: empilhados, primário embaixo.

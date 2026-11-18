@@ -121,6 +121,45 @@ class RoleTip extends Equatable {
   List<Object?> get props => [kind, text];
 }
 
+/// Selo de segurança do rolê. Nome, quem concede e critérios são
+/// **(hipótese)** — Q-10 segue aberta. Descreve o que foi checado, nunca
+/// promete segurança.
+class RoleSeal extends Equatable {
+  const RoleSeal({
+    this.by = 'Moradoras e curadoria',
+    this.checks = const ['Ir sozinha', 'Chegar e sair à noite'],
+  });
+
+  /// Quem avaliou.
+  final String by;
+
+  /// Situações avaliadas.
+  final List<String> checks;
+
+  static const standard = RoleSeal();
+
+  @override
+  List<Object?> get props => [by, checks];
+}
+
+/// Informação de acesso no trajeto sugerido (ex.: alagamento na chuva).
+/// Descreve a rota, com fonte e data — não garante nada. A fonte do dado é
+/// **(hipótese)**: Q-39.
+class RouteAccess extends Equatable {
+  const RouteAccess({
+    required this.text,
+    required this.source,
+    required this.checkedAt,
+  });
+
+  final String text;
+  final String source;
+  final String checkedAt;
+
+  @override
+  List<Object?> get props => [text, source, checkedAt];
+}
+
 /// Um rolê indicado por local, curado pela equipe.
 class Role extends Equatable {
   const Role({
@@ -143,6 +182,8 @@ class Role extends Equatable {
     required this.videos,
     this.tips = const [],
     this.covered = false,
+    this.seal = RoleSeal.standard,
+    this.access,
   });
 
   final String id;
@@ -178,6 +219,12 @@ class Role extends Equatable {
 
   /// Coberto — o agente usa para trocas por chuva.
   final bool covered;
+
+  /// Selo de segurança (hipótese, Q-10).
+  final RoleSeal seal;
+
+  /// Acesso no trajeto sugerido (só quando a curadoria tem o dado).
+  final RouteAccess? access;
 
   @override
   List<Object?> get props => [id];
@@ -371,6 +418,15 @@ enum MessageKind {
   calendarDone,
   swapProposal,
   swapDone,
+
+  /// Pergunta de datas e hospedagem antes do roteiro (etapa 04).
+  tripInfo,
+
+  /// Oferta do transfer com motorista parceira depois da troca (D-26).
+  transferOffer,
+
+  /// Transfer pago: acompanhamento no app da parceira.
+  transferBooked,
   error,
 }
 
