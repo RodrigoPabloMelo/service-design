@@ -55,18 +55,19 @@ flowchart TD
 
 - **Gatilho:** ☰ no cabeçalho da conversa ou no topo do começo do zero.
 - **Passos:**
-  1. A conversa desliza pra direita (véu escuro por cima) e revela a gaveta: "Maré", "Explorar", **Fixadas**, **Recentes** e o primário "Nova conversa".
+  1. A conversa desliza pra direita, com os cantos arredondados e véu escuro por cima, e revela a gaveta: "Maré", **Explorar**, **Salvos** e **Perfil** (as abas da home), **Fixadas**, **Recentes** e o primário "Nova conversa".
   2. Fixada (mock): "Roteiro Recife, 14 a 16 nov". Recentes (mock): "Noite com as amigas", "Perto do hotel", "Organizar meus 8 rolês" (a que falhou).
   3. **Abrir uma conversa:** a gaveta fecha e a conversa aparece como foi deixada; a aberta fica marcada na lista.
   4. **Nova conversa:** volta a `FL-04.1`.
-  5. **Explorar:** sai da Maré (volta pra home; se a Maré foi aberta direto pela rota, vai pra `/explorar`).
+  5. **Explorar, Salvos ou Perfil:** sai da Maré e abre a home já nessa aba (`FL-01.1`, `FL-03.2`, `FL-03.5`). Se a Maré foi aberta direto pela rota, vai pra `/explorar` (com `?aba=salvos` ou `?aba=perfil`).
   6. Fechar: tocar no véu, arrastar a conversa pra esquerda ou o voltar do sistema.
 - **Regras ao sair de uma conversa (trocar ou "Nova conversa"):**
   - Se a Maré estava pensando, ela responde na hora antes de guardar.
   - Conversa nova **com** mensagem dela vira a primeira de "Recentes", com a primeira mensagem como título.
   - Conversa nova **sem** mensagem some.
   - Conversa da gaveta guarda onde parou (reabrir mostra as respostas novas).
-- **Saídas:** `FL-04.1`, conversa reaberta, `FL-01.1`.
+- **Saídas:** `FL-04.1`, conversa reaberta, `FL-01.1`, `FL-03.2`, `FL-03.5`.
+- **Abrir pela chuva ou pelo erro:** `/agente/chuva` é a conversa fixada do roteiro e `?cenario=erro` é a que falhou; sair delas guarda na mesma linha da gaveta.
 - **Estados:** `ST-GAVETA.fechada` ↔ `ST-GAVETA.aberta`; `ST-CONVERSA` da conversa aberta.
 - **Ref.:** ChatGPT (gaveta lateral) · **Questão:** [Q-40](../questoes-em-aberto.md#q-40) (histórico exige conta? quanto tempo guarda?).
 - **Lacunas (simulado):** a lista vive só na sessão; não há busca, fixar, renomear nem apagar. As antigas são refeitas a partir do pedido que as abriu.
@@ -80,10 +81,10 @@ flowchart TD
   3. A resposta depende do pedido **(simulado)**:
      - nada salvo ainda → "Separei 8 rolês de gente daqui" + cards (começo do zero);
      - "mapa" → abre o mapa (`FL-04.7`);
-     - "comida", "noite"/"amigas", "grátis", "hotel"/"perto" → os salvos daquele recorte, com o motivo, destacados no mapa;
+     - "comida", "noite"/"amigas", "graça" (de graça), "hotel"/"perto" → os salvos daquele recorte, com o motivo, destacados no mapa;
      - qualquer outro, sem roteiro → monta o roteiro (`FL-04.6`), pedindo antes datas e hospedagem se ela ainda não informou (`FL-04.5`);
      - qualquer outro, com roteiro → "Anotado!…" sem mexer no roteiro.
-  4. Cada envio conta uma mensagem do limite semanal (o anel ao lado do enviar mostra o uso).
+  4. Cada envio conta uma mensagem do limite semanal (o anel ao lado do enviar mostra o uso). A contagem segue de uma conversa pra outra.
 - **Saídas:** `FL-04.5` a `FL-04.8`; volta ao composer.
 - **Estados:** `ST-CONVERSA.pensando` → `ST-CONVERSA.respondida` ou `ST-CONVERSA.com-roteiro`.
 - **Decisões:** D-07, D-17 · **Questões:** [Q-11](../questoes-em-aberto.md#q-11), [Q-35](../questoes-em-aberto.md#q-35) (no limite o envio para sem aviso **(lacuna)**).
@@ -93,7 +94,7 @@ flowchart TD
 - **Gatilho:** pedido que vai virar roteiro sem viagem informada.
 - **Passos:** a Maré pergunta "Antes de montar: quando você vai e onde vai ficar?" e mostra um card com chips de datas e de hospedagem; "Montar roteiro" responde. **Não gasta mensagem.**
 - **Saídas:** `FL-04.6` com o pedido original.
-- **Estados:** `ST-VIAGEM.sem` → `ST-VIAGEM.informada` (vale pro app todo: Salvos e Perfil passam a mostrar as datas).
+- **Estados:** `ST-CONVERSA.aguardando-viagem`; `ST-VIAGEM.sem` → `ST-VIAGEM.informada` (vale pro app todo: Salvos e Perfil passam a mostrar as datas).
 - **Decisão:** D-23.
 
 ## FL-04.6 · Montar o roteiro
@@ -157,5 +158,6 @@ flowchart TD
 
 - **Gatilho:** a Maré não consegue responder (`/agente?cenario=erro` ou a conversa "Organizar meus 8 rolês" da gaveta).
 - **Passos:** a mensagem dela e o card "Maré fora do ar" com "Não consegui montar o roteiro agora. Seus rolês salvos continuam aqui — tenta de novo em instantes." e o primário "Tentar de novo"; o bloco-resumo diz que a Maré está fora do ar e os rolês continuam salvos. Composer desligado. "Tentar de novo" refaz o pedido.
-- **Saídas:** `FL-04.6`.
-- **Estados:** `ST-CONVERSA.erro` → `ST-CONVERSA.pensando`.
+- **Saídas:** `FL-04.6`, ou `FL-04.5` se ela ainda não informou datas e hospedagem.
+- **Estados:** `ST-CONVERSA.erro` → `ST-CONVERSA.pensando` (ou `aguardando-viagem`).
+- **Notas:** o erro não nasce de um pedido feito na sessão: só aparece pelo cenário ou pela conversa que falhou **(simulado)**.

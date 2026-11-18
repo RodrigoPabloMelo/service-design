@@ -17,11 +17,11 @@ Os **cenários** do protótipo (`?cenario=` na URL e rotas da narrativa) são at
 
 | Estado | O que ela vê | Entra quando | Sai para |
 | --- | --- | --- | --- |
-| `carregando` | Esqueleto da home | abre o app; "Tentar de novo" | `pronta` |
-| `pronta` | Busca, categorias, seções curtas, atalho do transfer no dia | dados carregados | — |
+| `carregando` | Esqueleto da home | "Tentar de novo"; `?cenario=carregando` | `pronta` |
+| `pronta` | Busca, categorias, seções curtas, atalho do transfer no dia | abre o app; dados carregados | — |
 | `erro` | "Sem conexão agora" + "Tentar de novo" | falha ao carregar | `carregando` |
 
-Sub-estado `aba`: `explorar` · `salvos` · `perfil` (tab bar; cada aba guarda a rolagem). Busca compacta e tab bar recolhida enquanto rola pra baixo. Fluxos: `FL-01`.
+Sub-estado `aba`: `explorar` · `salvos` · `perfil` (tab bar ou gaveta da Maré; `?aba=` na URL; cada aba guarda a rolagem). Busca compacta e tab bar recolhida enquanto rola pra baixo. Fluxos: `FL-01`.
 
 ### ST-BUSCA · Busca guiada e resultados
 
@@ -61,7 +61,7 @@ Fluxos: `FL-04.7` a `FL-04.9`.
 | Estado | O que ela vê | Entra quando | Sai para |
 | --- | --- | --- | --- |
 | `fechada` | A conversa | abrir a Maré; escolher conversa; "Nova conversa"; tocar no véu; arrastar pra esquerda; voltar do sistema | `aberta` |
-| `aberta` | Gaveta à esquerda (Explorar, Fixadas, Recentes, "Nova conversa"), conversa empurrada com véu | ☰ | `fechada`; "Explorar" sai da Maré |
+| `aberta` | Gaveta à esquerda (Explorar, Salvos, Perfil, Fixadas, Recentes, "Nova conversa"), conversa empurrada com cantos arredondados e véu | ☰ | `fechada`; Explorar, Salvos ou Perfil saem da Maré |
 
 "Recentes" pode estar vazia ("Nenhuma conversa ainda") no começo do zero. Fluxo: `FL-04.3`.
 
@@ -79,8 +79,9 @@ stateDiagram-v2
   aguardando_viagem --> pensando: Montar roteiro
   pensando --> respondida: filtro, mapa, nada salvo
   pensando --> com_roteiro: organizar
-  pensando --> erro: falha
+  [*] --> erro: cenário ou conversa que falhou
   erro --> pensando: Tentar de novo
+  erro --> aguardando_viagem: Tentar de novo sem datas
   respondida --> pensando: novo pedido
   com_roteiro --> pensando: Pedir ajuste
   respondida --> guardada: sai pela gaveta
@@ -97,10 +98,10 @@ stateDiagram-v2
 | `pensando` | Linha do tempo de passos (no roteiro, visão de agente); "Pular" | Composer desligado; cada envio gasta 1 mensagem. |
 | `respondida` | Mensagens + rolês filtrados ou mapa | Composer: "Peça um ajuste à Maré…". |
 | `com-roteiro` | Prévia do roteiro, extras, convite da agenda; bloco-resumo do fim de semana | Habilita "Ver roteiro", troca por chuva (`ST-TROCA`). |
-| `erro` | "Maré fora do ar" + "Tentar de novo"; bloco-resumo de fora do ar | Composer desligado. |
+| `erro` | "Maré fora do ar" + "Tentar de novo"; bloco-resumo de fora do ar | Composer desligado. Só abre pelo cenário ou pela conversa que falhou **(simulado)**. |
 | `guardada` | Linha em Fixadas/Recentes da gaveta | Guarda onde parou; se estava `pensando`, responde na hora antes de guardar. Só na sessão ([Q-40](../questoes-em-aberto.md#q-40)). |
 
-Limite de mensagens: com 0 restantes o envio é ignorado, sem tela própria — **lacuna** ([Q-35](../questoes-em-aberto.md#q-35)). Fluxos: `FL-04`.
+Limite de mensagens: a contagem é da semana e segue entre conversas; com 0 restantes o envio é ignorado, sem tela própria — **lacuna** ([Q-35](../questoes-em-aberto.md#q-35)). Fluxos: `FL-04`.
 
 ### ST-CONTA · Conta da viajante
 
@@ -163,7 +164,7 @@ Só uma proposta por conversa. Fluxo: `FL-05.1`.
 | Maré | padrão (`/agente`) | `ST-CONVERSA.nova`, `ST-VISAO.conversa`, 8 rolês salvos no mock, gaveta com 1 fixada e 3 recentes |
 | Maré | `?cenario=vazio` | `ST-CONVERSA.nova`, `ST-VISAO.mapa` (começo do zero), gaveta sem conversas |
 | Maré | `?cenario=carregando` | `ST-CONVERSA.pensando` (em loop) |
-| Maré | `?cenario=erro` | `ST-CONVERSA.erro` |
-| Maré | `/agente/chuva` | `ST-CONVERSA.com-roteiro`, `ST-AGENDA.conectado`, `ST-TROCA.nenhuma` + notificação de chuva; `ST-CONTA.com`, `ST-VIAGEM.informada` |
+| Maré | `?cenario=erro` | `ST-CONVERSA.erro` (é a conversa "Organizar meus 8 rolês" da gaveta) |
+| Maré | `/agente/chuva` | conversa fixada "Roteiro Recife" aberta: `ST-CONVERSA.com-roteiro`, `ST-AGENDA.conectado`, `ST-TROCA.nenhuma` + notificação de chuva; `ST-CONTA.com`, `ST-VIAGEM.informada` |
 | Avaliar | `/avaliar` | `ST-AVALIACAO.pendente`, `ST-TRANSFER.saida-feita`, `ST-CONTA.com` |
 | Carteira | `/carteira` | `ST-CUPOM` conforme os pontos |

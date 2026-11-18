@@ -16,7 +16,7 @@
 
 ## FL-03.2 · Pasta da viagem
 
-- **Gatilho:** abrir Salvos com pelo menos um rolê salvo (`FL-01.4`).
+- **Gatilho:** abrir Salvos com pelo menos um rolê salvo (`FL-01.4`), pela tab bar ou pela gaveta da Maré (`FL-04.3`).
 - **Passos:** bloco da pasta (nome = cidade + datas da viagem, ou cidade + mês enquanto ela não informou as datas) com a contagem e "Organizar com a Maré"; embaixo, os rolês na ordem em que salvou. Tocar abre o detalhe (`FL-01.3`); o salvar do card tira da pasta.
 - **Saídas:** `FL-01.3`, `FL-03.3`, `FL-01.4`.
 - **Estados:** `ST-SALVOS.com-rolês`; nome da pasta depende de `ST-VIAGEM`.
@@ -39,7 +39,7 @@
 
 ## FL-03.5 · Perfil
 
-- **Gatilho:** aba Perfil.
+- **Gatilho:** aba Perfil (tab bar ou gaveta da Maré, `FL-04.3`).
 - **Passos:**
   - **Sem conta:** "Sua conta" + "Entre pra salvar rolês, montar o roteiro e juntar pontos." e o secundário "Entrar" (`FL-03.4`).
   - **Com conta:** "Oi, {nome}", bloco "Sua viagem" (pasta, hotel, rolês salvos, saídas avaliadas, transfer com motorista, se houver) e a carteira embaixo (`FL-06.2`).

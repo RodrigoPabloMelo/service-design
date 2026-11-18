@@ -8,7 +8,7 @@
 ```mermaid
 flowchart TD
   A[Abre o app] --> B{Home carrega?}
-  B -->|carregando| SK[Esqueleto]
+  B -->|cenário carregando| SK[Esqueleto]
   B -->|erro| E[Sem conexão agora] -->|Tentar de novo| SK
   SK --> H[Home pronta]
   B -->|pronta| H
@@ -24,9 +24,9 @@ flowchart TD
 
 ## FL-01.1 · Ver a home
 
-- **Gatilho:** abrir o app (ou voltar da Maré pela gaveta, `FL-04.3`).
+- **Gatilho:** abrir o app (ou sair da Maré pela gaveta → "Explorar", `FL-04.3`).
 - **Passos:**
-  1. App mostra o esqueleto e depois a home (`ST-HOME.carregando` → `ST-HOME.pronta`).
+  1. A home abre pronta (`ST-HOME.pronta`). O esqueleto (`ST-HOME.carregando`) só aparece ao tentar de novo depois de um erro ou no cenário `?cenario=carregando` **(simulado)**.
   2. No dia em que ela tem transfer pago, o **atalho do transfer** aparece no topo (`FL-05.3`).
   3. Topo: pílula "Inicie sua pesquisa" e, à direita, o botão da Maré.
   4. "Explore rolês" com as categorias (restaurantes, café, museu, cultura, arte, história) em carrossel.
@@ -81,5 +81,5 @@ flowchart TD
 
 - **Gatilho:** botão da Maré no topo da home.
 - **Passos:** a Maré abre como página por cima da home, numa conversa nova (`FL-04.1`).
-- **Saídas:** `FL-04`; volta pela gaveta → "Explorar" (`FL-04.3`).
+- **Saídas:** `FL-04`; volta pela gaveta → "Explorar", "Salvos" ou "Perfil" (`FL-04.3`), que abre a home já na aba tocada.
 - **Decisão:** D-24 (o agente não é aba).

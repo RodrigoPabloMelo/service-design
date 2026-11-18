@@ -39,6 +39,7 @@ flowchart LR
   S -->|Organizar com a Maré| A[FL-04 Maré]
   H -->|botão da Maré| A
   A -->|gaveta: Explorar| H
+  A -->|gaveta: Salvos, Perfil| S
   A -->|roteiro pronto + chuva| D[FL-05 Durante]
   D -->|transfer pago| H
   D -->|depois do rolê| P[FL-06 Avaliar e carteira]
