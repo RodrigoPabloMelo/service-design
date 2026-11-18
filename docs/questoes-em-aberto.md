@@ -59,6 +59,16 @@ Ainda sem nome. Nos docs: "o app" / "o serviço".
 ### Q-02 · Estrutura dos planos/pacotes
 Ref.: D-01. Quantos planos? O que é grátis e o que é pago? Preço? Plano por viagem (passe) ou recorrente? Pacote é por rolê (ex.: jantar com reserva + prato + motorista) ou por período?
 **2026-11-04 (D-17):** modelo freemium definido: grátis = rolês curados + agente com mensagens limitadas; pagos = transfer com motoristas mulheres e rolês em grupo só com mulheres. Ainda em aberto: preço, se os extras são avulsos ou num plano, se o plano pago amplia as mensagens do agente.
+**2026-11-18 (proposta do Rodrigo, não decidida):** **pacotes de planejamento com o agente**, comprados por ano em vez de assinatura recorrente, com o pagamento dividido em parcelas. Um planejamento é o roteiro de uma viagem (datas + hospedagem + rolês organizados por dia, com mapa e calendário).
+
+| | Free | Pacote 3 viagens | Pacote 5 viagens |
+| --- | --- | --- | --- |
+| Viagens planejadas | 1 | 3 no ano | 5 no ano |
+| Preço | grátis | R$ 15,90 por semestre (2 parcelas) | R$ 14,90 por trimestre (4 parcelas) |
+| Total no ano | R$ 0 | R$ 31,80 | R$ 59,60 |
+| Custo por viagem | — | ~R$ 10,60 | ~R$ 11,92 |
+
+Sugestões levadas junto **(hipótese)**: reajustes durante a mesma viagem não gastam outro planejamento; ver, filtrar e salvar rolês segue grátis; pacotes só aparecem ao começar uma viagem nova, nunca num reajuste na rua ([Q-35](#q-35)); pacote de 5 a R$ 11,90/trimestre (~R$ 9,52 por viagem), porque hoje o pacote maior sai mais caro por viagem; Free único, sem renovar; validade de 12 meses; tudo liberado na 1ª parcela e, se ela parar de pagar, perde só o que não usou; transfer e rolês em grupo seguem avulsos, com desconto para quem tem pacote. Em aberto: os pacotes substituem o limite de mensagens de D-17 ou somam a ele? Detalhe no Google Doc "Estrutura narrativa do serviço", seção Ideias. O protótipo ainda mostra a assinatura de R$ 14,90/mês e não foi alterado.
 
 <a id="q-03"></a>
 ### Q-03 · Transporte com motoristas mulheres

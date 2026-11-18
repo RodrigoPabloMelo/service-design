@@ -54,6 +54,7 @@ O transporte com motoristas mulheres (benefício de plano) também atua como rec
 - **Sem reserva integrada no app** (D-13, 2026-11-04). O que ainda se paga no app: [Q-05](questoes-em-aberto.md#q-05).
 - **Retorno ao local** (D-14): o local ganha pontos quando uma viajante usa o rolê que ele indicou.
 - **Freemium** (D-17): grátis = rolês curados + agente de IA com mensagens limitadas; pagos = transfer com motoristas mulheres e rolês em grupo só com mulheres, guiados ([Q-33](questoes-em-aberto.md#q-33), [Q-35](questoes-em-aberto.md#q-35)).
+- **Proposta em discussão (2026-11-18):** pacotes anuais de planejamento com o agente, pagos em parcelas: Free (1 viagem), 3 viagens (R$ 15,90/semestre) e 5 viagens (R$ 14,90/trimestre). Não decidido; detalhes em [Q-02](questoes-em-aberto.md#q-02).
 
 ## 7. Descoberta e exibição
 
