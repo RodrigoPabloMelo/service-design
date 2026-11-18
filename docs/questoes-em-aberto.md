@@ -68,7 +68,15 @@ Ref.: D-01. Quantos planos? O que é grátis e o que é pago? Preço? Plano por 
 | Total no ano | R$ 0 | R$ 31,80 | R$ 59,60 |
 | Custo por viagem | — | ~R$ 10,60 | ~R$ 11,92 |
 
-Sugestões levadas junto **(hipótese)**: reajustes durante a mesma viagem não gastam outro planejamento; ver, filtrar e salvar rolês segue grátis; pacotes só aparecem ao começar uma viagem nova, nunca num reajuste na rua ([Q-35](#q-35)); pacote de 5 a R$ 11,90/trimestre (~R$ 9,52 por viagem), porque hoje o pacote maior sai mais caro por viagem; Free único, sem renovar; validade de 12 meses; tudo liberado na 1ª parcela e, se ela parar de pagar, perde só o que não usou; transfer e rolês em grupo seguem avulsos, com desconto para quem tem pacote. Em aberto: os pacotes substituem o limite de mensagens de D-17 ou somam a ele? Detalhe no Google Doc "Estrutura narrativa do serviço", seção Ideias. O protótipo ainda mostra a assinatura de R$ 14,90/mês e não foi alterado.
+Sugestões levadas junto **(hipótese)**: reajustes durante a mesma viagem não gastam outro planejamento; ver, filtrar e salvar rolês segue grátis; pacotes só aparecem ao começar uma viagem nova, nunca num reajuste na rua ([Q-35](#q-35)); pacote de 5 a R$ 11,90/trimestre (~R$ 9,52 por viagem), porque hoje o pacote maior sai mais caro por viagem; Free com 1 planejamento que renova a cada ano; validade de 12 meses; tudo liberado na 1ª parcela e, se ela parar de pagar, perde só o que não usou. Transfer com motorista mulher e rolês em grupo seguem avulsos, para todas, e o pacote dá desconto nas viagens que cobre:
+
+| Pacote | Transfer com motorista mulher | Rolês em grupo só com mulheres | Onde vale |
+| --- | --- | --- | --- |
+| Free | avulso, preço cheio | avulso, preço cheio | sem desconto |
+| 3 viagens | 10% de desconto | 10% de desconto | nas 3 viagens do pacote |
+| 5 viagens | 15% + prioridade no agendamento com motoristas parceiras | 15% + prioridade de vaga em grupos lotados | nas 5 viagens do pacote |
+
+Em aberto: os pacotes substituem o limite de mensagens de D-17 ou somam a ele? O desconto nos extras sai da comissão do serviço ou do valor pago à motorista e à guia? Preço dos extras depende de [Q-03](#q-03) e [Q-33](#q-33). Detalhe no Google Doc "Estrutura narrativa do serviço", seção Ideias. O protótipo ainda mostra a assinatura de R$ 14,90/mês e não foi alterado.
 
 <a id="q-03"></a>
 ### Q-03 · Transporte com motoristas mulheres
