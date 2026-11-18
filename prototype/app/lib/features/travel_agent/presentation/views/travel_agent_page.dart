@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:studio_app/core/components/page_scrim.dart';
 import 'package:studio_app/core/components/glass/app_glass.dart';
+import 'package:studio_app/features/explore/presentation/view_models/explore_state.dart';
 import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 import 'package:studio_app/features/travel_agent/presentation/view_models/conversations_cubit.dart';
@@ -52,7 +53,13 @@ class TravelAgentPage extends StatelessWidget {
       child: BlocProvider(
         // Começo do zero = primeira visita: ainda não há conversas antigas.
         create: (_) => ConversationsCubit(
-            seeded: scenario != TravelAgentScenario.vazio),
+          seeded: scenario != TravelAgentScenario.vazio,
+          activeId: switch (scenario) {
+            TravelAgentScenario.chuva => 'roteiro',
+            TravelAgentScenario.erro => 'erro',
+            _ => null,
+          },
+        ),
         child: _AgentShell(scenario: scenario),
       ),
     );
@@ -81,7 +88,13 @@ class _AgentShellState extends State<_AgentShell>
   /// Conversa aberta agora (pra guardar o estado ao trocar).
   TravelAgentCubit? _current;
 
-  bool get _open => _drawer.value > 0.5;
+  /// Gaveta aberta (ou abrindo). Bool próprio: o valor da animação ainda
+  /// não andou quando o voltar do sistema e a acessibilidade leem.
+  bool _open = false;
+
+  /// Tela da abertura (cenário da rota): a única que nasce do cenário.
+  late final String _initialKey =
+      context.read<ConversationsCubit>().state.viewKey;
 
   @override
   void dispose() {
@@ -98,7 +111,7 @@ class _AgentShellState extends State<_AgentShell>
   void _setOpen(bool open) {
     _drawer.animateTo(open ? 1 : 0,
         duration: _d, curve: const Cubic(0.2, 0, 0, 1));
-    setState(() {});
+    setState(() => _open = open);
   }
 
   void _settle(double velocity, double width) {
@@ -124,12 +137,15 @@ class _AgentShellState extends State<_AgentShell>
     _setOpen(false);
   }
 
-  void _explore() {
+  /// Sai da Maré pra home, já na aba pedida (Explorar, Salvos, Perfil).
+  void _explore(ExploreTab tab) {
     final nav = Navigator.of(context);
     if (nav.canPop()) {
-      nav.pop();
+      nav.pop(tab);
     } else {
-      context.go('/explorar');
+      context.go(tab == ExploreTab.explorar
+          ? '/explorar'
+          : '/explorar?aba=${tab.name}');
     }
   }
 
@@ -138,25 +154,27 @@ class _AgentShellState extends State<_AgentShell>
     final TravelAgentCubit cubit;
     if (entry?.snapshot != null) {
       cubit = TravelAgentCubit.restore(entry!.snapshot!);
-    } else if (entry?.seed != null) {
-      cubit = TravelAgentCubit.fromSeed(entry!.seed!);
-    } else if (cs.newChats == 0) {
-      // A tela abre no cenário pedido (rota ou ?cenario=).
+    } else if (cs.viewKey == _initialKey) {
+      // A tela abre no cenário pedido (rota ou ?cenario=); na chuva e no
+      // erro, ele é a conversa fixada / a que falhou da gaveta.
       if (widget.scenario == TravelAgentScenario.chuva) {
         // Cena 5: já em Recife, conta e viagem existem.
         travelerCubit().ensureMoment();
       }
       cubit = TravelAgentCubit(scenario: widget.scenario);
+    } else if (entry?.seed != null) {
+      cubit = TravelAgentCubit.fromSeed(entry!.seed!);
     } else {
       cubit = TravelAgentCubit();
     }
+    // O limite é semanal: a contagem segue de uma conversa pra outra.
+    cubit.syncUsage(cs.messagesUsed);
     return _current = cubit;
   }
 
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
-    final lite = AppEffects.lite;
     return BlocBuilder<ConversationsCubit, ConversationsState>(
       builder: (context, cs) {
         final view = BlocProvider(
@@ -165,8 +183,10 @@ class _AgentShellState extends State<_AgentShell>
           child: Builder(builder: (context) {
             const child = _TravelAgentView();
             // Cena 5: a notificação só na abertura pelo alerta de chuva.
+            // Voltar pra ela depois (já guardada) não repete o alerta.
             if (widget.scenario != TravelAgentScenario.chuva ||
-                cs.viewKey != 'nova-0') {
+                cs.viewKey != _initialKey ||
+                cs.active?.snapshot != null) {
               return _DrawerScope(onOpen: () => _setOpen(true), child: child);
             }
             return MareNotificationOverlay(
@@ -213,7 +233,7 @@ class _AgentShellState extends State<_AgentShell>
                           state: cs,
                           onOpen: _openConversation,
                           onNew: _newConversation,
-                          onExplore: _explore,
+                          onNavigate: _explore,
                         ),
                       ),
                     ),
@@ -222,16 +242,15 @@ class _AgentShellState extends State<_AgentShell>
                     animation: _drawer,
                     builder: (context, child) {
                       final t = _drawer.value;
-                      Widget page = child!;
-                      // Cantos crescem até o raio do sheet; no celular do
-                      // navegador, sem recorte (custa caro sobre o blur).
-                      if (!lite && t > 0) {
-                        page = ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(TravelSpace.rSheet * t),
-                          child: page,
-                        );
-                      }
+                      // Cantos crescem até o raio do sheet (ref. ChatGPT).
+                      // O ClipRRect fica sempre na árvore (entrar e sair
+                      // remontaria a conversa); fechada, não recorta nada.
+                      final page = ClipRRect(
+                        borderRadius:
+                            BorderRadius.circular(TravelSpace.rSheet * t),
+                        clipBehavior: t > 0 ? Clip.antiAlias : Clip.none,
+                        child: child,
+                      );
                       return Transform.translate(
                         offset: Offset(t * w, 0),
                         child: page,
@@ -240,7 +259,8 @@ class _AgentShellState extends State<_AgentShell>
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        view,
+                        // Gaveta aberta: a conversa sai do leitor de tela.
+                        ExcludeSemantics(excluding: _open, child: view),
                         // Véu preto 12% (figura-fundo sem sombra); tocar ou
                         // arrastar pra esquerda fecha.
                         AnimatedBuilder(
@@ -1159,6 +1179,15 @@ class _SheetBodyState extends State<_SheetBody> {
   bool _askOpen = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Conversa que já abre com mensagens (gaveta, chuva, erro): a aurora
+    // nasce apagada e o fade nunca termina — sem isso o ticker ficaria
+    // rodando escondido.
+    _auroraIdle = widget.state.messages.isNotEmpty;
+  }
+
+  @override
   void didUpdateWidget(covariant _SheetBody old) {
     super.didUpdateWidget(old);
     if (!widget.state.itineraryOpen) _askOpen = false;
@@ -1215,8 +1244,7 @@ class _SheetBodyState extends State<_SheetBody> {
     final inset = t * (safeTop + (hasHeader ? 0 : TravelSpace.tap + 8));
     // Abertura (nada enviado ainda): aurora sob o composer. Na primeira
     // mensagem ela se esvai devagar.
-    _fresh =
-        !s.messages.any((m) => m.author == MessageAuthor.user) && !hasHeader;
+    _fresh = s.messages.isEmpty && !hasHeader;
     return Container(
       clipBehavior: Clip.antiAlias,
       // Flat: sem sombra nem borda — o sheet se separa do mapa só pela cor.

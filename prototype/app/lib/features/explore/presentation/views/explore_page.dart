@@ -2,6 +2,7 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studio_app/core/components/glass/app_glass.dart';
 import 'package:studio_app/features/explore/data/explore_mock.dart';
@@ -39,13 +40,41 @@ class ExplorePage extends StatelessWidget {
       data: travelTheme(context),
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (_) => ExploreCubit(scenario: scenario)),
+          BlocProvider(
+            create: (_) {
+              final cubit = ExploreCubit(scenario: scenario);
+              // `?aba=salvos` (vindo da gaveta da Maré) abre já na aba.
+              final tab = _tabFromUrl(context);
+              if (tab != null) cubit.selectTab(tab);
+              return cubit;
+            },
+          ),
           BlocProvider(create: (_) => SearchCubit()),
         ],
         child: const _ExploreView(),
       ),
     );
   }
+}
+
+ExploreTab? _tabFromUrl(BuildContext context) {
+  try {
+    final aba = GoRouterState.of(context).uri.queryParameters['aba'];
+    return ExploreTab.values.where((t) => t.name == aba).firstOrNull;
+  } on Object {
+    return null; // fora do go_router (testes, rota empilhada)
+  }
+}
+
+/// Abre a Maré por cima; a gaveta dela pode devolver uma aba pra abrir.
+Future<void> openAgent(BuildContext context,
+    {Alignment origin = Alignment.center}) async {
+  final explore = context.read<ExploreCubit>();
+  final tab = await Navigator.of(context).push<ExploreTab>(
+    exploreRouteOf<ExploreTab>(context, const TravelAgentPage(),
+        origin: origin),
+  );
+  if (tab != null && !explore.isClosed) explore.selectTab(tab);
 }
 
 class _ExploreView extends StatefulWidget {
@@ -147,9 +176,7 @@ class _ExploreViewState extends State<_ExploreView>
                         ExploreTab.salvos => SavedTab(
                             onExplore: () =>
                                 cubit.selectTab(ExploreTab.explorar),
-                            onOrganize: () => Navigator.of(context).push(
-                              exploreRoute(context, const TravelAgentPage()),
-                            ),
+                            onOrganize: () => openAgent(context),
                           ),
                         ExploreTab.perfil => const ProfileTab(),
                       },
@@ -277,13 +304,7 @@ class _HomeTabState extends State<_HomeTab> {
     ));
   }
 
-  void _openAgent() {
-    Navigator.of(context).push(exploreRoute(
-      context,
-      const TravelAgentPage(),
-      origin: Alignment.topRight,
-    ));
-  }
+  void _openAgent() => openAgent(context, origin: Alignment.topRight);
 
   @override
   Widget build(BuildContext context) {

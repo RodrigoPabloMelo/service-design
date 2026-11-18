@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:studio_app/features/explore/presentation/view_models/explore_state.dart';
+import 'package:studio_app/features/explore/presentation/widgets/explore_ui.dart';
 import 'package:studio_app/features/travel_agent/presentation/view_models/conversations_cubit.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
@@ -15,14 +17,23 @@ class ConversationDrawer extends StatelessWidget {
     required this.state,
     required this.onOpen,
     required this.onNew,
-    required this.onExplore,
+    required this.onNavigate,
     super.key,
   });
 
   final ConversationsState state;
   final ValueChanged<String> onOpen;
   final VoidCallback onNew;
-  final VoidCallback onExplore;
+
+  /// Sai da Maré pra home, na aba tocada.
+  final ValueChanged<ExploreTab> onNavigate;
+
+  /// Mesmos ícones e rótulos da tab bar da home.
+  static const _tabs = [
+    (ExploreTab.explorar, 'Explorar', TravelIcons.compass),
+    (ExploreTab.salvos, 'Salvos', TravelIcons.bookmark),
+    (ExploreTab.perfil, 'Perfil', TravelIcons.user),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +53,8 @@ class ConversationDrawer extends StatelessWidget {
             SizedBox(
               height: TravelSpace.tap,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: TravelSpace.content),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: TravelSpace.content),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text('Maré',
@@ -55,69 +66,58 @@ class ConversationDrawer extends StatelessWidget {
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: TravelSpace.gutter),
-              child: _DrawerRow(
-                label: 'Explorar',
-                icon: TravelIcons.compass,
-                onTap: onExplore,
+              child: Column(
+                children: [
+                  for (final (tab, label, icon) in _tabs)
+                    _DrawerRow(
+                      label: label,
+                      icon: icon,
+                      onTap: () => onNavigate(tab),
+                    ),
+                ],
               ),
             ),
-            const SizedBox(height: TravelSpace.xl),
+            const SizedBox(height: TravelSpace.sm),
             Expanded(
-              child: Stack(
-                children: [
-                  ListView(
-                    padding: const EdgeInsets.fromLTRB(TravelSpace.gutter, 0,
-                        TravelSpace.gutter, TravelSpace.xl),
-                    children: [
-                      if (pinned.isNotEmpty) ...[
-                        const SectionHeader('Fixadas'),
-                        for (final c in pinned)
-                          _DrawerRow(
-                            label: c.title,
-                            active: c.id == state.activeId,
-                            onTap: () => onOpen(c.id),
-                          ),
-                        const SizedBox(height: TravelSpace.xl),
-                      ],
-                      const SectionHeader('Recentes'),
-                      if (recent.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: TravelSpace.cardPad, vertical: 12),
-                          child: Text(
-                            'Nenhuma conversa ainda',
-                            style:
-                                TravelType.callout.copyWith(color: p.inkMuted),
-                          ),
-                        )
-                      else
-                        for (final c in recent)
-                          _DrawerRow(
-                            label: c.title,
-                            active: c.id == state.activeId,
-                            onTap: () => onOpen(c.id),
-                          ),
-                    ],
-                  ),
-                  // Fade sobre fundo sólido = véu na cor do fundo.
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    height: TravelSpace.xl,
-                    child: IgnorePointer(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [p.s0.withValues(alpha: 0), p.s0],
-                          ),
+              // Rampa senoidal nas duas pontas: some sob as abas e sobre o
+              // botão (regra 11), sem borda dura.
+              child: VerticalEdgeFade(
+                top: TravelSpace.lg,
+                bottom: TravelSpace.xl,
+                child: ListView(
+                  // Topo = altura do fade: em repouso nada fica velado.
+                  padding: const EdgeInsets.fromLTRB(TravelSpace.gutter,
+                      TravelSpace.lg, TravelSpace.gutter, TravelSpace.xl),
+                  children: [
+                    if (pinned.isNotEmpty) ...[
+                      const SectionHeader('Fixadas'),
+                      for (final c in pinned)
+                        _DrawerRow(
+                          label: c.title,
+                          active: c.id == state.activeId,
+                          onTap: () => onOpen(c.id),
                         ),
-                      ),
-                    ),
-                  ),
-                ],
+                      const SizedBox(height: TravelSpace.xl),
+                    ],
+                    const SectionHeader('Recentes'),
+                    if (recent.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: TravelSpace.cardPad, vertical: 12),
+                        child: Text(
+                          'Nenhuma conversa ainda',
+                          style: TravelType.callout.copyWith(color: p.inkMuted),
+                        ),
+                      )
+                    else
+                      for (final c in recent)
+                        _DrawerRow(
+                          label: c.title,
+                          active: c.id == state.activeId,
+                          onTap: () => onOpen(c.id),
+                        ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: TravelSpace.sm),

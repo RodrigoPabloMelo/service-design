@@ -34,6 +34,7 @@ class ConversationsState extends Equatable {
     required this.entries,
     this.activeId,
     this.newChats = 0,
+    this.messagesUsed = TravelMock.messagesUsed,
   });
 
   /// Fixadas e recentes, mais nova primeiro.
@@ -44,6 +45,10 @@ class ConversationsState extends Equatable {
 
   /// Conta as conversas novas: cada uma ganha uma tela própria (key).
   final int newChats;
+
+  /// Mensagens usadas na semana, somando todas as conversas (o limite é
+  /// da semana, não de cada conversa — D-17, Q-35).
+  final int messagesUsed;
 
   List<ConversationEntry> get pinned =>
       entries.where((e) => e.pinned).toList();
@@ -57,7 +62,7 @@ class ConversationsState extends Equatable {
   String get viewKey => activeId ?? 'nova-$newChats';
 
   @override
-  List<Object?> get props => [entries, activeId, newChats];
+  List<Object?> get props => [entries, activeId, newChats, messagesUsed];
 }
 
 /// Gaveta de conversas do agente (☰), ref. ChatGPT.
@@ -65,8 +70,10 @@ class ConversationsState extends Equatable {
 /// No protótipo a lista vive só na sessão: antigas vêm do mock e conversas
 /// novas entram em "Recentes" quando a pessoa sai delas (Q-40).
 class ConversationsCubit extends Cubit<ConversationsState> {
-  ConversationsCubit({bool seeded = true})
-      : super(ConversationsState(entries: [
+  /// [activeId]: a tela abre numa conversa da gaveta (a chuva é a
+  /// conversa fixada do roteiro; o erro, a que falhou).
+  ConversationsCubit({bool seeded = true, String? activeId})
+      : super(ConversationsState(activeId: activeId, entries: [
           if (seeded)
             for (final c in TravelMock.conversations)
               ConversationEntry(
@@ -80,7 +87,10 @@ class ConversationsCubit extends Cubit<ConversationsState> {
     if (id == state.activeId) return;
     final entries = _archive(current);
     safeEmit(ConversationsState(
-        entries: entries, activeId: id, newChats: state.newChats));
+        entries: entries,
+        activeId: id,
+        newChats: state.newChats,
+        messagesUsed: _used(current)));
   }
 
   /// "Nova conversa": guarda a atual e abre uma em branco.
@@ -92,8 +102,16 @@ class ConversationsCubit extends Cubit<ConversationsState> {
       return;
     }
     safeEmit(ConversationsState(
-        entries: entries, activeId: null, newChats: state.newChats + 1));
+        entries: entries,
+        activeId: null,
+        newChats: state.newChats + 1,
+        messagesUsed: _used(current)));
   }
+
+  int _used(TravelAgentState? current) =>
+      current == null || current.messagesUsed < state.messagesUsed
+          ? state.messagesUsed
+          : current.messagesUsed;
 
   static bool _hasUserMessage(TravelAgentState? s) =>
       s != null && s.messages.any((m) => m.author == MessageAuthor.user);

@@ -23,7 +23,13 @@ Duration exploreMotion(BuildContext context, int ms) =>
 /// Com Reduce Motion a rota troca na hora (sem voo de Hero).
 Route<void> exploreRoute(BuildContext context, Widget page,
         {Alignment origin = Alignment.center}) =>
-    PageRouteBuilder<void>(
+    exploreRouteOf<void>(context, page, origin: origin);
+
+/// [exploreRoute] que devolve um resultado ao fechar (ex.: a aba que a
+/// gaveta da Maré pediu).
+Route<T> exploreRouteOf<T>(BuildContext context, Widget page,
+        {Alignment origin = Alignment.center}) =>
+    PageRouteBuilder<T>(
       transitionDuration: exploreMotion(context, 420),
       reverseTransitionDuration: exploreMotion(context, 320),
       pageBuilder: (_, __, ___) => page,

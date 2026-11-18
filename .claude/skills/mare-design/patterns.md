@@ -50,19 +50,21 @@
 
 Ref. ChatGPT, no nosso sistema (`ConversationDrawer`):
 - A página **desliza pra direita** (gaveta = min(82% da tela, 320)), a
-  gaveta entra com parallax curto, cantos da página crescem até 36 e um
-  **véu preto 12%** cobre a página. **Sem sombra.** No `AppEffects.lite`,
-  sem o recorte arredondado. Tocar no véu, arrastar pra esquerda ou o
-  voltar do sistema fecham.
-- Gaveta em `s0`: "Maré" em `title2` na altura do cabeçalho (44); linha
-  "Explorar" (bússola) que sai do agente; `SectionHeader` "Fixadas" e
+  gaveta entra com parallax curto, **cantos da página arredondados**
+  (crescem até 36, também no modo leve — ref. ChatGPT) e um **véu preto
+  12%** cobre a página. **Sem sombra.** Recorte só enquanto a gaveta está
+  aberta. Tocar no véu, arrastar pra esquerda ou o voltar do sistema
+  fecham.
+- Gaveta em `s0`: "Maré" em `title2` na altura do cabeçalho (44); linhas
+  **Explorar, Salvos e Perfil** (mesmos ícones e rótulos da tab bar), que
+  saem do agente e abrem a home naquela aba; `SectionHeader` "Fixadas" e
   "Recentes"; linhas de 48 **só texto**, 1 linha com reticências, sem
   divisores; aberta/pressionada em `s2` raio 16 (igual ao menu ⋯).
   Recentes vazia: "Nenhuma conversa ainda" em `inkMuted`.
 - Rodapé: `PrimaryButton` "Nova conversa" com `pen` (único primário), sobre
   fade `s0` da lista.
 - **Não copiar do ChatGPT:** sombra na página, busca, engrenagem e itens de
-  navegação que o protótipo não tem.
+  navegação que o protótipo não tem (só as abas da home entram).
 
 ## Sugestões da abertura
 

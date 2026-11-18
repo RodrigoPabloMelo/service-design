@@ -254,6 +254,13 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
     emit(state.copyWith(showSummary: state.hasItinerary));
   }
 
+  /// Contagem da semana vinda das outras conversas (o limite é semanal).
+  void syncUsage(int used) {
+    if (used > state.messagesUsed) {
+      safeEmit(state.copyWith(messagesUsed: used));
+    }
+  }
+
   /// "Pular": encerra o processo e responde na hora.
   void skipThinking() {
     if (state.phase != AgentPhase.thinking) return;
