@@ -22,6 +22,20 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
   })  : traveler = traveler ?? travelerCubit(),
         super(_initial(scenario));
 
+  /// Conversa antiga da gaveta: refaz o pedido e responde na hora (sem
+  /// timers), com a mesma lógica de [send].
+  TravelAgentCubit.fromSeed(ConversationSeed seed, {TravelerCubit? traveler})
+      : traveler = traveler ?? travelerCubit(),
+        super(_initial(seed.failed
+            ? TravelAgentScenario.erro
+            : TravelAgentScenario.padrao)) {
+    if (!seed.failed) _replay(seed.prompt);
+  }
+
+  /// Conversa feita nesta sessão e guardada na gaveta: volta como estava.
+  TravelAgentCubit.restore(super.initialState, {TravelerCubit? traveler})
+      : traveler = traveler ?? travelerCubit();
+
   /// Conta, viagem e transfer da viajante (compartilhado com o app).
   final TravelerCubit traveler;
 
@@ -40,9 +54,10 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
           phase: AgentPhase.idle,
           savedRoleIds: saved,
           days: TravelMock.itinerary,
-          // A saudação vive no bloco-resumo; logo abaixo, só as sugestões
+          // Conversa nova: saudação central + sugestões, sem bloco-resumo
           // (os salvos aparecem quando o agente responde).
           messages: const [],
+          showSummary: false,
         );
       case TravelAgentScenario.vazio:
         return TravelAgentState(
@@ -53,6 +68,7 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
           // Começo do zero: abre no mapa (ideia do lugar), sem bloco-resumo.
           messages: const [],
           mapOpen: true,
+          showSummary: false,
         );
       case TravelAgentScenario.erro:
         return TravelAgentState(
@@ -119,7 +135,12 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
     }
   }
 
-  String _id() => 'x${_seq++}';
+  /// Ids únicos entre conversas: a entrada animada das mensagens lembra o
+  /// que já viu pela key, e cada conversa nova recomeça a contagem.
+  static int _instances = 0;
+  final int _tag = _instances++;
+
+  String _id() => 'x$_tag-${_seq++}';
 
   void _after(Duration d, void Function() fn) {
     _timers.add(Timer(d, () {
@@ -213,6 +234,24 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
       });
     }
     _after(Duration(milliseconds: marks.last), () => _respond(text));
+  }
+
+  void _replay(String text) {
+    emit(state.copyWith(
+      thinkingKind:
+          _willBuildItinerary(text) ? ThinkingKind.collect : ThinkingKind.quick,
+      messages: [
+        AgentMessage(
+          id: _id(),
+          author: MessageAuthor.user,
+          kind: MessageKind.text,
+          text: text,
+        ),
+      ],
+    ));
+    _respond(text);
+    // Conversa com roteiro mantém o bloco-resumo no topo.
+    emit(state.copyWith(showSummary: state.hasItinerary));
   }
 
   /// "Pular": encerra o processo e responde na hora.

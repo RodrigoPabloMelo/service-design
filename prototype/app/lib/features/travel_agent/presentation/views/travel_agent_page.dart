@@ -5,15 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:studio_app/core/components/page_scrim.dart';
 import 'package:studio_app/core/components/glass/app_glass.dart';
 import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
+import 'package:studio_app/features/travel_agent/presentation/view_models/conversations_cubit.dart';
 import 'package:studio_app/features/travel_agent/presentation/view_models/travel_agent_cubit.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/agent_sheet.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/blank_start.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/calendar_connect_sheet.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/connector_carousel.dart';
+import 'package:studio_app/features/travel_agent/presentation/widgets/conversation_drawer.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/itinerary_view.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/place_detail.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/recife_map.dart';
@@ -47,28 +50,249 @@ class TravelAgentPage extends StatelessWidget {
     return Theme(
       data: travelTheme(context),
       child: BlocProvider(
-        create: (_) {
-          // Cena 5: já em Recife, conta e viagem existem.
-          if (scenario == TravelAgentScenario.chuva) {
-            travelerCubit().ensureMoment();
-          }
-          return TravelAgentCubit(scenario: scenario);
-        },
-        child: scenario == TravelAgentScenario.chuva
-            ? Builder(
-                builder: (context) => MareNotificationOverlay(
-                  title: 'Chuva às ${TravelMock.rainAt} em Casa Forte',
-                  body: 'O '
-                      '${TravelMock.roleById(TravelMock.swapFromId).shortName}'
-                      ' é ao ar livre. Tenho uma troca coberta pra você.',
-                  onTap: context.read<TravelAgentCubit>().startRainAlert,
-                  child: const _TravelAgentView(),
-                ),
-              )
-            : const _TravelAgentView(),
+        // Começo do zero = primeira visita: ainda não há conversas antigas.
+        create: (_) => ConversationsCubit(
+            seeded: scenario != TravelAgentScenario.vazio),
+        child: _AgentShell(scenario: scenario),
       ),
     );
   }
+}
+
+/// Casca do agente: a gaveta de conversas (☰) por baixo e a conversa aberta
+/// por cima. Trocar de conversa recria cubit e tela (key da conversa) — a
+/// tela lê o modo inicial (mapa ou conversa) só ao nascer.
+class _AgentShell extends StatefulWidget {
+  const _AgentShell({required this.scenario});
+
+  final TravelAgentScenario scenario;
+
+  @override
+  State<_AgentShell> createState() => _AgentShellState();
+}
+
+class _AgentShellState extends State<_AgentShell>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _drawer = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 360),
+  );
+
+  /// Conversa aberta agora (pra guardar o estado ao trocar).
+  TravelAgentCubit? _current;
+
+  bool get _open => _drawer.value > 0.5;
+
+  @override
+  void dispose() {
+    _drawer.dispose();
+    super.dispose();
+  }
+
+  double _width(BoxConstraints box) => math.min(box.maxWidth * 0.82, 320);
+
+  Duration get _d => MediaQuery.disableAnimationsOf(context)
+      ? const Duration(milliseconds: 1)
+      : const Duration(milliseconds: 360);
+
+  void _setOpen(bool open) {
+    _drawer.animateTo(open ? 1 : 0,
+        duration: _d, curve: const Cubic(0.2, 0, 0, 1));
+    setState(() {});
+  }
+
+  void _settle(double velocity, double width) {
+    final v = velocity / width;
+    _setOpen(v.abs() > 1 ? v > 0 : _drawer.value > 0.5);
+  }
+
+  TravelAgentState? _leaving() {
+    final c = _current;
+    if (c == null || c.isClosed) return null;
+    // Responde na hora o que estava pensando (sem timer órfão).
+    c.skipThinking();
+    return c.state;
+  }
+
+  void _openConversation(String id) {
+    context.read<ConversationsCubit>().open(id, current: _leaving());
+    _setOpen(false);
+  }
+
+  void _newConversation() {
+    context.read<ConversationsCubit>().startNew(current: _leaving());
+    _setOpen(false);
+  }
+
+  void _explore() {
+    final nav = Navigator.of(context);
+    if (nav.canPop()) {
+      nav.pop();
+    } else {
+      context.go('/explorar');
+    }
+  }
+
+  TravelAgentCubit _create(ConversationsState cs) {
+    final entry = cs.active;
+    final TravelAgentCubit cubit;
+    if (entry?.snapshot != null) {
+      cubit = TravelAgentCubit.restore(entry!.snapshot!);
+    } else if (entry?.seed != null) {
+      cubit = TravelAgentCubit.fromSeed(entry!.seed!);
+    } else if (cs.newChats == 0) {
+      // A tela abre no cenário pedido (rota ou ?cenario=).
+      if (widget.scenario == TravelAgentScenario.chuva) {
+        // Cena 5: já em Recife, conta e viagem existem.
+        travelerCubit().ensureMoment();
+      }
+      cubit = TravelAgentCubit(scenario: widget.scenario);
+    } else {
+      cubit = TravelAgentCubit();
+    }
+    return _current = cubit;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    final lite = AppEffects.lite;
+    return BlocBuilder<ConversationsCubit, ConversationsState>(
+      builder: (context, cs) {
+        final view = BlocProvider(
+          key: ValueKey(cs.viewKey),
+          create: (_) => _create(cs),
+          child: Builder(builder: (context) {
+            const child = _TravelAgentView();
+            // Cena 5: a notificação só na abertura pelo alerta de chuva.
+            if (widget.scenario != TravelAgentScenario.chuva ||
+                cs.viewKey != 'nova-0') {
+              return _DrawerScope(onOpen: () => _setOpen(true), child: child);
+            }
+            return MareNotificationOverlay(
+              title: 'Chuva às ${TravelMock.rainAt} em Casa Forte',
+              body: 'O '
+                  '${TravelMock.roleById(TravelMock.swapFromId).shortName}'
+                  ' é ao ar livre. Tenho uma troca coberta pra você.',
+              onTap: context.read<TravelAgentCubit>().startRainAlert,
+              child: _DrawerScope(onOpen: () => _setOpen(true), child: child),
+            );
+          }),
+        );
+        return PopScope(
+          // Voltar com a gaveta aberta só fecha a gaveta.
+          canPop: !_open,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop) _setOpen(false);
+          },
+          child: ColoredBox(
+            color: p.s0,
+            child: LayoutBuilder(builder: (context, box) {
+              final w = _width(box);
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: w,
+                    child: AnimatedBuilder(
+                      animation: _drawer,
+                      builder: (context, child) => Offstage(
+                        offstage: _drawer.value == 0,
+                        child: Transform.translate(
+                          // Parallax curto: a gaveta anda menos que a página.
+                          offset: Offset(-(1 - _drawer.value) * w * 0.3, 0),
+                          child: child,
+                        ),
+                      ),
+                      child: ExcludeSemantics(
+                        excluding: !_open,
+                        child: ConversationDrawer(
+                          state: cs,
+                          onOpen: _openConversation,
+                          onNew: _newConversation,
+                          onExplore: _explore,
+                        ),
+                      ),
+                    ),
+                  ),
+                  AnimatedBuilder(
+                    animation: _drawer,
+                    builder: (context, child) {
+                      final t = _drawer.value;
+                      Widget page = child!;
+                      // Cantos crescem até o raio do sheet; no celular do
+                      // navegador, sem recorte (custa caro sobre o blur).
+                      if (!lite && t > 0) {
+                        page = ClipRRect(
+                          borderRadius:
+                              BorderRadius.circular(TravelSpace.rSheet * t),
+                          child: page,
+                        );
+                      }
+                      return Transform.translate(
+                        offset: Offset(t * w, 0),
+                        child: page,
+                      );
+                    },
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        view,
+                        // Véu preto 12% (figura-fundo sem sombra); tocar ou
+                        // arrastar pra esquerda fecha.
+                        AnimatedBuilder(
+                          animation: _drawer,
+                          builder: (context, _) => _drawer.value == 0
+                              ? const Positioned(
+                                  left: 0, top: 0, child: SizedBox.shrink())
+                              : Positioned.fill(
+                                  child: Semantics(
+                                    button: true,
+                                    label: 'Fechar conversas',
+                                    excludeSemantics: true,
+                                    onTap: () => _setOpen(false),
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () => _setOpen(false),
+                                      onHorizontalDragUpdate: (d) =>
+                                          _drawer.value += d.delta.dx / w,
+                                      onHorizontalDragEnd: (d) => _settle(
+                                          d.velocity.pixelsPerSecond.dx, w),
+                                      child: ColoredBox(
+                                        color: Colors.black.withValues(
+                                            alpha: 0.12 * _drawer.value),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Dá aos cabeçalhos da conversa o "abrir conversas" (☰) da casca.
+class _DrawerScope extends InheritedWidget {
+  const _DrawerScope({required this.onOpen, required super.child});
+
+  final VoidCallback onOpen;
+
+  static VoidCallback of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_DrawerScope>()!.onOpen;
+
+  @override
+  bool updateShouldNotify(_DrawerScope old) => false;
 }
 
 class _TravelAgentView extends StatefulWidget {
@@ -435,13 +659,11 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
                                   opacity: 1 - chatT,
                                   child: _TopBar(
                                     menuOpen: _menuOpen,
-                                    // No começo do zero o mapa é a base:
-                                    // voltar sai da tela.
-                                    backLabel: s.isBlankStart
-                                        ? 'Voltar'
-                                        : 'Voltar pra conversa',
+                                    // No começo do zero o mapa é a base: no
+                                    // lugar do voltar, as conversas (☰).
+                                    conversations: s.isBlankStart,
                                     onBack: s.isBlankStart
-                                        ? () => Navigator.of(context).maybePop()
+                                        ? _DrawerScope.of(context)
                                         : cubit.closeMap,
                                     onMenu: () =>
                                         setState(() => _menuOpen = true),
@@ -496,7 +718,7 @@ class _TravelAgentViewState extends State<_TravelAgentView> {
                                 scroll: scroll,
                                 chatT: chatT,
                                 locked: _chatLocked,
-                                onBack: () => Navigator.of(context).maybePop(),
+                                onBack: _DrawerScope.of(context),
                                 onMenu: () => setState(() => _menuOpen = true),
                                 onDrag: (dy) {
                                   if (!_sheet.isAttached || _chatLocked) return;
@@ -629,13 +851,13 @@ class _TopBar extends StatelessWidget {
       {required this.menuOpen,
       required this.onBack,
       required this.onMenu,
-      this.backLabel = 'Voltar pra conversa'});
+      this.conversations = false});
 
   final bool menuOpen;
   final VoidCallback onBack;
 
-  /// No começo do zero o voltar sai da tela (não há conversa atrás).
-  final String backLabel;
+  /// Começo do zero: não há conversa atrás — o botão abre as conversas.
+  final bool conversations;
   final VoidCallback onMenu;
 
   @override
@@ -644,8 +866,9 @@ class _TopBar extends StatelessWidget {
     return Row(
       children: [
         AppGlassIconButton(
-          icon: const FaIcon(TravelIcons.back),
-          semanticLabel: backLabel,
+          icon: FaIcon(
+              conversations ? TravelIcons.sidebar : TravelIcons.back),
+          semanticLabel: conversations ? 'Conversas' : 'Voltar pra conversa',
           color: p.ink,
           onPressed: onBack,
         ),
@@ -694,7 +917,7 @@ class _GhostIconButton extends StatelessWidget {
   }
 }
 
-/// Cabeçalho da conversa em tela cheia: voltar · Maré · ⋯
+/// Cabeçalho da conversa em tela cheia: ☰ (conversas) · Maré · ⋯
 /// Botões nas mesmas posições dos de vidro do mapa (continuidade).
 class _ChatHeader extends StatelessWidget {
   const _ChatHeader(
@@ -724,8 +947,8 @@ class _ChatHeader extends StatelessWidget {
           Row(
             children: [
               _GhostIconButton(
-                  icon: TravelIcons.back,
-                  label: 'Voltar',
+                  icon: TravelIcons.sidebar,
+                  label: 'Conversas',
                   onTap: onBack,
                   color: fg),
               const Spacer(),
@@ -1213,6 +1436,10 @@ class _SheetBodyState extends State<_SheetBody> {
                               enabled: s.phase != AgentPhase.thinking &&
                                   s.phase != AgentPhase.error,
                               used: s.messagesUsed,
+                              // Conversa nova: ainda não há o que ajustar.
+                              hint: s.isNewChat
+                                  ? 'Pergunte à Maré…'
+                                  : 'Peça um ajuste à Maré…',
                               autofocus: s.itineraryOpen,
                               above: s.phase == AgentPhase.idle &&
                                       !s.itineraryOpen

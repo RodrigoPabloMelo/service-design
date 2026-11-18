@@ -6,6 +6,7 @@ import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 import 'package:studio_app/features/travel_agent/presentation/view_models/travel_agent_cubit.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/agent_process.dart';
+import 'package:studio_app/features/travel_agent/presentation/widgets/blank_start.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/connector_carousel.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/mare_mark.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/ride_sheet.dart';
@@ -35,20 +36,34 @@ class AgentConversation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final msgs = state.messages;
+    final top = 18 + SheetTopInset.of(context);
+    final bottom = state.phase == AgentPhase.idle ? 284.0 : 200.0;
+    // Conversa nova: só a saudação, centrada no espaço acima do rodapé
+    // (sugestões + composer). Nada de bloco-resumo.
+    if (state.isNewChat) {
+      return LayoutBuilder(
+        builder: (context, box) => SingleChildScrollView(
+          controller: scrollController,
+          padding: EdgeInsets.fromLTRB(
+              TravelSpace.gutter, top, TravelSpace.gutter, bottom),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+                minHeight: (box.maxHeight - top - bottom).clamp(0, 9999)),
+            child: const Center(child: AgentGreeting()),
+          ),
+        ),
+      );
+    }
     return ListView(
       controller: scrollController,
       // Topo 18: o conteúdo em repouso começa abaixo do fade da alça.
+      // Rodapé fixo: composer + linha de sugestões (76 + 8) quando ociosa.
       padding: EdgeInsets.fromLTRB(
-        TravelSpace.gutter,
-        18 + SheetTopInset.of(context),
-        TravelSpace.gutter,
-        // Rodapé fixo: composer + linha de sugestões (76 + 8) quando ociosa.
-        state.phase == AgentPhase.idle ? 284 : 200,
-      ),
+          TravelSpace.gutter, top, TravelSpace.gutter, bottom),
       children: [
-        // Começo do zero: sem bloco-resumo (nada foi salvo pela pessoa; os
-        // rolês vêm da Maré).
-        if (state.scenario != TravelAgentScenario.vazio) ...[
+        // Conversa nova e começo do zero seguem sem bloco-resumo; ele fica
+        // nas conversas que já têm roteiro ou erro.
+        if (state.showSummary) ...[
           DarkBackdrop(child: _Summary(state: state)),
           const SizedBox(height: TravelSpace.xl),
         ],

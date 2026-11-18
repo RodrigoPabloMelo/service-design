@@ -30,6 +30,7 @@ class TravelAgentState extends Equatable {
     this.itineraryFocused = false,
     this.itineraryEditing = false,
     this.mapOpen = false,
+    this.showSummary = true,
   });
 
   final TravelAgentScenario scenario;
@@ -77,6 +78,15 @@ class TravelAgentState extends Equatable {
   /// que é como a tela começa.
   final bool mapOpen;
 
+  /// Bloco-resumo azul no topo da conversa. Conversa nova abre sem ele (só
+  /// a saudação); conversas que já têm roteiro ou erro o mantêm.
+  final bool showSummary;
+
+  /// Conversa nova em tela cheia: nada enviado e sem resumo — mostra a
+  /// saudação central (não confundir com o começo do zero, no mapa).
+  bool get isNewChat =>
+      messages.isEmpty && !showSummary && phase == AgentPhase.idle;
+
   bool get hasItinerary => phase == AgentPhase.itinerary;
 
   /// Começo do zero: nada salvo e nada enviado — abre no mapa com a
@@ -109,6 +119,7 @@ class TravelAgentState extends Equatable {
     bool? itineraryFocused,
     bool? itineraryEditing,
     bool? mapOpen,
+    bool? showSummary,
   }) {
     return TravelAgentState(
       scenario: scenario,
@@ -134,6 +145,7 @@ class TravelAgentState extends Equatable {
       itineraryFocused: itineraryFocused ?? this.itineraryFocused,
       itineraryEditing: itineraryEditing ?? this.itineraryEditing,
       mapOpen: mapOpen ?? this.mapOpen,
+      showSummary: showSummary ?? this.showSummary,
     );
   }
 
@@ -161,5 +173,6 @@ class TravelAgentState extends Equatable {
         itineraryFocused,
         itineraryEditing,
         mapOpen,
+        showSummary,
       ];
 }

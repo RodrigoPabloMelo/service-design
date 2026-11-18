@@ -446,3 +446,25 @@ class AgentMessage extends Equatable {
   @override
   List<Object?> get props => [id, author, kind, text];
 }
+
+/// Conversa antiga com a Maré, mostrada na gaveta (☰). No protótipo é
+/// reconstruída a partir do pedido que a abriu ([prompt]): a Maré responde
+/// na hora, sem o processo animado. [failed] = a Maré estava fora do ar.
+class ConversationSeed extends Equatable {
+  const ConversationSeed({
+    required this.id,
+    required this.title,
+    required this.prompt,
+    this.pinned = false,
+    this.failed = false,
+  });
+
+  final String id;
+  final String title;
+  final String prompt;
+  final bool pinned;
+  final bool failed;
+
+  @override
+  List<Object?> get props => [id, title, prompt, pinned, failed];
+}

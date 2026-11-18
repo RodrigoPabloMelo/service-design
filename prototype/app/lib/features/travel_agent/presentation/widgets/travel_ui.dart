@@ -198,6 +198,10 @@ abstract final class TravelIcons {
       fontFamily: _solid,
       fontPackage: _pkg,
       fontFamilyFallback: _keep)); // layerGroup
+  static const sidebar = FaIconData(IconData(0xf550,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // barsStaggered — gaveta de conversas
   static const more = FaIconData(IconData(0xf141,
       fontFamily: _solid,
       fontPackage: _pkg,

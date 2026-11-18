@@ -114,6 +114,33 @@ abstract final class TravelMock {
     'Perto do hotel',
   ];
 
+  /// Conversas anteriores na gaveta (☰): a fixada é o roteiro da viagem;
+  /// as recentes vêm das sugestões da abertura (cenas da narrativa).
+  static const conversations = [
+    ConversationSeed(
+      id: 'roteiro',
+      title: 'Roteiro Recife, 14 a 16 nov',
+      prompt: 'Organizar meus 8 rolês',
+      pinned: true,
+    ),
+    ConversationSeed(
+      id: 'noite',
+      title: 'Noite com as amigas',
+      prompt: 'Noite com as amigas',
+    ),
+    ConversationSeed(
+      id: 'hotel',
+      title: 'Perto do hotel',
+      prompt: 'Perto do hotel',
+    ),
+    ConversationSeed(
+      id: 'erro',
+      title: 'Organizar meus 8 rolês',
+      prompt: 'Organizar meus 8 rolês',
+      failed: true,
+    ),
+  ];
+
   // ── Começo do zero (cenário Vazio) ───────────────────────────────────
   // Uma de cada sorteada por visita: a abertura muda um pouco cada vez.
 
