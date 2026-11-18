@@ -224,8 +224,7 @@ class _HomeTabState extends State<_HomeTab> {
       buildWhen: (a, b) =>
           a.status != b.status ||
           a.sections != b.sections ||
-          a.saved != b.saved ||
-          a.greeting != b.greeting,
+          a.saved != b.saved,
       builder: (context, s) {
         final Widget content = switch (s.status) {
           ExploreStatus.loading => _Skeleton(top: top),
@@ -261,7 +260,6 @@ class _HomeTabState extends State<_HomeTab> {
 
   Widget _content(
       BuildContext context, ExploreState s, double top, double bottom) {
-    final p = TravelPalette.of(context);
     final cubit = context.read<ExploreCubit>();
     final stay = ExploreMock.profile.stayLocation;
     return ListView(
@@ -269,23 +267,21 @@ class _HomeTabState extends State<_HomeTab> {
       children: [
         Reveal(
           index: 0,
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: TravelSpace.content),
-            child: Text(s.greeting,
-                style: TravelType.title1.copyWith(color: p.ink)),
-          ),
-        ),
-        const SizedBox(height: TravelSpace.lg),
-        Reveal(
-          index: 1,
-          child: EdgeFadeScroll(
-            height: CategoryCard.height,
-            itemCount: ExploreMock.categories.length,
-            itemBuilder: (context, i) => CategoryCard(
-              info: ExploreMock.categories[i],
-              onTap: () => _openCategory(ExploreMock.categories[i].category),
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ExploreSectionTitle('Explore rolês'),
+              const SizedBox(height: TravelSpace.md),
+              EdgeFadeScroll(
+                height: CategoryCard.height,
+                itemCount: ExploreMock.categories.length,
+                itemBuilder: (context, i) => CategoryCard(
+                  info: ExploreMock.categories[i],
+                  onTap: () =>
+                      _openCategory(ExploreMock.categories[i].category),
+                ),
+              ),
+            ],
           ),
         ),
         for (var si = 0; si < s.sections.length; si++) ...[
@@ -338,13 +334,12 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
-    const profile = ExploreMock.profile;
     return Row(
       children: [
         Expanded(
           child: Semantics(
             button: true,
-            label: 'Buscar rolês',
+            label: 'Inicie sua pesquisa',
             excludeSemantics: true,
             onTap: onSearch,
             child: Pressable(
@@ -365,29 +360,19 @@ class _Header extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                    // Ref. Airbnb: lupa + "Inicie sua pesquisa" no centro.
+                    Center(
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           FaIcon(TravelIcons.search, size: 16, color: p.ink),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Pra onde hoje?',
-                                    style: TravelType.subheadStrong
-                                        .copyWith(color: p.ink, height: 1.25)),
-                                Text(
-                                  'Recife e Olinda, ${profile.dates}',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TravelType.caption
-                                      .copyWith(color: p.inkMuted, height: 1.3),
-                                ),
-                              ],
-                            ),
+                          const SizedBox(width: 10),
+                          Flexible(
+                            child: Text('Inicie sua pesquisa',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TravelType.headline
+                                    .copyWith(color: p.ink, height: 1.2)),
                           ),
                         ],
                       ),
@@ -432,14 +417,6 @@ class _Skeleton extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.only(top: top + 80),
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: TravelSpace.content),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: SkeletonBox(width: 220, height: 30),
-            ),
-          ),
-          const SizedBox(height: TravelSpace.lg),
           SizedBox(
             height: CategoryCard.height,
             child: ListView.separated(

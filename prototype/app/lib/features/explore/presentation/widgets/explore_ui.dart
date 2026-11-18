@@ -305,12 +305,20 @@ class RoundButton extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.badge,
+    this.fill,
+    this.size = 44,
     super.key,
   });
+
+  /// Diâmetro (mínimo 44, alvo HIG).
+  final double size;
 
   final Widget icon;
   final String label;
   final VoidCallback onTap;
+
+  /// Fundo do círculo (padrão `s1`; dentro de cápsula `s1`, use `s2`).
+  final Color? fill;
 
   /// Contador opcional (filtros ligados).
   final int? badge;
@@ -327,15 +335,16 @@ class RoundButton extends StatelessWidget {
       child: Pressable(
         onTap: onTap,
         child: SizedBox.square(
-          dimension: 44,
+          dimension: size,
           child: Stack(
             clipBehavior: Clip.none,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: size,
+                height: size,
                 alignment: Alignment.center,
-                decoration: BoxDecoration(color: p.s1, shape: BoxShape.circle),
+                decoration:
+                    BoxDecoration(color: fill ?? p.s1, shape: BoxShape.circle),
                 child: IconTheme(
                   data: IconThemeData(size: 16, color: p.ink),
                   child: icon,

@@ -28,11 +28,9 @@ class ExploreCubit extends Cubit<ExploreState> {
   Timer? _retry;
 
   void _load() {
-    final hour = _now().hour;
     emit(state.copyWith(
       status: ExploreStatus.ready,
-      greeting: '${_salutation(hour)}, ${ExploreMock.profile.travelerName}.',
-      sections: buildSections(hour),
+      sections: buildSections(_now().hour),
     ));
   }
 
@@ -54,14 +52,6 @@ class ExploreCubit extends Cubit<ExploreState> {
     if (!saved.remove(roleId)) saved.add(roleId);
     emit(state.copyWith(saved: saved));
   }
-
-  static String _salutation(int hour) => hour < 5
-      ? 'Boa noite'
-      : hour < 12
-          ? 'Bom dia'
-          : hour < 18
-              ? 'Boa tarde'
-              : 'Boa noite';
 
   static StopPeriod periodOf(int hour) => hour >= 5 && hour < 12
       ? StopPeriod.manha

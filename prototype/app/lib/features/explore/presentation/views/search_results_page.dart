@@ -70,7 +70,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
               CustomScrollView(
                 controller: _scroll,
                 slivers: [
-                  SliverToBoxAdapter(child: SizedBox(height: top + 68)),
+                  SliverToBoxAdapter(child: SizedBox(height: top + 84)),
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -125,26 +125,50 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 top: 0,
                 left: 0,
                 right: 0,
-                child: ProgressiveBlurTop(height: top + 72),
+                child: ProgressiveBlurTop(height: top + 80),
               ),
               Positioned(
                 top: top + 8,
                 left: TravelSpace.gutter,
                 right: TravelSpace.gutter,
+                // Três containers separados (mesma altura, 56): voltar,
+                // resumo da busca (toque reabre; recebe a pílula em Hero) e
+                // filtrar com contador.
                 child: Row(
                   children: [
                     RoundButton(
+                      size: 56,
                       label: 'Voltar',
                       onTap: () => Navigator.of(context).maybePop(),
                       icon: const FaIcon(TravelIcons.back),
                     ),
                     const SizedBox(width: TravelSpace.sm),
                     Expanded(
-                      child: _Summary(query: s.query, onTap: _editSearch),
+                      child: SizedBox(
+                        height: 56,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Hero(
+                                tag: kSearchHero,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: p.s1,
+                                    borderRadius: BorderRadius.circular(
+                                        TravelSpace.rComposer),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            _Summary(query: s.query, onTap: _editSearch),
+                          ],
+                        ),
+                      ),
                     ),
                     const SizedBox(width: TravelSpace.sm),
                     RoundButton(
-                      label: 'Filtros',
+                      size: 56,
+                      label: 'Filtrar',
                       badge: s.filters.count + s.query.categories.length,
                       onTap: _openFilters,
                       icon: const FaIcon(TravelIcons.sliders),
@@ -183,20 +207,9 @@ class _Summary extends StatelessWidget {
       child: Pressable(
         onTap: onTap,
         child: SizedBox(
-          height: 48,
+          height: 56,
           child: Stack(
             children: [
-              Positioned.fill(
-                child: Hero(
-                  tag: kSearchHero,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: p.s1,
-                      borderRadius: BorderRadius.circular(TravelSpace.rCard),
-                    ),
-                  ),
-                ),
-              ),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),

@@ -13,12 +13,11 @@ import 'package:studio_app/features/travel_agent/domain/entities/travel_entities
 
 void main() {
   group('ExploreCubit', () {
-    test('monta saudação e seções pela hora', () {
+    test('monta as seções pela hora', () {
       final cubit = ExploreCubit(now: () => DateTime(2026, 11, 14, 20));
       addTearDown(cubit.close);
       final s = cubit.state;
       expect(s.status, ExploreStatus.ready);
-      expect(s.greeting, 'Boa noite, Camila.');
       expect(s.sections.first.title, 'Pra hoje à noite');
       for (final section in s.sections) {
         expect(section.roleIds, isNotEmpty);
@@ -33,7 +32,6 @@ void main() {
     test('de manhã a seção da hora muda', () {
       final cubit = ExploreCubit(now: () => DateTime(2026, 11, 14, 9));
       addTearDown(cubit.close);
-      expect(cubit.state.greeting, startsWith('Bom dia'));
       expect(cubit.state.sections.first.title, 'Pra esta manhã');
     });
 
@@ -123,11 +121,12 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: ExplorePage()));
     await tester.pump(const Duration(seconds: 1));
 
-    expect(find.text('Pra onde hoje?'), findsOneWidget);
+    expect(find.text('Inicie sua pesquisa'), findsOneWidget);
     expect(find.bySemanticsLabel('Abrir a Maré'), findsOneWidget);
     expect(find.text('Explorar'), findsOneWidget);
     expect(find.text('Salvos'), findsWidgets);
     expect(find.text('Museu'), findsOneWidget);
+    expect(find.text('Explore rolês'), findsOneWidget);
   });
 
   testWidgets('arrastar a seleção da tab bar troca a aba', (tester) async {

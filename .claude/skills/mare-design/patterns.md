@@ -189,11 +189,11 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
 
 ## Explorar (home)
 
-- **Topo:** pílula de busca `s1` (56, raio 28: lupa + "Pra onde hoje?" +
-  linha de datas) e, à direita, botão circular `s1` 56 com `MareMark` que
+- **Topo:** pílula de busca `s1` (56, raio 28: lupa + "Inicie sua
+  pesquisa" centralizados, ref. Airbnb) e, à direita, botão circular `s1` 56 com `MareMark` que
   abre o agente como página separada (fade + escala do canto). O agente
   **não é aba**. Conteúdo rola sob `ProgressiveBlurTop`.
-- Saudação pela hora em `title1`; categorias em carrossel (cards 116×148,
+- Sem saudação (o designer tirou): logo abaixo da busca, título de seção "Explore rolês" e as categorias em carrossel (cards 116×148,
   raio 24); seções curtas (até 5) em carrossel com título `title3`. A
   seção da hora vem primeiro. Nada de feed infinito.
 - **Card do rolê:** foto (raio 24, Hero até o detalhe) com salvar em frost
@@ -221,8 +221,9 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
   Quando?, Com quem?, Que tipo?. Rodapé: só o primário "Buscar".
 - **Chip:** pílula 40 sem borda; dentro de card `s2`, solto `s1`;
   selecionado `accentSoft`. Chip de categoria leva o ícone SVG em `ink`.
-- **Resultados:** voltar, pílula-resumo (reabre a busca) e filtros (44, com
-  contador `accent`); "N rolês" em `title1` + "Pra ir com…"; lista curta.
+- **Resultados:** três containers `s1` de 56, separados por 8: voltar
+  (círculo), resumo da busca (pílula raio 28, reabre a busca) e filtrar
+  (círculo, contador `accent`); "N rolês" em `title1` + "Pra ir com…"; lista curta.
   Vazio diz que a base curada não cobre (D-07) e oferece um secundário.
 - **Filtros** (sheet `s0` raio 36): tiles "Pra você" (88, raio 24, ícone
   sólido + rótulo), `PillSegmented` de período e preço, chips de tipo.

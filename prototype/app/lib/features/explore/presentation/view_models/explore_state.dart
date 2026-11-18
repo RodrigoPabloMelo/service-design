@@ -9,7 +9,6 @@ enum ExploreTab { explorar, salvos, perfil }
 class ExploreState extends Equatable {
   const ExploreState({
     this.status = ExploreStatus.loading,
-    this.greeting = '',
     this.sections = const [],
     this.tab = ExploreTab.explorar,
     this.saved = const {},
@@ -17,8 +16,6 @@ class ExploreState extends Equatable {
 
   final ExploreStatus status;
 
-  /// "Boa tarde, Camila."
-  final String greeting;
   final List<ExploreSection> sections;
   final ExploreTab tab;
 
@@ -27,19 +24,17 @@ class ExploreState extends Equatable {
 
   ExploreState copyWith({
     ExploreStatus? status,
-    String? greeting,
     List<ExploreSection>? sections,
     ExploreTab? tab,
     Set<String>? saved,
   }) =>
       ExploreState(
         status: status ?? this.status,
-        greeting: greeting ?? this.greeting,
         sections: sections ?? this.sections,
         tab: tab ?? this.tab,
         saved: saved ?? this.saved,
       );
 
   @override
-  List<Object?> get props => [status, greeting, sections, tab, saved];
+  List<Object?> get props => [status, sections, tab, saved];
 }
