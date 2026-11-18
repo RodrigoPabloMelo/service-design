@@ -47,6 +47,7 @@
 | [Q-37](#q-37) | Salvos em pastas | UX/Ecossistema | média | aberta |
 | [Q-38](#q-38) | Categorias da home x categorias do agente | Conteúdo | média | aberta |
 | [Q-39](#q-39) | Dado de alagamento no trajeto sugerido | Segurança/Dados | média | aberta |
+| [Q-40](#q-40) | Histórico de conversas com a Maré: conta e retenção | IA/Privacidade | média | aberta |
 
 ---
 
@@ -236,3 +237,7 @@ Ref.: D-24, D-07. A home usa 6 categorias (restaurantes, café, museu, cultura, 
 <a id="q-39"></a>
 ### Q-39 · Alagamento no trajeto sugerido
 Ref.: D-06, D-07, `Q-11`, `Q-10`, narrativa do serviço (momento 5). Na troca por chuva, a Maré diz que o trajeto sugerido não tem pontos de alagamento conhecidos. De onde vem esse dado (relatos de moradoras, curadoria, Defesa Civil/Prefeitura, app de trânsito)? Com que frequência é atualizado? Como dizer isso sem prometer segurança e sem rotular bairro (UX.md §6)? No protótipo o texto descreve a rota com **fonte e data** ("Relatos de moradoras, em 05 nov") — **(hipótese)**.
+
+<a id="q-40"></a>
+### Q-40 · Histórico de conversas com a Maré: conta e retenção
+Ref.: D-16, D-17, D-07, `Q-11`, `Q-13`, [fluxos/agente.md](fluxos/agente.md#fl-043--conversas-anteriores-gaveta) (`FL-04.3`). O protótipo abre a Maré numa conversa nova e guarda as anteriores numa gaveta (fixadas e recentes, ref. ChatGPT). Guardar conversas exige conta? D-16 só pede conta para salvar — conversar sem conta e perder o histórico ao sair seria aceitável? Por quanto tempo as conversas ficam guardadas e quem pode vê-las (a companhia, `Q-22`)? Conversas contam para o limite de mensagens só uma vez (`Q-35`)? No protótipo o histórico vive só na sessão, não pede conta e as conversas antigas são mock — **(hipótese)**.

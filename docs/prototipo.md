@@ -27,6 +27,8 @@ Abra `/explorar` (home, abre por padrão) ou `/agente`. Momentos da narrativa: `
 
 ## Telas e componentes ↔ docs
 
+O passo a passo de cada tela (fluxos `FL-xx`, subfluxos `FL-xx.y`) e os estados por onde passa (`ST-*`) estão em [fluxos/](fluxos/README.md).
+
 | Parte do protótipo | O que faz | Etapa | Personas | Decisões que aplica | Questões que toca |
 | --- | --- | --- | --- | --- | --- |
 | **Explorar (home)** (busca no topo, botão da Maré à direita, "Explore rolês" com as categorias, seções curtas: "Pra esta tarde/noite", "Pra ir sozinha", "Mais perto do hotel", "Se chover") | Porta de entrada: rolês curados com quem indicou e por quê, sem feed infinito | `E-01`, `E-03`, `E-04` | todas; seção da companhia segue o perfil (mock: Camila, sozinha, `P-CAMILA`) | D-24, D-03, D-21 | [Q-25](questoes-em-aberto.md#q-25), [Q-37](questoes-em-aberto.md#q-37) |
@@ -36,7 +38,8 @@ Abra `/explorar` (home, abre por padrão) ou `/agente`. Momentos da narrativa: `
 | **Conta rápida ao salvar** (folha com Apple, e-mail ou Google; um passo, sem verificação) | Salvar pede conta; ver continua sem login. Depois de entrar, o rolê já fica salvo | `E-04` | todas | D-16, D-23 | [Q-13](questoes-em-aberto.md#q-13) |
 | **Salvos** (pasta "Recife, datas" com os rolês salvos, "Organizar com a Maré", vazio honesto) | A pasta da viagem | `E-04`, `E-05` | todas | D-24 | [Q-37](questoes-em-aberto.md#q-37) |
 | **Perfil** (resumo da viagem: datas, hotel, salvos, avaliações, transfer; carteira) | Pós-serviço e conta | `E-08` | todas | — | [Q-27](questoes-em-aberto.md#q-27), [Q-32](questoes-em-aberto.md#q-32) |
-| **Conversa com o agente** (abertura em tela cheia, sugestões "Organizar meus 8 rolês", "Noite com as amigas", "Perto do hotel") | A viajante pede em linguagem natural; o agente responde com rolês ou roteiro | `E-05`, `E-06` | todas; "Noite com as amigas" → `P-JULIA` | D-07 (IA usa só a base curada) | [Q-11](questoes-em-aberto.md#q-11) escopo da IA |
+| **Conversa com o agente** (abre numa **conversa nova**: saudação central, sem bloco-resumo; sugestões "Organizar meus 8 rolês", "Noite com as amigas", "Perto do hotel" acima do composer). Vale também para quem chega pelo Explorar e por "Organizar com a Maré" em Salvos | A viajante pede em linguagem natural; o agente responde com rolês ou roteiro | `E-05`, `E-06` | todas; "Noite com as amigas" → `P-JULIA` | D-07 (IA usa só a base curada) | [Q-11](questoes-em-aberto.md#q-11) escopo da IA |
+| **Conversas anteriores (gaveta ☰)** (ref. ChatGPT: Explorar, Fixadas, Recentes, "Nova conversa"; a conversa desliza pra direita) | Retomar uma conversa (o roteiro da viagem fica fixado) ou começar outra | `E-05`, `E-06` | todas | — | [Q-40](questoes-em-aberto.md#q-40) (conta e retenção do histórico) |
 | **"Pensando" com passos** | Mostra o que o agente está fazendo antes de responder | `E-05` | — | — | Q-11 (hipótese: transparência do porquê da recomendação) |
 | **Começo do zero** (cenário `vazio`: mapa com pontos da curadoria sem nome + saudação) | Primeira visita, nada salvo | `E-01`, `E-03` | — | D-05 (curadoria) | — |
 | **Card do rolê** (quem indicou + vínculo com o lugar + citação, fotos reais, vídeos curtos, o que fazer, melhor horário, custo) | Junta num lugar só as provas de confiança | `E-04` | `P-CAMILA` (quem recomendou e por quê), `P-JULIA` (viral x bom) | D-03 (moradoras/es e criadoras de conteúdo), D-05 | [Q-08](questoes-em-aberto.md#q-08) publi, [Q-06](questoes-em-aberto.md#q-06) curadoria |
