@@ -477,7 +477,7 @@ class _SealBlock extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Selo Rolê Seguro',
+                Text('Rolê seguro',
                     style: TravelType.subheadStrong.copyWith(color: p.ink)),
                 const SizedBox(height: 2),
                 Text(

@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studio_app/core/components/glass/app_glass.dart';
 import 'package:studio_app/features/explore/data/explore_mock.dart';
 import 'package:studio_app/features/explore/presentation/widgets/explore_ui.dart';
+import 'package:studio_app/features/travel_agent/presentation/widgets/photo_viewer.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
@@ -177,12 +178,27 @@ class RoleCard extends StatelessWidget {
                   style: TravelType.cardTitle.copyWith(color: p.ink),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  meta ?? '${role.neighborhood}, ${role.price}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TravelType.footnote.copyWith(
-                      color: p.inkMuted, fontFeatures: TravelType.tabular),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        meta ?? '${role.neighborhood}, ${role.price}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TravelType.footnote.copyWith(
+                            color: p.inkMuted,
+                            fontFeatures: TravelType.tabular),
+                      ),
+                    ),
+                    // Selo visível já no card (UX.md §5, Q-10).
+                    const SizedBox(width: TravelSpace.sm),
+                    FaIcon(TravelIcons.safety, size: 11, color: p.inkMuted),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Rolê seguro',
+                      style: TravelType.footnote.copyWith(color: p.inkMuted),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -196,14 +212,6 @@ class RoleCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TravelType.footnoteStrong.copyWith(color: p.ink),
                       ),
-                    ),
-                    // Selo de segurança visível já no card (UX.md §5, Q-10).
-                    const SizedBox(width: TravelSpace.sm),
-                    FaIcon(TravelIcons.safety, size: 11, color: p.inkMuted),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Selo',
-                      style: TravelType.footnote.copyWith(color: p.inkMuted),
                     ),
                   ],
                 ),
@@ -225,7 +233,7 @@ class RoleCard extends StatelessWidget {
     return Semantics(
       button: true,
       label: '${role.shortName}, ${role.neighborhood}. '
-          'Indicado por $firstName. Com selo Rolê Seguro. ${reason ?? ''}',
+          'Indicado por $firstName. Rolê seguro. ${reason ?? ''}',
       onTap: onTap,
       child: Pressable(
         onTap: onTap,
@@ -258,4 +266,235 @@ class RoleCardSkeleton extends StatelessWidget {
           ],
         ),
       );
+}
+
+/// Card grande dos resultados da busca (ref. Airbnb): fotos em carrossel
+/// com bolinhas, selo em pílula de frost no canto, salvar à direita;
+/// embaixo nome + distância, onde e preço, quem indicou e por quê.
+class RoleResultCard extends StatefulWidget {
+  const RoleResultCard({
+    required this.role,
+    required this.heroTag,
+    required this.saved,
+    required this.distance,
+    required this.onTap,
+    required this.onToggleSave,
+    super.key,
+  });
+
+  final Role role;
+  final Object heroTag;
+  final bool saved;
+
+  /// "a 2,1 km do hotel".
+  final String distance;
+  final VoidCallback onTap;
+  final VoidCallback onToggleSave;
+
+  @override
+  State<RoleResultCard> createState() => _RoleResultCardState();
+}
+
+class _RoleResultCardState extends State<RoleResultCard> {
+  final _pages = PageController();
+  int _page = 0;
+
+  @override
+  void dispose() {
+    _pages.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    final role = widget.role;
+    final reason = ExploreMock.tags[role.id]?.reason;
+    final parts = role.recommender.name.split(' ');
+    final firstName = parts.length > 1 && {'Seu', 'Dona'}.contains(parts[0])
+        ? '${parts[0]} ${parts[1]}'
+        : parts.first;
+    final photos = role.photos;
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final w = MediaQuery.sizeOf(context).width;
+    final card = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AspectRatio(
+          aspectRatio: 4 / 3,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Hero(
+                tag: widget.heroTag,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(TravelSpace.rCard),
+                  child: PageView.builder(
+                    controller: _pages,
+                    itemCount: photos.length,
+                    onPageChanged: (i) => setState(() => _page = i),
+                    itemBuilder: (_, i) => Image.asset(
+                      photos[i].asset,
+                      fit: BoxFit.cover,
+                      cacheWidth: (w * dpr).round(),
+                    ),
+                  ),
+                ),
+              ),
+              IgnorePointer(
+                child: DecoratedBox(
+                    decoration: imageOutline(p, TravelSpace.rCard)),
+              ),
+              // Selo no ponto de decisão (UX.md §5; nome em Q-10).
+              const Positioned(top: 12, left: 12, child: _SealPill()),
+              Positioned(
+                top: 4,
+                right: 4,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: widget.onToggleSave,
+                  child: SizedBox.square(
+                    dimension: TravelSpace.tap + 8,
+                    child: Center(
+                      child: AppFrostButton(
+                        size: 40,
+                        semanticLabel:
+                            widget.saved ? 'Tirar dos salvos' : 'Salvar',
+                        onPressed: widget.onToggleSave,
+                        icon: FaIcon(
+                          widget.saved
+                              ? TravelIcons.bookmarkSolid
+                              : TravelIcons.bookmark,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              if (photos.length > 1)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 12,
+                  child: IgnorePointer(
+                    child: Center(
+                        child: PhotoDots(count: photos.length, index: _page)),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: TravelSpace.md),
+        ExcludeSemantics(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        role.shortName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TravelType.cardTitle.copyWith(color: p.ink),
+                      ),
+                    ),
+                    const SizedBox(width: TravelSpace.sm),
+                    Text(
+                      widget.distance,
+                      style: TravelType.footnote.copyWith(
+                          color: p.inkMuted, fontFeatures: TravelType.tabular),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${role.neighborhood}, ${role.hours}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TravelType.subhead.copyWith(color: p.inkMuted),
+                ),
+                const SizedBox(height: TravelSpace.xs),
+                Text(
+                  role.cost,
+                  style: TravelType.subheadStrong.copyWith(
+                      color: p.ink, fontFeatures: TravelType.tabular),
+                ),
+                const SizedBox(height: TravelSpace.sm),
+                Row(
+                  children: [
+                    RecommenderAvatar(role.recommender, size: 22),
+                    const SizedBox(width: TravelSpace.sm),
+                    Expanded(
+                      child: Text.rich(
+                        TextSpan(children: [
+                          TextSpan(
+                            text: 'Indicado por $firstName',
+                            style: TravelType.footnoteStrong
+                                .copyWith(color: p.ink),
+                          ),
+                          if (reason != null)
+                            TextSpan(
+                              text: '. $reason',
+                              style: TravelType.footnote
+                                  .copyWith(color: p.inkMuted),
+                            ),
+                        ]),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+    return Semantics(
+      button: true,
+      label: '${role.shortName}, ${role.neighborhood}, ${widget.distance}. '
+          'Rolê seguro. Indicado por $firstName. ${reason ?? ''}',
+      onTap: widget.onTap,
+      child: Pressable(onTap: widget.onTap, child: card),
+    );
+  }
+}
+
+/// Pílula de frost sobre a foto: selo de segurança.
+class _SealPill extends StatelessWidget {
+  const _SealPill();
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    return AppBackdropBlur(
+      sigma: 14,
+      borderRadius: BorderRadius.circular(TravelSpace.rPill),
+      liteColor: p.s1.withValues(alpha: 0.9),
+      child: Container(
+        height: 32,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: p.s1.withValues(alpha: 0.78),
+          borderRadius: BorderRadius.circular(TravelSpace.rPill),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FaIcon(TravelIcons.safety, size: 12, color: p.ink),
+            const SizedBox(width: 6),
+            Text('Rolê seguro',
+                style: TravelType.footnoteStrong.copyWith(color: p.ink)),
+          ],
+        ),
+      ),
+    );
+  }
 }

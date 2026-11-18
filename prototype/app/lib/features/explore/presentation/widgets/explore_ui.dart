@@ -84,8 +84,37 @@ String categoriesLabel(Set<ExploreCategory> cs) {
 
 String placeLabel(SearchQuery q) => q.place ?? 'Qualquer lugar';
 
-String dayLabel(SearchQuery q) =>
-    q.day == null ? 'Qualquer dia' : ExploreMock.tripDays[q.day!];
+const _months = [
+  'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
+  'jul', 'ago', 'set', 'out', 'nov', 'dez',
+];
+
+/// Nome do mês por extenso, minúsculo ("novembro").
+const monthNames = [
+  'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+  'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro',
+];
+
+/// "14 a 16 nov", "28 nov a 2 dez", "14 nov", "Fim de semana em nov".
+String dayLabel(SearchQuery q) {
+  final s = q.start;
+  if (s != null) {
+    final e = q.end;
+    final slack = q.slack > 0 ? ', ±${q.slack} ${q.slack == 1 ? 'dia' : 'dias'}' : '';
+    if (e == null) return '${s.day} ${_months[s.month - 1]}$slack';
+    final range = s.month == e.month
+        ? '${s.day} a ${e.day} ${_months[e.month - 1]}'
+        : '${s.day} ${_months[s.month - 1]} a ${e.day} ${_months[e.month - 1]}';
+    return '$range$slack';
+  }
+  final stay = q.flexStay;
+  if (stay != null) {
+    final what = stay == FlexStay.fimDeSemana ? 'Fim de semana' : 'Uma semana';
+    final m = q.flexMonth;
+    return m == null ? what : '$what em ${_months[m.month - 1]}';
+  }
+  return 'Qualquer dia';
+}
 
 String rolesCount(int n) => n == 1 ? '1 rolê' : '$n rolês';
 

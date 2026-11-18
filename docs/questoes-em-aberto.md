@@ -114,7 +114,7 @@ Ref.: D-03. A pesquisa diz que **avaliações de outras mulheres** são as mais 
 <a id="q-10"></a>
 ### Q-10 · Selo de segurança
 Ref.: D-06. O selo é dado pela comunidade, pela curadoria ou pelos dois? Quais critérios (sozinha, em dupla, à noite, transporte de volta)? É por lugar, por horário ou por trajeto? Como evitar estigmatizar bairros periféricos (conflito com ODS 8.9 / 11.7)?
-**2026-11-18 — protótipo (hipótese):** o selo aparece no card ("Selo") e no detalhe como "Selo Rolê Seguro", dizendo quem avaliou (moradoras e curadoria), para quais situações (ir sozinha, chegar e sair à noite) e a data. Nome, quem concede e critérios seguem em aberto.
+**2026-11-18 — protótipo (hipótese):** o selo aparece como **"Rolê seguro"** (rótulo pedido pelo Rodrigo em 2026-11-18, sem a palavra "Selo"): marca no card da home, pílula na foto do card de resultado e bloco no detalhe, dizendo quem avaliou (moradoras e curadoria), para quais situações (ir sozinha, chegar e sair à noite) e a data. Nome, quem concede e critérios seguem em aberto.
 
 <a id="q-11"></a>
 ### Q-11 · IA de roteiro

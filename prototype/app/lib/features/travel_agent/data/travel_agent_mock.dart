@@ -51,7 +51,7 @@ abstract final class TravelMock {
     ProcessStep(
       title: 'Recolhendo rolês no catálogo',
       detail: 'Só indicações de quem mora aqui',
-      sources: ['Catálogo local', 'Selo Rolê Seguro'],
+      sources: ['Catálogo local', 'Rolê seguro'],
       collect: true,
     ),
     ProcessStep(
