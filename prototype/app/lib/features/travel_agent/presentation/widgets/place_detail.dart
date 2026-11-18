@@ -23,11 +23,15 @@ class PlaceDetail extends StatelessWidget {
     required this.role,
     required this.scrollController,
     required this.onPlayVideo,
+    this.heroTag,
     super.key,
   });
 
   final Role role;
   final ScrollController scrollController;
+
+  /// Tag do `Hero` da foto principal (abrindo a partir de um card da home).
+  final Object? heroTag;
 
   /// Índice do vídeo + contexto do tile (para a transição de expansão).
   final void Function(int index, BuildContext tile) onPlayVideo;
@@ -50,7 +54,9 @@ class PlaceDetail extends StatelessWidget {
       padding: EdgeInsets.only(
           top: kDetailHeaderSpace - 8 + SheetTopInset.of(context), bottom: 120),
       children: [
-        _g(PhotoHero(photos: role.photos)),
+        _g(heroTag == null
+            ? PhotoHero(photos: role.photos)
+            : Hero(tag: heroTag!, child: PhotoHero(photos: role.photos))),
         const SizedBox(height: TravelSpace.lg),
         _text(
           Column(
@@ -206,12 +212,14 @@ class DetailHeader extends StatelessWidget {
     required this.scroll,
     required this.title,
     required this.onBack,
+    this.backLabel = 'Voltar pra conversa',
     super.key,
   });
 
   final ScrollController scroll;
   final String title;
   final VoidCallback onBack;
+  final String backLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -263,7 +271,7 @@ class DetailHeader extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: Semantics(
                     button: true,
-                    label: 'Voltar pra conversa',
+                    label: backLabel,
                     excludeSemantics: true,
                     onTap: onBack,
                     child: Pressable(

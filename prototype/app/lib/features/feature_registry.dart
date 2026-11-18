@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 // Só para os exemplos da Biblioteca (as telas de demo não são registradas).
 import 'package:studio_app/features/demo/demo_screens.dart';
+import 'package:studio_app/features/explore/data/explore_mock.dart';
+import 'package:studio_app/features/explore/presentation/views/explore_page.dart';
 import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/travel_agent/presentation/views/travel_agent_page.dart';
 
@@ -201,6 +203,32 @@ extension RegisteredScreenVariants on RegisteredScreen {
 const _libraryAccent = Color(0xFF6C2BD9);
 
 final designScreens = <RegisteredScreen>[
+  // ── Tela inicial "Explorar" (primeira: `/` abre aqui) ──
+  RegisteredScreen(
+    title: 'Explorar',
+    route: '/explorar',
+    flow: 'Explorar',
+    next: const ['/agente'],
+    descricao: 'Home com busca guiada (onde, quando, com quem, que tipo) e '
+        'filtros depois, categorias com foto de lugares daqui e seções '
+        'curtas que mudam com a hora e o perfil. A Maré abre pelo botão '
+        'no topo; tab bar com Explorar, Salvos e Perfil.',
+    builder: (_) => const ExplorePage(),
+    variants: [
+      ScreenVariant(
+        scenario: 'Carregando',
+        note: 'Primeira abertura: skeleton com brilho enquanto os rolês '
+            'chegam.',
+        builder: (_) =>
+            const ExplorePage(scenario: ExploreScenario.carregando),
+      ),
+      ScreenVariant(
+        scenario: 'Erro',
+        note: 'Sem conexão: aviso curto e "Tentar de novo".',
+        builder: (_) => const ExplorePage(scenario: ExploreScenario.erro),
+      ),
+    ],
+  ),
   // ── Agente de roteiros "Maré" (etapa 05 do blueprint) ──
   RegisteredScreen(
     title: 'Agente de roteiros',

@@ -251,6 +251,28 @@ abstract final class TravelIcons {
       fontPackage: _pkg,
       fontFamilyFallback: _keep)); // chevronUp
 
+  // Explorar (home, busca, tab bar)
+  static const compass = FaIconData(IconData(0xf14e,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // compass — aba Explorar
+  static const user = FaIconData(IconData(0xf007,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // user — aba Perfil
+  static const search = FaIconData(IconData(0xf002,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // magnifyingGlass
+  static const sliders = FaIconData(IconData(0xf1de,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // sliders — filtros
+  static const bookmarkSolid = FaIconData(IconData(0xf02e,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // solidBookmark — salvo
+
   // Player
   static const circlePlay = FaIconData(IconData(0xf144,
       fontFamily: _regular,
@@ -1197,6 +1219,7 @@ class SheetBar extends StatelessWidget {
     this.title,
     this.fill,
     this.ink,
+    this.leading,
     super.key,
   });
 
@@ -1205,15 +1228,25 @@ class SheetBar extends StatelessWidget {
   final Color? fill;
   final Color? ink;
 
+  /// Ação de texto à esquerda ("Limpar"). O título segue centralizado.
+  final Widget? leading;
+
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
     final fg = ink ?? p.ink;
+    final lead = leading;
     return SizedBox(
       height: 52,
       child: Row(
         children: [
-          const SizedBox(width: TravelSpace.tap),
+          if (lead == null)
+            const SizedBox(width: TravelSpace.tap)
+          else
+            SizedBox(
+              width: 88,
+              child: Align(alignment: Alignment.centerLeft, child: lead),
+            ),
           Expanded(
             child: title == null
                 ? const SizedBox.shrink()
@@ -1253,6 +1286,8 @@ class SheetBar extends StatelessWidget {
               ),
             ),
           ),
+          // Equilibra o "Limpar" (88) com o X (44): título no centro.
+          if (lead != null) const SizedBox(width: 88 - TravelSpace.tap),
         ],
       ),
     );

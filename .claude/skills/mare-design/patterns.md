@@ -186,3 +186,40 @@ sheet passa de 0.7.
 
 Fotos reais com licença livre (Wikimedia Commons) em `assets/images/roles/`
 com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
+
+## Explorar (home)
+
+- **Topo:** pílula de busca `s1` (56, raio 28: lupa + "Pra onde hoje?" +
+  linha de datas) e, à direita, botão circular `s1` 56 com `MareMark` que
+  abre o agente como página separada (fade + escala do canto). O agente
+  **não é aba**. Conteúdo rola sob `ProgressiveBlurTop`.
+- Saudação pela hora em `title1`; categorias em carrossel (cards 116×148,
+  raio 24); seções curtas (até 5) em carrossel com título `title3`. A
+  seção da hora vem primeiro. Nada de feed infinito.
+- **Card do rolê:** foto (raio 24, Hero até o detalhe) com salvar em frost
+  36; nome em Oswald; bairro e preço (ou "a X km do hotel"); avatar 20 +
+  "Indicado por Nome" ("Seu Zé", "Dona X" inteiros); motivo em 1–2 linhas.
+- **Tab bar** (ref. Yelp): pílula de Liquid Glass 64 (raio 32, padding 6),
+  3 itens ícone regular + rótulo (Explorar, Salvos, Perfil); ativo com
+  pílula de tint sólido `ink` 8% (escuro 14%) que desliza na mola do
+  segmented. Recolhe ao rolar pra baixo, volta ao rolar pra cima. Troca de
+  aba em fade-through (opacidade + escala 0.98, 220 ms).
+
+## Busca guiada e filtros (ref. Airbnb, no nosso sistema)
+
+- Tela cheia; a pílula da home voa até o card "Onde?" (Hero do fundo).
+  Barra: "Limpar" (texto) à esquerda, X à direita (`SheetBar.leading`).
+- **Sanfona** de cards `s1` raio 24: aberto mostra a pergunta em `title1`
+  e chips; fechado, rótulo à esquerda e valor à direita (linha de 60).
+  Escolha única avança sozinha pro próximo card (220 ms). Ordem: Onde?,
+  Quando?, Com quem?, Que tipo?. Rodapé: só o primário "Buscar".
+- **Chip:** pílula 40 sem borda; dentro de card `s2`, solto `s1`;
+  selecionado `accentSoft`. Chip de categoria leva o ícone SVG em `ink`.
+- **Resultados:** voltar, pílula-resumo (reabre a busca) e filtros (44, com
+  contador `accent`); "N rolês" em `title1` + "Pra ir com…"; lista curta.
+  Vazio diz que a base curada não cobre (D-07) e oferece um secundário.
+- **Filtros** (sheet `s0` raio 36): tiles "Pra você" (88, raio 24, ícone
+  sólido + rótulo), `PillSegmented` de período e preço, chips de tipo.
+  Aplica ao vivo; primário "Mostrar N rolês" com o número animando. Sem
+  filtro de segurança (Q-10).
+

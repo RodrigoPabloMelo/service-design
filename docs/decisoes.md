@@ -1,6 +1,6 @@
 # Log de decisões
 
-> **Atualizado:** 2026-11-09
+> **Atualizado:** 2026-11-18
 > Uma linha por decisão. Para mudar uma decisão, não apague: marque como `substituída por D-xx` e crie a nova.
 
 | ID | Data | Área | Decisão | Origem |
@@ -27,3 +27,5 @@
 | D-20 | 2026-11-04 | Protótipo | Primeira tela prototipada = **etapa 05 do blueprint, "Organiza locais com o agente"**: conversa com o agente + mapa + roteiro por dia (aplica D-07) | Blueprint (PDF 2026-11-04) + protótipo |
 | D-21 | 2026-11-07 | Confiança | No card do rolê, a prova de confiança vem junto: **quem indicou** (nome, vínculo com o lugar, citação), **fotos reais**, **vídeos curtos** e **entorno** com data de verificação (aplica D-03, D-06, D-18) | Protótipo, com Rodrigo |
 | D-22 | 2026-11-07 | Visual | Identidade visual **de trabalho** "Maré" (flat, iOS, neutros cinza + azul de contraste) documentada na skill `.claude/skills/mare-design/`. Provisória: ver [Q-26](questoes-em-aberto.md#q-26); o nome segue em aberto ([Q-01](questoes-em-aberto.md#q-01)) | Protótipo, com Rodrigo |
+| D-23 | 2026-11-18 | Protótipo/Navegação | Tela inicial **Explorar** com tab bar de 3 abas (**Explorar, Salvos, Perfil**). O agente **não é aba**: abre por um botão no topo da home, ao lado da busca, como página separada. Salvos = pastas de rolês (estilo Pinterest), ainda não construída ([Q-36](questoes-em-aberto.md#q-36)). Home com tab bar é **(hipótese)** de app — a entrada segue pela web ([Q-25](questoes-em-aberto.md#q-25)) | Conversa Rodrigo (protótipo) |
+| D-24 | 2026-11-18 | Protótipo/Busca | Busca **guiada pelas necessidades dela** (ref. Airbnb): onde, quando, com quem, que tipo; **filtros depois**, nos resultados (coberto, grátis, perto do hotel, período, preço, tipo). Sem filtro de segurança enquanto [Q-10](questoes-em-aberto.md#q-10) estiver aberta. Sem resultado na base curada, a tela diz isso (aplica D-07) | Conversa Rodrigo (protótipo) |

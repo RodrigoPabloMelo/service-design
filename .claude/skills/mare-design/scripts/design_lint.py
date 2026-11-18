@@ -20,7 +20,10 @@ import sys
 from pathlib import Path
 
 # Pastas cobertas (relativas à raiz do projeto).
-SCOPES = ("prototype/app/lib/features/travel_agent/",)
+SCOPES = (
+    "prototype/app/lib/features/travel_agent/",
+    "prototype/app/lib/features/explore/",
+)
 
 # Arquivos que DEFINEM os tokens podem usar o que os outros não podem.
 TOKEN_FILE = "travel_tokens.dart"
@@ -164,7 +167,7 @@ def main() -> int:
               + report(path, root, items), file=sys.stderr)
         return 2  # PostToolUse: stderr vai para o Claude
 
-    targets = [Path(a) for a in sys.argv[1:]] or [root / SCOPES[0]]
+    targets = [Path(a) for a in sys.argv[1:]] or [root / s for s in SCOPES]
     files = []
     for t in targets:
         files += sorted(t.rglob("*.dart")) if t.is_dir() else [t]

@@ -106,7 +106,9 @@ flutter:
     - assets/images/roles/
     - assets/images/connectors/
     - assets/images/people/
+    - assets/images/explore/
     - assets/icons/
+    - assets/icons/categories/
 
   fonts:
     - family: Inter

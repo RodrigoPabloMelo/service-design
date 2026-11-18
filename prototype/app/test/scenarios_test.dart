@@ -540,8 +540,9 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
 
+      final agente = designScreens.firstWhere((s) => s.route == '/agente');
       await tester.pumpWidget(
-        MaterialApp(home: DesignDocPage(slug: screenSlug(designScreens.first))),
+        MaterialApp(home: DesignDocPage(slug: screenSlug(agente))),
       );
       await tester.pump();
 

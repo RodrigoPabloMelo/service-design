@@ -372,3 +372,19 @@ abstract final class TravelCategoryTones {
   static CategoryTone of(BuildContext context, RoleCategory c) =>
       (TravelPalette.of(context).isDark ? dark : light)[c]!;
 }
+
+/// Cor de overlay dos cards de categoria da home (Explorar): foto por trás,
+/// véu nesta cor e ícone + rótulo em branco por cima. Escuras o bastante
+/// pra branco passar de 4,5:1 sobre o véu (alfa [overlayAlpha]); iguais no
+/// claro e no escuro, porque ficam sempre sobre foto. Só nos cards de
+/// categoria — no resto da interface vale a regra de uma cor de contraste.
+abstract final class ExploreCategoryTones {
+  static const overlayAlpha = 0.74;
+
+  static const restaurantes = Color(0xFFB4410E); // laranja
+  static const cafe = Color(0xFF6E4326); // café
+  static const museu = Color(0xFF9E1F4C); // carmim (frevo)
+  static const cultura = Color(0xFF5636B8); // roxo
+  static const arte = Color(0xFF8E5F00); // ocre (Brennand)
+  static const historia = Color(0xFF0D646B); // verde-petróleo
+}

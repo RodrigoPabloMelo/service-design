@@ -22,6 +22,9 @@ feedback do designer; não reabra sem ele pedir.
    calendário e na hora do guia — música roxo, arte amarelo, comida
    laranja, natureza verde, praia azul-água; fundo com cor de verdade (sem
    lavar) e texto no tom escuro da mesma cor.
+   Exceção 2: **cards de categoria da home** (`ExploreCategoryTones`): foto
+   de lugar daqui + véu escuro na cor da categoria (alfa 0.74) + ícone e
+   rótulo em branco. Só nesses cards.
 3. **Plus Jakarta Sans em 99%.** Oswald 700 só no título de card visual
    (nome do rolê). Pesos: 400 regular, 500 ênfase, 700 só títulos. **Nunca
    semibold.** Texto livre com entrelinha 150%. Peso de fonte variável muda
@@ -35,6 +38,9 @@ feedback do designer; não reabra sem ele pedir.
    codepoint — `FontAwesomeIcons.x` direto some no build web). Ícone neutro
    direto na superfície, sem bolinha colorida. Centralize o ícone no botão.
    Mesmo estilo (outline/solid) dentro de uma seção.
+   Exceção: ícones **ilustrados SVG** das categorias da home
+   (`assets/icons/categories/`, `CategoryIcon`), tingidos por `ColorFilter`;
+   só em card e chip de categoria.
 7. **Nada de brilhinho/varinha/esfera 3D pra dizer "IA".** O símbolo é o
    `MareMark` flat (disco + ondas). A `Aurora` (brilho de marca, de fundo)
    só em dois lugares: atrás do composer na abertura e no sheet de
@@ -43,7 +49,8 @@ feedback do designer; não reabra sem ele pedir.
    Corte o texto antes de enfeitar.
 9. **Vidro (Liquid Glass) em controle flutuante**: sobre o mapa e nos
    cabeçalhos/rodapés flutuantes do roteiro (voltar, dias, Editar, "Pedir
-   ajuste"); frost sobre foto; nunca vidro sobre vidro.
+   ajuste") e na **tab bar** da home; frost sobre foto; nunca vidro sobre
+   vidro (item ativo da tab bar = pílula de tint sólido).
 10. **Topo do sheet em tela cheia = desfoque progressivo do iOS**
     (`ProgressiveBlurTop`) + véu `s0`; o conteúdo começa no topo do sheet
     (`SheetTopInset`), nunca cortado numa borda dura. Fundo escuro passando

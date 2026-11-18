@@ -11,11 +11,11 @@ abstract final class TravelMock {
   static const _people = 'assets/images/people';
 
   static const profile = TripProfile(
-    travelerName: 'Marina',
+    travelerName: 'Camila',
     dates: '14–16 nov',
     stay: 'Hotel em Boa Viagem',
     stayLocation: GeoPoint(-8.1180, -34.8952),
-    company: 'com as amigas',
+    company: 'sozinha',
   );
 
   static const messageLimit = 20;
