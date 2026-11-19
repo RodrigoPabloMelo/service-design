@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studio_app/features/explore/data/explore_mock.dart';
+import 'package:studio_app/features/explore/presentation/widgets/explore_ui.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
 
@@ -122,10 +123,9 @@ class _SearchField extends StatelessWidget {
     return Container(
       height: 52,
       padding: const EdgeInsets.only(left: 16, right: 4),
-      decoration: BoxDecoration(
-        color: p.s2,
-        borderRadius: BorderRadius.circular(TravelSpace.rInner),
-      ),
+      // Campo em contorno, como as opções do card (regra 15).
+      decoration: outlineChoiceDecoration(p,
+          selected: false, radius: TravelSpace.rInner),
       child: Row(
         children: [
           FaIcon(TravelIcons.search, size: 16, color: p.ink),
@@ -158,7 +158,7 @@ class _SearchField extends StatelessWidget {
                       height: 24,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                          color: p.s1, shape: BoxShape.circle),
+                          color: p.s2, shape: BoxShape.circle),
                       child: FaIcon(TravelIcons.close, size: 11, color: p.ink),
                     ),
                   ),

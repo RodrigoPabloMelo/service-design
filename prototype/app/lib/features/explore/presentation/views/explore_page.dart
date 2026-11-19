@@ -148,7 +148,7 @@ class _ExploreViewState extends State<_ExploreView>
                             onExplore: () =>
                                 cubit.selectTab(ExploreTab.explorar),
                             onOrganize: () => Navigator.of(context).push(
-                              exploreRoute(context, const TravelAgentPage()),
+                              slideRoute(context, const TravelAgentPage()),
                             ),
                           ),
                         ExploreTab.perfil => const ProfileTab(),
@@ -278,11 +278,8 @@ class _HomeTabState extends State<_HomeTab> {
   }
 
   void _openAgent() {
-    Navigator.of(context).push(exploreRoute(
-      context,
-      const TravelAgentPage(),
-      origin: Alignment.topRight,
-    ));
+    // A Maré entra da direita (push do iOS), não em fade.
+    Navigator.of(context).push(slideRoute(context, const TravelAgentPage()));
   }
 
   @override

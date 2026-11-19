@@ -329,6 +329,7 @@ class _Flexible extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(height: TravelSpace.sm),
         Text('Quanto tempo?',
             style: TravelType.headline.copyWith(color: p.ink)),
         const SizedBox(height: TravelSpace.md),
@@ -396,12 +397,12 @@ class _MonthCard extends StatelessWidget {
       child: Pressable(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: TravelSpace.lg),
-          decoration: selectionDecoration(p,
-              selected: selected, fill: p.s2, radius: TravelSpace.rInner),
+          padding: const EdgeInsets.symmetric(vertical: TravelSpace.xl),
+          decoration: outlineChoiceDecoration(p,
+              selected: selected, radius: TravelSpace.rInner),
           child: Column(
             children: [
-              FaIcon(TravelIcons.calendar, size: 22, color: p.ink),
+              FaIcon(TravelIcons.calendar, size: 26, color: p.ink),
               const SizedBox(height: TravelSpace.sm),
               Text('${name[0].toUpperCase()}${name.substring(1)}',
                   style: TravelType.subheadStrong.copyWith(color: p.ink)),

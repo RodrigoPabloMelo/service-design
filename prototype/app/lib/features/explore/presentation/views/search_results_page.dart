@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:studio_app/features/traveler/presentation/view_models/traveler_cubit.dart';
 import 'package:studio_app/features/traveler/presentation/widgets/account_sheet.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -68,59 +69,80 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
           final results = s.results;
           return Stack(
             children: [
-              CustomScrollView(
-                controller: _scroll,
-                slivers: [
-                  SliverToBoxAdapter(child: SizedBox(height: top + 84)),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: TravelSpace.content),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AnimatedSwitcher(
-                            duration: exploreMotion(context, 200),
-                            child: Text(
-                              rolesCount(results.length),
-                              key: ValueKey(results.length),
-                              style: TravelType.title1.copyWith(
-                                  color: p.ink,
-                                  fontFeatures: TravelType.tabular),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SliverToBoxAdapter(
-                      child: SizedBox(height: TravelSpace.xl)),
-                  SliverPadding(
-                    padding: EdgeInsets.fromLTRB(TravelSpace.gutter, 0,
-                        TravelSpace.gutter, TravelSpace.xxl + bottom),
-                    sliver: SliverToBoxAdapter(
-                      child: AnimatedSwitcher(
-                        duration: exploreMotion(context, 260),
-                        switchInCurve: kExploreEase,
-                        layoutBuilder: (current, previous) => Stack(
-                          alignment: Alignment.topCenter,
-                          children: [...previous, if (current != null) current],
-                        ),
-                        child: results.isEmpty
-                            ? _Empty(
-                                key: const ValueKey('vazio'),
-                                hasFilters: s.filters.count +
-                                        s.query.categories.length >
-                                    0,
-                              )
-                            : _ResultList(
-                                key: ValueKey(results.map((r) => r.id).join()),
-                                roles: results,
+              Positioned.fill(
+                child: AnimatedSwitcher(
+                  duration: exploreMotion(context, 260),
+                  switchInCurve: kExploreEase,
+                  child: results.isEmpty
+                      // Vazio ocupa a tela: conteúdo no centro, ações
+                      // embaixo, perto do polegar.
+                      ? _Empty(
+                          key: const ValueKey('vazio'),
+                          state: s,
+                          top: top + 80,
+                          bottom: bottom,
+                        )
+                      : CustomScrollView(
+                          key: const ValueKey('lista'),
+                          controller: _scroll,
+                          slivers: [
+                            SliverToBoxAdapter(
+                                child: SizedBox(height: top + 84)),
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: TravelSpace.content),
+                                child: AnimatedSwitcher(
+                                  duration: exploreMotion(context, 200),
+                                  layoutBuilder: (current, previous) =>
+                                      Stack(
+                                    alignment: Alignment.centerLeft,
+                                    children: [
+                                      ...previous,
+                                      if (current != null) current,
+                                    ],
+                                  ),
+                                  child: Text(
+                                    rolesCount(results.length),
+                                    key: ValueKey(results.length),
+                                    style: TravelType.title1.copyWith(
+                                        color: p.ink,
+                                        fontFeatures: TravelType.tabular),
+                                  ),
+                                ),
                               ),
-                      ),
-                    ),
-                  ),
-                ],
+                            ),
+                            const SliverToBoxAdapter(
+                                child: SizedBox(height: TravelSpace.xl)),
+                            SliverPadding(
+                              padding: EdgeInsets.fromLTRB(
+                                  TravelSpace.gutter,
+                                  0,
+                                  TravelSpace.gutter,
+                                  TravelSpace.xxl + bottom),
+                              sliver: SliverToBoxAdapter(
+                                child: AnimatedSwitcher(
+                                  duration: exploreMotion(context, 260),
+                                  switchInCurve: kExploreEase,
+                                  layoutBuilder: (current, previous) =>
+                                      Stack(
+                                    alignment: Alignment.topCenter,
+                                    children: [
+                                      ...previous,
+                                      if (current != null) current,
+                                    ],
+                                  ),
+                                  child: _ResultList(
+                                    key: ValueKey(
+                                        results.map((r) => r.id).join()),
+                                    roles: results,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
               ),
               Positioned(
                 top: 0,
@@ -275,39 +297,204 @@ class _ResultList extends StatelessWidget {
   }
 }
 
-/// Sem resultado: diz que a base curada não cobre (D-07), sem completar.
+/// Sem resultado: diz que a base curada não cobre (D-07), sem completar
+/// com rolê genérico. Ilustração + o que afrouxar, cada opção com quantos
+/// rolês curados ela traria (contagem real da base).
 class _Empty extends StatelessWidget {
-  const _Empty({required this.hasFilters, super.key});
+  const _Empty({
+    required this.state,
+    required this.top,
+    required this.bottom,
+    super.key,
+  });
 
-  final bool hasFilters;
+  final SearchState state;
+
+  /// Espaço do cabeçalho flutuante e da área segura de baixo.
+  final double top;
+  final double bottom;
+
+  int _count(SearchQuery q, ExploreFilters f) => searchRoles(
+        roles: ExploreMock.roles,
+        tags: ExploreMock.tags,
+        stay: ExploreMock.profile.stayLocation,
+        query: q,
+        filters: f,
+        cityOf: ExploreMock.cityOf,
+      ).length;
 
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
     final cubit = context.read<SearchCubit>();
+    final q = state.query;
+    final f = state.filters;
+    final hasFilters = f.count + q.categories.length > 0;
+    final hasWhen = q.hasDates || q.isFlexible;
+    final city = q.place;
+
+    final title = city == 'Olinda'
+        ? 'Olinda ainda não tem rolês curados'
+        : hasFilters
+            ? 'Nenhum rolê com esses filtros'
+            : 'Ainda não temos rolês curados assim';
+
+    // O que afrouxar, só se trouxer algum rolê.
+    final options = <(String, int, VoidCallback)>[
+      if (hasFilters)
+        (
+          'Limpar filtros',
+          _count(q.copyWith(categories: const {}), const ExploreFilters()),
+          cubit.clearFiltersAndTypes,
+        ),
+      if (hasWhen)
+        (
+          'Qualquer dia',
+          _count(
+              q.copyWith(
+                start: () => null,
+                end: () => null,
+                flexStay: () => null,
+                flexMonth: () => null,
+              ),
+              f),
+          cubit.clearWhen,
+        ),
+      if (city != null && city != 'Recife')
+        (
+          'Buscar em Recife',
+          _count(q.copyWith(place: () => 'Recife'), f),
+          () => cubit.setPlace('Recife'),
+        ),
+    ].where((o) => o.$2 > 0).toList();
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: TravelSpace.cardPad),
+      // Ações com respiro da borda de baixo (não coladas no gesto).
+      padding: EdgeInsets.fromLTRB(TravelSpace.gutter, top, TravelSpace.gutter,
+          40 + bottom),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Ainda não temos rolês curados assim',
-              style: TravelType.title3.copyWith(color: p.ink)),
-          const SizedBox(height: TravelSpace.sm),
-          Text(
-            'Só mostramos o que foi indicado por quem é daqui.',
-            style: TravelType.subhead.copyWith(color: p.inkMuted),
+          Expanded(
+            child: Center(
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: TravelSpace.cardPad),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const _EmptyIllustration(),
+                    const SizedBox(height: TravelSpace.xl),
+                    Text(title,
+                        textAlign: TextAlign.center,
+                        style: TravelType.title2.copyWith(color: p.ink)),
+                    const SizedBox(height: TravelSpace.sm),
+                    Text(
+                      'Só mostramos o que foi indicado por quem é daqui.',
+                      textAlign: TextAlign.center,
+                      style: TravelType.subhead.copyWith(color: p.inkMuted),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-          const SizedBox(height: TravelSpace.xl),
+          for (final (i, o) in options.indexed) ...[
+            if (i > 0) const SizedBox(height: TravelSpace.md),
+            _RelaxRow(label: o.$1, count: o.$2, onTap: o.$3),
+          ],
+          if (options.isNotEmpty) const SizedBox(height: TravelSpace.md),
           SecondaryButton(
-            label: hasFilters ? 'Limpar filtros' : 'Mudar a busca',
-            onPressed: hasFilters
-                ? cubit.clearFiltersAndTypes
-                : () => Navigator.of(context).push(exploreRoute(
-                      context,
-                      withExplore(context, const SearchPage(editing: true)),
-                    )),
+            label: 'Mudar a busca',
+            onPressed: () => Navigator.of(context).push(exploreRoute(
+              context,
+              withExplore(context, const SearchPage(editing: true)),
+            )),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Mapa dobrado com o caminho pontilhado e o pino "sem lugar" por cima,
+/// num círculo `accentSoft`.
+class _EmptyIllustration extends StatelessWidget {
+  const _EmptyIllustration();
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    final ink = ColorFilter.mode(p.accent, BlendMode.srcIn);
+    return Container(
+      width: 136,
+      height: 136,
+      decoration: BoxDecoration(color: p.accentSoft, shape: BoxShape.circle),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SvgPicture.asset('assets/icons/places/vazio.svg',
+              width: 96, height: 96, colorFilter: ink),
+          Positioned(
+            right: 30,
+            top: 26,
+            // Fundo do pino na cor do círculo: esconde as linhas do mapa.
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                  color: p.accentSoft,
+                  borderRadius: BorderRadius.circular(16)),
+              child: SvgPicture.asset('assets/icons/places/pino_vazio.svg',
+                  width: 30, height: 38, colorFilter: ink),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Opção pra afrouxar a busca: contorno (regra 15), rótulo, quantos rolês
+/// traria e seta.
+class _RelaxRow extends StatelessWidget {
+  const _RelaxRow({
+    required this.label,
+    required this.count,
+    required this.onTap,
+  });
+
+  final String label;
+  final int count;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    return Semantics(
+      button: true,
+      label: '$label, ${rolesCount(count)}',
+      excludeSemantics: true,
+      onTap: onTap,
+      child: Pressable(
+        onTap: onTap,
+        child: Container(
+          height: 56,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          decoration: outlineChoiceDecoration(p,
+              selected: false, radius: TravelSpace.rInner),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(label,
+                    style: TravelType.subheadStrong.copyWith(color: p.ink)),
+              ),
+              Text(rolesCount(count),
+                  style: TravelType.subhead.copyWith(
+                      color: p.inkMuted, fontFeatures: TravelType.tabular)),
+              const SizedBox(width: TravelSpace.sm),
+              FaIcon(TravelIcons.chevronRight, size: 12, color: p.inkMuted),
+            ],
+          ),
+        ),
       ),
     );
   }

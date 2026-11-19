@@ -389,13 +389,28 @@ abstract final class ExploreCategoryTones {
   static const historia = Color(0xFF0D646B); // verde-petróleo
 }
 
-/// Card do período no filtro (arco do dia, ref. card de nascer/pôr do sol):
-/// claro de dia, azul-tinta à noite (escurece mesmo no tema claro), com o
-/// brilho atrás do sol/lua mudando de quente (manhã) a azul (noite).
+/// Card do período no filtro (arco do dia, ref. card de nascer/pôr do sol).
+/// Cada período tem um céu próprio, em gradiente de cima pra baixo, igual
+/// nos dois temas: manhã pêssego (texto escuro, sol laranja), tarde azul
+/// vivo (texto branco, sol amarelo) e noite azul-tinta (texto branco, lua).
 abstract final class DayArcTones {
-  static const night = Color(0xFF0C1230);
-  static const nightGround = Color(0xFF060918);
+  // Manhã
+  static const morningTop = Color(0xFFFFC98A);
+  static const morningBottom = Color(0xFFFFEEDB);
+  static const morningInk = Color(0xFF3D2410);
+  static const morningSun = Color(0xFFE8620C);
+  static const morningGround = Color(0xFFE7A866);
   static const warmGlow = Color(0xFFFFB547);
-  static const noonGlow = Color(0xFF7CC4FF);
+
+  // Tarde
+  static const dayTop = Color(0xFF1F7BEA);
+  static const dayBottom = Color(0xFF7FC0FF);
+  static const daySun = Color(0xFFFFC107);
+  static const noonGlow = Color(0xFFBFE1FF);
+
+  // Noite
+  static const night = Color(0xFF0C1230);
+  static const nightBottom = Color(0xFF1C2558);
+  static const nightGround = Color(0xFF060918);
   static const nightGlow = Color(0xFF3B4CFF);
 }
