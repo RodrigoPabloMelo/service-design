@@ -42,10 +42,39 @@ class TravelerCubit extends Cubit<TravelerState> {
     if (trip == null) return s;
     return s.copyWith(folders: [
       for (final f in s.folders)
-        f.isTrip && f.days.isEmpty
-            ? f.copyWith(days: TravelerMock.daysOf(trip))
-            : f,
+        f.isTrip ? f.copyWith(days: _reconcileDays(f.days, trip)) : f,
     ]);
+  }
+
+  /// Encaixa os dias que ela já separou nas datas da viagem, sem perder
+  /// rolê: um dia com data continua na mesma data; os "Dia N" (criados
+  /// antes das datas) viram as datas na ordem. O que sobrar (mais dias que
+  /// datas, ou datas fora do intervalo) fica no fim, como estava.
+  static List<FolderDay> _reconcileDays(List<FolderDay> days, TripInfo trip) {
+    final dated = TravelerMock.daysOf(trip);
+    if (dated.isEmpty) return days;
+    final byId = {for (final d in days) d.id: d};
+    final undated = [for (final d in days) if (!d.id.startsWith('d')) d];
+    final used = <String>{};
+    var next = 0;
+    final result = <FolderDay>[];
+    for (final date in dated) {
+      final same = byId[date.id];
+      if (same != null) {
+        used.add(same.id);
+        result.add(date.copyWith(roleIds: same.roleIds));
+      } else if (next < undated.length) {
+        final manual = undated[next++];
+        used.add(manual.id);
+        result.add(date.copyWith(roleIds: manual.roleIds));
+      } else {
+        result.add(date);
+      }
+    }
+    return [
+      ...result,
+      for (final d in days) if (!used.contains(d.id)) d,
+    ];
   }
 
   bool get hasAccount => state.account != null;

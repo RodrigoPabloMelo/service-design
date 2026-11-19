@@ -69,6 +69,31 @@ void main() {
           'Segunda, 17 nov');
     });
 
+    test('datas informadas depois encaixam os "Dia N" sem perder rolê', () {
+      final c = TravelerCubit()..signIn(AccountProvider.email);
+      addTearDown(c.close);
+      c
+        ..saveTo(SavedFolder.tripId, 'casa-astral')
+        ..saveTo(SavedFolder.tripId, 'parraxaxa-casa-forte');
+      final d1 = c.addDay(SavedFolder.tripId);
+      final d2 = c.addDay(SavedFolder.tripId);
+      c
+        ..moveToDay(SavedFolder.tripId, ['casa-astral'], d1)
+        ..moveToDay(SavedFolder.tripId, ['parraxaxa-casa-forte'], d2)
+        ..setTrip(TravelerMock.trip);
+
+      final days = c.state.folderById(SavedFolder.tripId).days;
+      expect(days.map((d) => d.label),
+          ['Sexta, 14 nov', 'Sábado, 15 nov', 'Domingo, 16 nov']);
+      expect(days[0].roleIds, ['casa-astral']);
+      expect(days[1].roleIds, ['parraxaxa-casa-forte']);
+      expect(days[2].roleIds, isEmpty);
+
+      // Informar as mesmas datas de novo não mexe em nada.
+      c.setTrip(TravelerMock.trip);
+      expect(c.state.folderById(SavedFolder.tripId).days, days);
+    });
+
     test('cupons mostram bloqueado, disponível e trocado', () {
       final c = TravelerCubit.inRecife();
       addTearDown(c.close);
