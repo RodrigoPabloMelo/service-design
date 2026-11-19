@@ -66,13 +66,12 @@ ExploreTab? _tabFromUrl(BuildContext context) {
   }
 }
 
-/// Abre a Maré por cima; a gaveta dela pode devolver uma aba pra abrir.
-Future<void> openAgent(BuildContext context,
-    {Alignment origin = Alignment.center}) async {
+/// Abre a Maré entrando da direita (push do iOS, não fade); a gaveta dela
+/// pode devolver uma aba pra abrir.
+Future<void> openAgent(BuildContext context) async {
   final explore = context.read<ExploreCubit>();
   final tab = await Navigator.of(context).push<ExploreTab>(
-    exploreRouteOf<ExploreTab>(context, const TravelAgentPage(),
-        origin: origin),
+    slideRouteOf<ExploreTab>(context, const TravelAgentPage()),
   );
   if (tab != null && !explore.isClosed) explore.selectTab(tab);
 }
@@ -304,7 +303,7 @@ class _HomeTabState extends State<_HomeTab> {
     ));
   }
 
-  void _openAgent() => openAgent(context, origin: Alignment.topRight);
+  void _openAgent() => openAgent(context);
 
   @override
   Widget build(BuildContext context) {

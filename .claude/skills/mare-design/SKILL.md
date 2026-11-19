@@ -76,9 +76,13 @@ feedback do designer; não reabra sem ele pedir.
     `AppBackdropBlur`.
     Fade de borda sobre fundo sólido = véu na cor do fundo por cima, nunca
     `ShaderMask`. `?efeitos=completo` força o visual cheio, `?fps=1` mede.
-15. **Selecionado em chip/tile = branco com anel azul**, não tint: fundo
-    `s1` + borda `accent` 1,5 (`selectionDecoration`); o `accentSoft`
-    inteiro se misturava com o fundo. Anel = estado, não divisor.
+15. **Selecionado em chip/tile = anel azul**, não tint (o `accentSoft`
+    inteiro se misturava com o fundo). **Dentro de card `s1`**, a opção é
+    **contorno** fino `ink` 12% sem fundo, e selecionada fica com contorno
+    `accent` 1,5 (`outlineChoiceDecoration`, ref. Airbnb) — nunca uma
+    superfície `s2` mais escura. **Solta no fundo `s0`**: pílula `s1` +
+    anel `accent` 1,5 (`selectionDecoration`). Anel = estado, não divisor.
+    Lint D12.
     Ícone de tile de filtro leve: regular, 20, `inkMuted`, com respiro de
     16–18 da borda.
 

@@ -289,11 +289,18 @@ class _DayArcPickerState extends State<DayArcPicker>
     StopPeriod.noite: 0.86,
   };
 
-  static const _night = DayArcTones.night;
-  static const _nightGround = DayArcTones.nightGround;
-  static const _warm = DayArcTones.warmGlow;
-  static const _noon = DayArcTones.noonGlow;
-  static const _nightGlow = DayArcTones.nightGlow;
+  /// Mistura das três cores pelos pesos de manhã, tarde e noite.
+  static Color _mix(double m, double d, double n, Color cm, Color cd, Color cn) {
+    final total = m + d + n;
+    double ch(double Function(Color) f) =>
+        (f(cm) * m + f(cd) * d + f(cn) * n) / total;
+    return Color.from(
+      alpha: ch((c) => c.a),
+      red: ch((c) => c.r),
+      green: ch((c) => c.g),
+      blue: ch((c) => c.b),
+    );
+  }
 
   late final AnimationController _t = AnimationController.unbounded(
       vsync: this, value: _stops[widget.value] ?? 0.5);
@@ -352,7 +359,6 @@ class _DayArcPickerState extends State<DayArcPicker>
 
   @override
   Widget build(BuildContext context) {
-    final p = TravelPalette.of(context);
     return LayoutBuilder(
       builder: (context, box) {
         final w = box.maxWidth;
@@ -383,13 +389,25 @@ class _DayArcPickerState extends State<DayArcPicker>
             animation: _t,
             builder: (context, _) {
               final t = _t.value;
+              // Pesos do céu: manhã → tarde → noite.
               final night = _smooth(0.6, 0.86, t);
               final morning = 1 - _smooth(0.16, 0.42, t);
-              final bg = Color.lerp(p.s1, _night, night)!;
-              final fg = Color.lerp(p.ink, Colors.white, night)!;
-              final muted = Color.lerp(p.inkMuted, Colors.white70, night)!;
-              final glow = Color.lerp(
-                  Color.lerp(_noon, _warm, morning)!, _nightGlow, night)!;
+              final day = (1 - morning - night).clamp(0.0, 1.0);
+              Color sky(Color m, Color d, Color n) =>
+                  _mix(morning, day, night, m, d, n);
+              final top = sky(DayArcTones.morningTop, DayArcTones.dayTop,
+                  DayArcTones.night);
+              final bottom = sky(DayArcTones.morningBottom,
+                  DayArcTones.dayBottom, DayArcTones.nightBottom);
+              final fg = sky(DayArcTones.morningInk, Colors.white, Colors.white);
+              final muted = sky(
+                  DayArcTones.morningInk.withValues(alpha: 0.62),
+                  Colors.white.withValues(alpha: 0.78),
+                  Colors.white70);
+              final glow = sky(DayArcTones.warmGlow, DayArcTones.noonGlow,
+                  DayArcTones.nightGlow);
+              final sun = Color.lerp(
+                  DayArcTones.morningSun, DayArcTones.daySun, day)!;
               final active = widget.value;
               return ClipRRect(
                 borderRadius: BorderRadius.circular(TravelSpace.rCard),
@@ -397,17 +415,32 @@ class _DayArcPickerState extends State<DayArcPicker>
                   height: _h,
                   child: Stack(
                     children: [
-                      Positioned.fill(child: ColoredBox(color: bg)),
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [top, bottom],
+                            ),
+                          ),
+                        ),
+                      ),
                       Positioned.fill(
                         child: CustomPaint(
                           painter: _ArcPainter(
                             t: t,
                             glow: glow,
                             night: night,
-                            ground: Color.lerp(p.ink.withValues(alpha: 0.035),
-                                _nightGround, night)!,
-                            stroke: Color.lerp(p.ink.withValues(alpha: 0.14),
-                                Colors.white.withValues(alpha: 0.32), night)!,
+                            ground: sky(
+                                DayArcTones.morningGround
+                                    .withValues(alpha: 0.32),
+                                Colors.white.withValues(alpha: 0.16),
+                                DayArcTones.nightGround),
+                            stroke: sky(
+                                DayArcTones.morningInk.withValues(alpha: 0.22),
+                                Colors.white.withValues(alpha: 0.6),
+                                Colors.white.withValues(alpha: 0.32)),
                           ),
                         ),
                       ),
@@ -429,12 +462,12 @@ class _DayArcPickerState extends State<DayArcPicker>
                                   children: [
                                     Opacity(
                                       opacity: 1 - night,
-                                      child: FaIcon(TravelIcons.sun,
-                                          size: 26, color: p.sol),
+                                      child: FaIcon(TravelIcons.sunSolid,
+                                          size: 26, color: sun),
                                     ),
                                     Opacity(
                                       opacity: night,
-                                      child: const FaIcon(TravelIcons.moon,
+                                      child: const FaIcon(TravelIcons.moonSolid,
                                           size: 24, color: Colors.white),
                                     ),
                                   ],

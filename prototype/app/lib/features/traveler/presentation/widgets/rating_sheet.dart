@@ -236,8 +236,8 @@ class _Choice extends StatelessWidget {
         child: Container(
           height: 48,
           alignment: Alignment.center,
-          decoration: selectionDecoration(p,
-              selected: selected, fill: p.s2, radius: TravelSpace.rInner),
+          decoration: outlineChoiceDecoration(p,
+              selected: selected, radius: TravelSpace.rInner),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

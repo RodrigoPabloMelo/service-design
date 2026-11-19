@@ -54,6 +54,9 @@ RULES = [
      "Cor fora dos tokens: use TravelPalette (preto/branco com alfa são ok).", (TOKEN_FILE,)),
     ("D09", "aviso", re.compile(r"FontWeight\.(w700|bold)\b"),
      "Bold fora dos tokens: só títulos (TravelType.title1/title2).", (TOKEN_FILE,)),
+    ("D12", "aviso", re.compile(r"\bfill:\s*p\.s2\b"),
+     "Opção de escolha dentro de card s1: contorno (outlineChoiceDecoration), "
+     "não superfície s2 mais escura.", ()),
 ]
 
 IGNORE = re.compile(r"design-lint:\s*ignore\s+([\w, ]+)")

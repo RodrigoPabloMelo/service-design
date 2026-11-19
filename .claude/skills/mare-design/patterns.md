@@ -265,8 +265,24 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
   e chips; fechado, rótulo à esquerda e valor à direita (linha de 60).
   Escolha única avança sozinha pro próximo card (220 ms). Ordem: Onde?,
   Quando?, Com quem?, Que tipo?. Rodapé: só o primário "Buscar".
-- **Chip:** pílula 40, padding 14/14; dentro de card `s2`, solto `s1`;
-  selecionado branco + anel `accent` 1,5. Chip de categoria leva o ícone SVG em `ink`.
+- **Chip:** pílula 40, padding 14/14. Dentro de card: contorno `ink` 12%
+  sem fundo, selecionado contorno `accent` 1,5. Solto no fundo: `s1`,
+  selecionado com anel `accent` 1,5. Chip de categoria leva o ícone SVG em `ink`.
+- **Tiles de escolha em card** (mês no "Flexível", "Foi bom/Não curti"):
+  mesmo contorno dos chips, raio 12, ícone `ink` em cima e texto embaixo.
+- **Quando?:** abas "Datas | Flexível" (`PillSegmented`). Datas =
+  calendário de intervalo (dias da semana fixos, meses rolando, passado
+  riscado, círculo `accent` nas pontas, faixa `accentSoft` no meio) e
+  chips de folga ±1/±2. Flexível = duração em chips + cards de mês.
+- **Onde?:** campo de busca `s2` raio 12 (52) com lupa; vazio mostra
+  sugestões com ilustração de traço em tile 56 tingido; digitando, pino +
+  trecho buscado em negrito.
+- **Vazio da busca:** ocupa a tela. No centro: ilustração de traço em
+  círculo `accentSoft` (mapa + pino com X, `accent`), título `title2` e
+  uma linha `inkMuted`, tudo centralizado. Embaixo, na zona do polegar e a
+  40 da borda: opções pra afrouxar a busca (contorno, rótulo + quantos
+  rolês traria, seta), só as que trazem algum rolê, e o secundário "Mudar
+  a busca". Nunca completa com rolê de fora da base (D-07).
 - **Resultados:** três containers `s1` de 56, separados por 8: voltar
   (círculo), resumo da busca (pílula raio 28, reabre a busca) e filtrar
   (círculo, contador `accent`); "N rolês" em `title1` + "Pra ir com…"; lista curta.
@@ -275,9 +291,13 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
   - "Pra você": tiles 104 (raio 24, padding 16/18), ícone regular 20
     `inkMuted`, rótulo até 2 linhas; selecionado branco + anel `accent`.
   - **Período = arco do dia** (`DayArcPicker`, ref. card de nascer/pôr do
-    sol): card claro com cúpula e arco; arrasta o sol (manhã à esquerda,
-    tarde no alto, noite à direita). Indo pra noite o card escurece
-    (`DayArcTones.night`), o sol vira lua e o brilho vai de quente a azul.
+    sol): card com cúpula e arco; arrasta o astro (manhã à esquerda,
+    tarde no alto, noite à direita). **Cada período tem um céu próprio**
+    em gradiente vertical (`DayArcTones`), igual nos dois temas, com
+    contraste no texto: manhã pêssego (texto marrom-escuro, sol laranja),
+    tarde azul vivo (texto branco, sol amarelo), noite azul-tinta (texto
+    branco, lua). Nunca o card cinza claro com brilho fraco: as cores se
+    misturavam. Sol e lua **preenchidos** (`sunSolid`/`moonSolid`).
     Solta → encaixa no período mais perto (mola 420/32), haptic ao cruzar.
     Rótulos no chão tocáveis; "Qualquer" no topo limpa.
   - **Preço por pessoa = histograma + faixa** (`PriceRangePicker`, ref.

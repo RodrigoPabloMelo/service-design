@@ -23,13 +23,7 @@ Duration exploreMotion(BuildContext context, int ms) =>
 /// Com Reduce Motion a rota troca na hora (sem voo de Hero).
 Route<void> exploreRoute(BuildContext context, Widget page,
         {Alignment origin = Alignment.center}) =>
-    exploreRouteOf<void>(context, page, origin: origin);
-
-/// [exploreRoute] que devolve um resultado ao fechar (ex.: a aba que a
-/// gaveta da Maré pediu).
-Route<T> exploreRouteOf<T>(BuildContext context, Widget page,
-        {Alignment origin = Alignment.center}) =>
-    PageRouteBuilder<T>(
+    PageRouteBuilder<void>(
       transitionDuration: exploreMotion(context, 420),
       reverseTransitionDuration: exploreMotion(context, 320),
       pageBuilder: (_, __, ___) => page,
@@ -47,6 +41,34 @@ Route<T> exploreRouteOf<T>(BuildContext context, Widget page,
             alignment: origin,
             child: child,
           ),
+        );
+      },
+    );
+
+/// Push lateral do iOS: a tela entra da direita. Usado pra abrir a Maré,
+/// que é outra página, não um detalhe da home. Com Reduce Motion troca na
+/// hora.
+Route<void> slideRoute(BuildContext context, Widget page) =>
+    slideRouteOf<void>(context, page);
+
+/// [slideRoute] que devolve um resultado ao fechar (ex.: a aba que a
+/// gaveta da Maré pediu).
+Route<T> slideRouteOf<T>(BuildContext context, Widget page) =>
+    PageRouteBuilder<T>(
+      transitionDuration: exploreMotion(context, 420),
+      reverseTransitionDuration: exploreMotion(context, 360),
+      pageBuilder: (_, __, ___) => page,
+      transitionsBuilder: (context, animation, secondary, child) {
+        if (MediaQuery.disableAnimationsOf(context)) return child;
+        final c = CurvedAnimation(
+          parent: animation,
+          curve: kExploreEase,
+          reverseCurve: Curves.easeInCubic,
+        );
+        return SlideTransition(
+          position: Tween(begin: const Offset(1, 0), end: Offset.zero)
+              .animate(c),
+          child: child,
         );
       },
     );
@@ -153,8 +175,9 @@ class CategoryIcon extends StatelessWidget {
       );
 }
 
-/// Chip de escolha: pílula sem borda; selecionado fica branco (`s1`) com
-/// anel `accent` — o tint azul se misturava com o fundo.
+/// Chip de escolha. Dentro de card: contorno fino, selecionado em azul
+/// ([outlineChoiceDecoration]). Solto no fundo `s0`: pílula `s1` sem
+/// borda, selecionado com anel `accent`.
 class ExploreChip extends StatelessWidget {
   const ExploreChip({
     required this.label,
@@ -170,7 +193,7 @@ class ExploreChip extends StatelessWidget {
   final VoidCallback onTap;
   final Widget? leading;
 
-  /// Dentro de card `s1` usa `s2`; solto no fundo `s0` usa `s1`.
+  /// Dentro de card `s1`: contorno; solto no fundo `s0`: pílula `s1`.
   final bool onCard;
 
   @override
@@ -189,10 +212,13 @@ class ExploreChip extends StatelessWidget {
           curve: kExploreEase,
           height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: selectionDecoration(p,
-              selected: selected,
-              fill: onCard ? p.s2 : p.s1,
-              radius: TravelSpace.rPill),
+          decoration: onCard
+              ? outlineChoiceDecoration(p,
+                  selected: selected, radius: TravelSpace.rPill)
+              : selectionDecoration(p,
+                  selected: selected,
+                  fill: p.s1,
+                  radius: TravelSpace.rPill),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -541,6 +567,23 @@ BoxDecoration selectionDecoration(
       borderRadius: BorderRadius.circular(radius),
       border: Border.all(
         color: selected ? p.accent : p.accent.withValues(alpha: 0),
+        width: 1.5,
+      ),
+    );
+
+/// Opção de escolha **dentro de card `s1`** (ref. Airbnb): sem superfície
+/// mais escura, só contorno fino `ink` 12%; selecionada, contorno `accent`
+/// 1,5. Largura fixa da borda: trocar a seleção não mexe no layout.
+BoxDecoration outlineChoiceDecoration(
+  TravelPalette p, {
+  required bool selected,
+  required double radius,
+}) =>
+    BoxDecoration(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(radius),
+      border: Border.all(
+        color: selected ? p.accent : p.ink.withValues(alpha: 0.12),
         width: 1.5,
       ),
     );

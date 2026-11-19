@@ -285,6 +285,15 @@ abstract final class TravelIcons {
       fontFamily: _regular,
       fontPackage: _pkg,
       fontFamilyFallback: _keep)); // moon — período noite
+  // Sol e lua preenchidos: o astro do arco do dia (filtro de período).
+  static const sunSolid = FaIconData(IconData(0xf185,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // sun (solid)
+  static const moonSolid = FaIconData(IconData(0xf186,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // moon (solid)
   static const bookmarkSolid = FaIconData(IconData(0xf02e,
       fontFamily: _solid,
       fontPackage: _pkg,
