@@ -80,6 +80,6 @@ flowchart TD
 ## FL-01.6 · Chamar a Maré
 
 - **Gatilho:** botão da Maré no topo da home.
-- **Passos:** a Maré abre como página por cima da home, numa conversa nova (`FL-04.1`).
+- **Passos:** a Maré entra da direita (push do iOS) por cima da home, numa conversa nova (`FL-04.1`).
 - **Saídas:** `FL-04`; volta pela gaveta → "Explorar", "Salvos" ou "Perfil" (`FL-04.3`), que abre a home já na aba tocada.
 - **Decisão:** D-24 (o agente não é aba).

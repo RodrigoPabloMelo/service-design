@@ -30,7 +30,7 @@ Sub-estado `aba`: `explorar` · `salvos` · `perfil` (tab bar ou gaveta da Maré
 | `passo` = `onde` · `quando` · `quem` · `tipo` | Um card da sanfona aberto | abrir a busca (começa em `onde`); tocar num card; escolha única avança | `resultados` ("Buscar") |
 | `resultados` | "N rolês" + lista curta | "Buscar"; categoria da home; "Mostrar N rolês" | `filtros`, `passo` (editar), `vazio` |
 | `filtros` | Sheet que aplica ao vivo, com contagem | botão filtrar | `resultados` |
-| `vazio` | "Ainda não temos rolês curados assim" + "Limpar filtros" ou "Mudar a busca" | nenhum rolê na base curada | `resultados`, `passo` |
+| `vazio` | Tela de vazio com o motivo, opções pra afrouxar ("Limpar filtros", "Qualquer dia", "Buscar em Recife", só as que trazem rolê) e "Mudar a busca" | nenhum rolê na base curada | `resultados`, `passo` |
 
 Fluxos: `FL-02`.
 

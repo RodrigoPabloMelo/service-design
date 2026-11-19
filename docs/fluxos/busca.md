@@ -74,7 +74,10 @@ flowchart TD
 ## FL-02.6 · Sem resultado (vazio honesto)
 
 - **Gatilho:** busca + filtros sem nenhum rolê curado.
-- **Passos:** "Ainda não temos rolês curados assim" + "Só mostramos o que foi indicado por quem é daqui." e um secundário: "Limpar filtros" (se há filtro) ou "Mudar a busca".
-- **Saídas:** `FL-02.3` (sem filtros) ou `FL-02.5`.
+- **Passos:**
+  1. A tela inteira vira o vazio: ilustração (mapa com pino e X), título e "Só mostramos o que foi indicado por quem é daqui.". O título diz o motivo: "Olinda ainda não tem rolês curados", "Nenhum rolê com esses filtros" ou "Ainda não temos rolês curados assim".
+  2. Embaixo, na zona do polegar, opções pra afrouxar a busca, cada uma com quantos rolês traria — só aparecem as que trazem algum: "Limpar filtros", "Qualquer dia", "Buscar em Recife".
+  3. Secundário "Mudar a busca" reabre a sanfona.
+- **Saídas:** `FL-02.3` (busca afrouxada) ou `FL-02.5`.
 - **Estados:** `ST-BUSCA.vazio`.
 - **Decisão:** D-07 (não completa com conhecimento genérico) · **Questão:** [Q-38](../questoes-em-aberto.md#q-38) (café sem rolê curado aparece vazio de propósito).
