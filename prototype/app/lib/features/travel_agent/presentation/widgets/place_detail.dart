@@ -5,6 +5,7 @@ import 'package:studio_app/features/travel_agent/domain/entities/travel_entities
 import 'package:studio_app/features/travel_agent/presentation/widgets/photo_viewer.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/account_sheet.dart';
 
 /// Altura reservada no topo da lista para o cabeçalho flutuante.
 const kDetailHeaderSpace = 18.0 + 44 + 8;
@@ -53,8 +54,8 @@ class PlaceDetail extends StatelessWidget {
           top: kDetailHeaderSpace - 8 + SheetTopInset.of(context), bottom: 120),
       children: [
         _g(heroTag == null
-            ? PhotoHero(photos: role.photos)
-            : Hero(tag: heroTag!, child: PhotoHero(photos: role.photos))),
+            ? PhotoHero(photos: role.photos, roleId: role.id)
+            : Hero(tag: heroTag!, child: PhotoHero(photos: role.photos, roleId: role.id))),
         const SizedBox(height: TravelSpace.lg),
         _text(
           Column(
@@ -582,9 +583,12 @@ class _GroupedChecks extends StatelessWidget {
 /// Hero de fotos: toque abre em tela cheia. Só bolinhas; a contagem
 /// aparece alinhada a elas depois do primeiro deslize.
 class PhotoHero extends StatefulWidget {
-  const PhotoHero({required this.photos, super.key});
+  const PhotoHero({required this.photos, required this.roleId, super.key});
 
   final List<PhotoCredit> photos;
+
+  /// Rolê da foto (botão de salvar).
+  final String roleId;
 
   @override
   State<PhotoHero> createState() => _PhotoHeroState();
@@ -658,11 +662,7 @@ class _PhotoHeroState extends State<PhotoHero> {
                 right: TravelSpace.md,
                 child: Row(
                   children: [
-                    AppFrostButton(
-                      icon: const FaIcon(TravelIcons.bookmark),
-                      semanticLabel: 'Salvar rolê',
-                      onPressed: () {},
-                    ),
+                    SaveFrostButton(roleId: widget.roleId),
                     const SizedBox(width: TravelSpace.sm),
                     AppFrostButton(
                       icon: const FaIcon(TravelIcons.share),

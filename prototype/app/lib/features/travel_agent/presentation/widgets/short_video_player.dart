@@ -6,6 +6,7 @@ import 'package:studio_app/core/components/glass/app_glass.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/account_sheet.dart';
 
 /// Player vertical de vídeos curtos (layout de Reels).
 ///
@@ -360,11 +361,7 @@ class _ShortVideoPlayerState extends State<ShortVideoPlayer>
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        AppFrostButton(
-                          icon: const FaIcon(TravelIcons.bookmark),
-                          semanticLabel: 'Salvar rolê',
-                          onPressed: () {},
-                        ),
+                        SaveFrostButton(roleId: widget.role.id),
                         const SizedBox(height: TravelSpace.sm),
                         AppFrostButton(
                           icon: const FaIcon(TravelIcons.share),

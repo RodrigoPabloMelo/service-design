@@ -1,30 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:studio_app/core/components/glass/app_glass.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
 import 'package:studio_app/features/traveler/data/traveler_mock.dart';
 import 'package:studio_app/features/traveler/domain/traveler_entities.dart';
 import 'package:studio_app/features/traveler/presentation/view_models/traveler_cubit.dart';
 import 'package:studio_app/features/traveler/presentation/widgets/mare_sheet.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/save_to_sheet.dart';
 
-/// Salvar um rolê. Sem conta, abre a conta rápida antes (D-16, D-23) e
-/// salva logo depois — ela volta ao rolê já salvo.
+/// Salvar um rolê. Sem conta, abre a conta rápida antes (D-16, D-23); depois
+/// escolhe a viagem no "Salvar em" (D-28). Já salvo: tira de todas as
+/// pastas.
 Future<void> saveRole(BuildContext context, String roleId) async {
   final traveler = travelerCubit();
   if (!traveler.hasAccount) {
     final provider = await showAccountSheet(context);
     if (provider == null) return;
     traveler.signIn(provider);
+    if (!context.mounted) return;
   }
-  final wasSaved = traveler.state.saved.contains(roleId);
-  traveler.toggleSaved(roleId);
+  final current = traveler.state.folderOf(roleId);
+  if (current != null) {
+    traveler.unsave(roleId);
+    showMareNotice(context,
+        'Tirado de ${TravelerMock.folderLabel(current, traveler.state.trip)}');
+    return;
+  }
+  final folderId = await showSaveToSheet(context);
+  if (folderId == null) return;
+  traveler.saveTo(folderId, roleId);
   if (!context.mounted) return;
   showMareNotice(
     context,
-    wasSaved
-        ? 'Tirado dos salvos'
-        : 'Salvo em ${TravelerMock.folderName(traveler.state.trip)}',
+    'Salvo em ${TravelerMock.folderLabel(traveler.state.folderById(folderId), traveler.state.trip)}',
   );
 }
 
@@ -124,9 +134,9 @@ class SaveRoleButton extends StatelessWidget {
     final p = TravelPalette.of(context);
     return BlocBuilder<TravelerCubit, TravelerState>(
       bloc: travelerCubit(),
-      buildWhen: (a, b) => a.saved != b.saved,
+      buildWhen: (a, b) => a.folders != b.folders,
       builder: (context, s) {
-        final saved = s.saved.contains(roleId);
+        final saved = s.isSaved(roleId);
         void onTap() => saveRole(context, roleId);
         return Semantics(
           button: true,
@@ -147,6 +157,31 @@ class SaveRoleButton extends StatelessWidget {
               ),
             ),
           ),
+        );
+      },
+    );
+  }
+}
+
+/// Salvar em botão fosco (sobre foto ou vídeo): mesmo fluxo do [saveRole],
+/// marcador cheio quando já está numa pasta.
+class SaveFrostButton extends StatelessWidget {
+  const SaveFrostButton({required this.roleId, super.key});
+
+  final String roleId;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<TravelerCubit, TravelerState>(
+      bloc: travelerCubit(),
+      buildWhen: (a, b) => a.folders != b.folders,
+      builder: (context, s) {
+        final saved = s.isSaved(roleId);
+        return AppFrostButton(
+          icon: FaIcon(
+              saved ? TravelIcons.bookmarkSolid : TravelIcons.bookmark),
+          semanticLabel: saved ? 'Tirar dos salvos' : 'Salvar rolê',
+          onPressed: () => saveRole(context, roleId),
         );
       },
     );

@@ -27,6 +27,10 @@ feedback do designer; não reabra sem ele pedir.
    Exceção 2: **cards de categoria da home** (`ExploreCategoryTones`): foto
    de lugar daqui + véu escuro na cor da categoria (alfa 0.74) + ícone e
    rótulo em branco. Só nesses cards.
+   Exceção 3: **cards de cupom** (pontos, ref. Google Pay): serviço =
+   `accent` com as ondas da marca em `piscina`; transporte parceiro =
+   superfície escura com o ícone do app; rolê = foto + véu escuro.
+   Bloqueado = sem cor (cinza) + cadeado. Só nesses cards.
 3. **Plus Jakarta Sans em 99%.** Oswald 700 só no título de card visual
    (nome do rolê). Pesos: 400 regular, 500 ênfase, 700 só títulos. **Nunca
    semibold.** Texto livre com entrelinha 150%. Peso de fonte variável muda
@@ -36,6 +40,9 @@ feedback do designer; não reabra sem ele pedir.
 5. **Dois botões: sempre empilhados, largura total, primário embaixo.** Um
    primário por vista. Secundário = fundo `s2` com **texto neutro** (`ink`),
    nunca azul. Ação única dentro de um card = secundário dentro do card.
+   Exceção: **botão segmentado** do cupom trocado (copiar código | usar no
+   app), dois segmentos colados (gap 2, fora 24, dentro 8): esquerda
+   `accent`, direita `s2` com texto neutro. Só ali.
 6. **Ícones Font Awesome só via `TravelIcons`** (constantes próprias com
    codepoint — `FontAwesomeIcons.x` direto some no build web). Ícone neutro
    direto na superfície, sem bolinha colorida. Centralize o ícone no botão.
@@ -46,7 +53,8 @@ feedback do designer; não reabra sem ele pedir.
 7. **Nada de brilhinho/varinha/esfera 3D pra dizer "IA".** O símbolo é o
    `MareMark` flat (disco + ondas). A `Aurora` (brilho de marca, de fundo)
    só em dois lugares: atrás do composer na abertura e no sheet de
-   conectores. A "maré em pixels" (`PixelTide`) só no começo do zero.
+   conectores. A "maré em pixels" (`PixelTide`) só na abertura do agente
+   (começo do zero e conversa nova), sempre sobre o mapa.
 8. **Texto mínimo, pt-BR, sentence case. Sem `·` ou `→` como separador.**
    Corte o texto antes de enfeitar.
 9. **Vidro (Liquid Glass) em controle flutuante**: sobre o mapa e nos
@@ -58,9 +66,10 @@ feedback do designer; não reabra sem ele pedir.
     (`SheetTopInset`), nunca cortado numa borda dura. Fundo escuro passando
     por baixo (`DarkBackdrop`) → título e ícones do cabeçalho em claro.
 11. **Fade de rolagem suave** (rampa senoidal) sob o composer e a alça.
-12. **Pouca coisa por vez.** Conversa nova = saudação central (fundo liso)
-    + sugestões acima do composer, **sem bloco azul**. Começo do zero
-    (nada salvo) = mapa + saudação central. O bloco azul só aparece em
+12. **Pouca coisa por vez.** Conversa nova = mapa parado + maré em
+    pixels atrás da saudação central (`TideBackdrop`) + sugestões acima do
+    composer, **sem bloco azul**; tudo some no primeiro envio. Começo do
+    zero (nada salvo) = mapa + saudação central. O bloco azul só aparece em
     conversa que já tem roteiro ou erro. Conteúdo (cards de rolês,
     roteiro) só aparece quando o agente responde.
 13. **Botão acessível:** `Semantics(button: true, excludeSemantics: true)`

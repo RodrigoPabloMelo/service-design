@@ -7,10 +7,13 @@ import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.
 import 'package:studio_app/features/traveler/data/traveler_mock.dart';
 import 'package:studio_app/features/traveler/domain/traveler_entities.dart';
 import 'package:studio_app/features/traveler/presentation/view_models/traveler_cubit.dart';
-import 'package:studio_app/features/traveler/presentation/widgets/mare_sheet.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/coupon_card.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/coupon_sheet.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/points_info_sheet.dart';
 
-/// Carteira de pontos (hipótese, Q-27/Q-28): saldo, cupons do próprio
-/// serviço e histórico. Valor dos pontos e regras ainda em aberto.
+/// Pontos e recompensas (ref. recompensas do Google Pay; hipótese,
+/// Q-27/Q-28): saldo grande no topo, cupons em grade (bloqueado cinza,
+/// trocado com selo) e histórico. Tocar num cupom abre o sheet dele.
 class WalletPage extends StatefulWidget {
   const WalletPage({super.key});
 
@@ -22,6 +25,14 @@ class _WalletPageState extends State<WalletPage> {
   final _scroll = ScrollController();
 
   @override
+  void initState() {
+    super.initState();
+    // Aberta direto pela rota (/carteira): começa no momento "já em Recife".
+    final traveler = travelerCubit();
+    if (!traveler.hasAccount) traveler.ensureMoment();
+  }
+
+  @override
   void dispose() {
     _scroll.dispose();
     super.dispose();
@@ -31,17 +42,58 @@ class _WalletPageState extends State<WalletPage> {
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
     final top = MediaQuery.paddingOf(context).top;
+    final bottom = MediaQuery.paddingOf(context).bottom;
     return Theme(
       data: travelTheme(context),
       child: Scaffold(
         backgroundColor: p.s0,
         body: Stack(
           children: [
-            ListView(
-              controller: _scroll,
-              padding: EdgeInsets.fromLTRB(TravelSpace.gutter,
-                  top + kDetailHeaderSpace, TravelSpace.gutter, 48),
-              children: const [WalletContent(showLabel: false)],
+            BlocBuilder<TravelerCubit, TravelerState>(
+              bloc: travelerCubit(),
+              builder: (context, s) => ListView(
+                controller: _scroll,
+                padding: EdgeInsets.fromLTRB(TravelSpace.gutter,
+                    top + kDetailHeaderSpace, TravelSpace.gutter, 48 + bottom),
+                children: [
+                  _Balance(points: s.points),
+                  const SizedBox(height: TravelSpace.xxl),
+                  const SectionHeader('Trocar por'),
+                  LayoutBuilder(builder: (context, box) {
+                    const gap = TravelSpace.md;
+                    final w = (box.maxWidth - gap) / 2;
+                    return Wrap(
+                      spacing: gap,
+                      runSpacing: gap,
+                      children: [
+                        for (final c in TravelerMock.coupons)
+                          SizedBox.square(
+                            dimension: w,
+                            child: _CouponTile(
+                              coupon: c,
+                              status: couponStatus(c, s.points, s.redeemed),
+                              points: s.points,
+                            ),
+                          ),
+                      ],
+                    );
+                  }),
+                  if (s.history.isNotEmpty) ...[
+                    const SizedBox(height: TravelSpace.xxl),
+                    const SectionHeader('Histórico'),
+                    SolidBlock(
+                      child: Column(
+                        children: [
+                          for (final (i, e) in s.history.indexed) ...[
+                            if (i > 0) const SizedBox(height: TravelSpace.md),
+                            _HistoryRow(entry: e),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
             // Topo fixo: desfoque progressivo + voltar (regras 10 e 11).
             Positioned(
@@ -56,7 +108,7 @@ class _WalletPageState extends State<WalletPage> {
               right: TravelSpace.gutter,
               child: DetailHeader(
                 scroll: _scroll,
-                title: 'Carteira',
+                title: 'Pontos',
                 backLabel: 'Voltar',
                 onBack: () => Navigator.of(context).maybePop(),
               ),
@@ -68,141 +120,89 @@ class _WalletPageState extends State<WalletPage> {
   }
 }
 
-/// Conteúdo da carteira (também usado na aba Perfil).
-class WalletContent extends StatelessWidget {
-  const WalletContent({this.showLabel = true, super.key});
+/// Saldo grande (ref. "Total rewards"): número em display, rótulo embaixo.
+class _Balance extends StatelessWidget {
+  const _Balance({required this.points});
 
-  /// Rótulo "Carteira" acima do saldo (a página já tem no cabeçalho).
-  final bool showLabel;
+  final int points;
 
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
-    final cubit = travelerCubit();
-    return BlocBuilder<TravelerCubit, TravelerState>(
-      bloc: cubit,
-      builder: (context, s) => Column(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: TravelSpace.cardPad),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: TravelSpace.cardPad),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (showLabel) ...[
-                  Text('Carteira',
-                      style: TravelType.section.copyWith(color: p.inkMuted)),
-                  const SizedBox(height: TravelSpace.xs),
-                ],
-                Text(
-                  '${s.points} pontos',
-                  style: TravelType.title1.copyWith(
-                      color: p.ink, fontFeatures: TravelType.tabular),
-                ),
-                const SizedBox(height: TravelSpace.xs),
-                Text(
-                  'Você ganha ${TravelerMock.pointsPerRating} pontos por '
-                  'avaliação, boa ou ruim.',
-                  style: TravelType.footnote.copyWith(color: p.inkMuted),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: TravelSpace.xl),
-          const SectionHeader('Trocar por'),
-          for (var i = 0; i < TravelerMock.coupons.length; i++) ...[
-            if (i > 0) const SizedBox(height: TravelSpace.segmentGap),
-            _CouponRow(
-              coupon: TravelerMock.coupons[i],
-              points: s.points,
-              redeemed: s.redeemed.contains(TravelerMock.coupons[i].id),
-              radius: _segment(i, TravelerMock.coupons.length),
-              onRedeem: () {
-                if (cubit.redeem(TravelerMock.coupons[i])) {
-                  showMareNotice(context, 'Cupom guardado na carteira');
-                }
-              },
-            ),
-          ],
-          if (s.history.isNotEmpty) ...[
-            const SizedBox(height: TravelSpace.xl),
-            const SectionHeader('Histórico'),
-            SolidBlock(
-              child: Column(
-                children: [
-                  for (final (i, e) in s.history.indexed) ...[
-                    if (i > 0) const SizedBox(height: TravelSpace.md),
-                    _HistoryRow(entry: e),
-                  ],
-                ],
+          TweenAnimationBuilder<double>(
+            tween: Tween(end: points.toDouble()),
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : const Duration(milliseconds: 600),
+            curve: Curves.easeOutCubic,
+            builder: (context, v, _) => Text(
+              '${v.round()}',
+              style: TravelType.display.copyWith(
+                color: p.ink,
+                fontFeatures: TravelType.tabular,
               ),
             ),
-          ],
+          ),
+          Row(
+            children: [
+              Text('pontos', style: TravelType.title3.copyWith(color: p.ink)),
+              // "i" ao lado: como ganhar e trocar (sheet com as artes).
+              Semantics(
+                button: true,
+                label: 'Como funcionam os pontos',
+                excludeSemantics: true,
+                onTap: () => showPointsInfoSheet(context),
+                child: Pressable(
+                  onTap: () => showPointsInfoSheet(context),
+                  child: SizedBox.square(
+                    dimension: TravelSpace.tap,
+                    child: Center(
+                      child: FaIcon(TravelIcons.info,
+                          size: 18, color: p.inkMuted),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-BorderRadius _segment(int i, int n) => BorderRadius.vertical(
-      top: Radius.circular(i == 0 ? TravelSpace.rCard : TravelSpace.rTight),
-      bottom:
-          Radius.circular(i == n - 1 ? TravelSpace.rCard : TravelSpace.rTight),
-    );
-
-class _CouponRow extends StatelessWidget {
-  const _CouponRow({
+class _CouponTile extends StatelessWidget {
+  const _CouponTile({
     required this.coupon,
+    required this.status,
     required this.points,
-    required this.redeemed,
-    required this.radius,
-    required this.onRedeem,
   });
 
   final Coupon coupon;
+  final CouponStatus status;
   final int points;
-  final bool redeemed;
-  final BorderRadius radius;
-  final VoidCallback onRedeem;
 
   @override
   Widget build(BuildContext context) {
-    final p = TravelPalette.of(context);
-    final canRedeem = !redeemed && points >= coupon.cost;
-    return Container(
-      constraints: const BoxConstraints(minHeight: 64),
-      padding: const EdgeInsets.symmetric(
-          horizontal: TravelSpace.cardPad, vertical: TravelSpace.sm),
-      decoration: BoxDecoration(color: p.s1, borderRadius: radius),
-      child: Row(
-        children: [
-          SizedBox.square(
-            dimension: 30,
-            child: Center(
-                child: FaIcon(TravelIcons.ticket, size: 18, color: p.ink)),
-          ),
-          const SizedBox(width: TravelSpace.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(coupon.title,
-                    style: TravelType.subheadStrong.copyWith(color: p.ink)),
-                Text(
-                  redeemed ? 'Na carteira' : '${coupon.cost} pontos',
-                  style: TravelType.footnote.copyWith(
-                      color: p.inkMuted, fontFeatures: TravelType.tabular),
-                ),
-              ],
-            ),
-          ),
-          SecondaryButton(
-            label: redeemed ? 'Trocado' : 'Trocar',
-            expand: false,
-            onPressed: canRedeem ? onRedeem : null,
-          ),
-        ],
+    void onTap() => showCouponSheet(context, coupon);
+    final state = switch (status) {
+      CouponStatus.locked => 'faltam ${coupon.cost - points} pontos',
+      CouponStatus.redeemed => 'trocado',
+      CouponStatus.available => '${coupon.cost} pontos',
+    };
+    return Semantics(
+      button: true,
+      label: '${coupon.fullTitle}, $state',
+      excludeSemantics: true,
+      onTap: onTap,
+      child: Pressable(
+        onTap: onTap,
+        child: CouponCard(coupon: coupon, status: status, points: points),
       ),
     );
   }

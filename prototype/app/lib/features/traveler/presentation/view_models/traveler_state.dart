@@ -3,7 +3,7 @@ part of 'traveler_cubit.dart';
 class TravelerState extends Equatable {
   const TravelerState({
     this.account,
-    this.saved = const [],
+    this.folders = const [SavedFolder(id: SavedFolder.tripId, name: '')],
     this.trip,
     this.transfer,
     this.ratings = const [],
@@ -16,8 +16,31 @@ class TravelerState extends Equatable {
   /// Null = ainda sem conta (navega e vê tudo sem login — D-16).
   final TravelerAccount? account;
 
-  /// Pasta da viagem (D-24), na ordem em que salvou.
-  final List<String> saved;
+  /// Pastas de viagem (D-24, D-28). A primeira é a da viagem atual.
+  final List<SavedFolder> folders;
+
+  /// Tudo o que ela salvou, sem repetir, na ordem em que salvou.
+  List<String> get saved {
+    final seen = <String>{};
+    return [
+      for (final f in folders)
+        for (final id in f.roleIds)
+          if (seen.add(id)) id,
+    ];
+  }
+
+  bool isSaved(String roleId) =>
+      folders.any((f) => f.roleIds.contains(roleId));
+
+  SavedFolder folderById(String id) => folders.firstWhere((f) => f.id == id);
+
+  /// Pasta onde o rolê está (a primeira, se estiver em várias).
+  SavedFolder? folderOf(String roleId) {
+    for (final f in folders) {
+      if (f.roleIds.contains(roleId)) return f;
+    }
+    return null;
+  }
 
   /// Datas e hospedagem informadas ao agente.
   final TripInfo? trip;
@@ -34,7 +57,7 @@ class TravelerState extends Equatable {
 
   TravelerState copyWith({
     TravelerAccount? account,
-    List<String>? saved,
+    List<SavedFolder>? folders,
     TripInfo? trip,
     TransferBooking? transfer,
     List<OutingRating>? ratings,
@@ -45,7 +68,7 @@ class TravelerState extends Equatable {
   }) =>
       TravelerState(
         account: account ?? this.account,
-        saved: saved ?? this.saved,
+        folders: folders ?? this.folders,
         trip: trip ?? this.trip,
         transfer: transfer ?? this.transfer,
         ratings: ratings ?? this.ratings,
@@ -59,7 +82,7 @@ class TravelerState extends Equatable {
   List<Object?> get props =>
       [
         account,
-        saved,
+        folders,
         trip,
         transfer,
         ratings,

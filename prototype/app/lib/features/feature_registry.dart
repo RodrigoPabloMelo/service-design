@@ -286,11 +286,12 @@ final designScreens = <RegisteredScreen>[
     builder: (_) => const RatingMomentPage(),
   ),
   RegisteredScreen(
-    title: 'Carteira de pontos',
+    title: 'Pontos e cupons',
     route: '/carteira',
     flow: 'Depois da viagem',
-    descricao: 'Saldo, cupons do próprio serviço e histórico (hipótese, '
-        'Q-27/Q-28).',
+    descricao: 'Saldo, cupons do serviço e de parceiros em grade '
+        '(bloqueado, disponível, trocado), sheet com código e copiar | usar '
+        'no app; histórico (hipótese, Q-27/Q-28).',
     builder: (_) => const WalletPage(),
   ),
 ];

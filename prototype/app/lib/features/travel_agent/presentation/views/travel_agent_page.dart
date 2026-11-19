@@ -1175,6 +1175,9 @@ class _SheetBodyState extends State<_SheetBody> {
   bool _auroraIdle = false;
   bool _fresh = true;
 
+  /// Cena da maré em pixels da conversa nova (sorteada por visita).
+  late final _tide = rollTide();
+
   /// Roteiro: composer aberto pelo "Pedir ajuste".
   bool _askOpen = false;
 
@@ -1256,6 +1259,29 @@ class _SheetBodyState extends State<_SheetBody> {
       ),
       child: Stack(
         children: [
+          // Conversa nova: mapa parado + maré em pixels atrás da saudação.
+          // Some junto com a aurora no primeiro envio (e o ticker morre).
+          if (s.isNewChat || !_auroraIdle)
+            Positioned.fill(
+              child: Opacity(
+                opacity: t,
+                child: AnimatedOpacity(
+                  opacity: _fresh && s.isNewChat ? 1 : 0,
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? const Duration(milliseconds: 1)
+                      : const Duration(milliseconds: 1800),
+                  curve: Curves.easeInOut,
+                  child: TickerMode(
+                    enabled: t > 0 && _fresh && s.isNewChat,
+                    child: TideBackdrop(
+                      scene: _tide.scene,
+                      seed: _tide.seed,
+                      withMap: true,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           // Conteúdo rolável. A lista começa no topo do sheet (por baixo da
           // status bar) e o recuo vira padding ([SheetTopInset]): rola por
           // baixo do cabeçalho e some num fade curto que nasce na status

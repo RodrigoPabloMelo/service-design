@@ -34,14 +34,16 @@ Sub-estado `aba`: `explorar` · `salvos` · `perfil` (tab bar ou gaveta da Maré
 
 Fluxos: `FL-02`.
 
-### ST-SALVOS · Pasta da viagem
+### ST-SALVOS · Viagens (pastas)
 
 | Estado | O que ela vê | Entra quando | Sai para |
 | --- | --- | --- | --- |
-| `vazio` | "Nada salvo ainda" + "Explorar rolês" | sem rolês salvos | `com-rolês` |
-| `com-rolês` | Pasta (cidade + datas ou mês) + "Organizar com a Maré" + cards | salvou o primeiro rolê | `vazio` (tirou o último) |
+| `vazio` | "Nada salvo ainda" + "Explorar rolês" | sem rolês salvos e sem viagem criada | `pastas` |
+| `pastas` | Grade de viagens com capa-mosaico + botão + | salvou o primeiro rolê ou criou uma viagem | `vazio`, `pasta` |
+| `pasta` | Dias como seções + rolês sem dia + barra "Organizar" / "Organizar com a Maré" | tocou numa viagem (ou num dia) | `organizando`, `pastas` |
+| `organizando` | Rolês com check pra escolher, "Concluir" e "Mover pra um dia" | "Organizar" | `pasta` (moveu ou concluiu) |
 
-Fluxos: `FL-03.1`, `FL-03.2`.
+Fluxos: `FL-03.1`, `FL-03.2`, `FL-03.6`, `FL-03.7`.
 
 ### ST-VISAO · O que a tela da Maré mostra
 
@@ -93,7 +95,7 @@ stateDiagram-v2
 
 | Estado | O que ela vê | Regras |
 | --- | --- | --- |
-| `nova` | Saudação central + 3 sugestões + aurora sob o composer ("Pergunte à Maré…"); no começo do zero, sobre o mapa | Sem bloco-resumo. Não está na gaveta. |
+| `nova` | Saudação central + 3 sugestões + aurora sob o composer ("Pergunte à Maré…"), sobre o mapa com os bichos do mar em pixels (no começo do zero, o mapa de verdade) | Sem bloco-resumo. Não está na gaveta. |
 | `aguardando-viagem` | "Antes de montar: quando você vai e onde vai ficar?" + card de datas e hospedagem | Não gasta mensagem (D-23). |
 | `pensando` | Linha do tempo de passos (no roteiro, visão de agente); "Pular" | Composer desligado; cada envio gasta 1 mensagem. |
 | `respondida` | Mensagens + rolês filtrados ou mapa | Composer: "Peça um ajuste à Maré…". |
@@ -150,7 +152,7 @@ Só uma proposta por conversa. Fluxo: `FL-05.1`.
 
 ### ST-CUPOM · Cupom da carteira
 
-`sem-saldo` ("Trocar" desligado) ↔ `disponivel` (pontos ≥ custo) → `trocado` ("Na carteira"). Fluxo: `FL-06.2`.
+`bloqueado` (card cinza, "Faltam N") ↔ `disponivel` (pontos ≥ custo; "Novo" quando é novo) → `trocado` (selo "Trocado"; o sheet mostra o código e "Copiar código" | "usar no app"). Fluxo: `FL-06.2`.
 
 ---
 

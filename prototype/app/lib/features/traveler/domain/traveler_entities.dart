@@ -118,20 +118,129 @@ class PointsEntry extends Equatable {
   List<Object?> get props => [label, points, date];
 }
 
-/// Cupom do próprio serviço trocado por pontos (hipótese, Q-27/Q-28).
+/// De onde vem o cupom: do próprio serviço, de um app de transporte
+/// parceiro ou de um lugar de rolê (hipótese, Q-27/Q-28).
+enum CouponKind { servico, transporte, role }
+
+/// Cupom trocado por pontos (hipótese, Q-27/Q-28). O código só aparece
+/// depois de trocar.
 class Coupon extends Equatable {
   const Coupon({
     required this.id,
+    required this.value,
     required this.title,
     required this.detail,
     required this.cost,
+    required this.kind,
+    required this.code,
+    required this.validUntil,
+    required this.action,
+    this.partner,
+    this.roleId,
+    this.isNew = false,
   });
 
   final String id;
+
+  /// Valor grande no card: "R$ 5", "15%", "Drink".
+  final String value;
+
+  /// "no próximo transfer".
   final String title;
+
+  /// Regra em uma linha.
   final String detail;
   final int cost;
+  final CouponKind kind;
+
+  /// Nome do parceiro ("99", "Uber", "Casa Astral"); null = do serviço.
+  final String? partner;
+
+  /// Rolê do cupom (tipo [CouponKind.role]).
+  final String? roleId;
+  final String code;
+
+  /// "Até 30 dez".
+  final String validUntil;
+
+  /// Segunda ação do botão segmentado: "Abrir na 99", "Usar no transfer".
+  final String action;
+
+  /// Aviso depois da segunda ação ("Aplicado no próximo transfer").
+  String get actionNotice => switch (kind) {
+        CouponKind.transporte => 'Abrindo a $partner com o código',
+        CouponKind.servico => 'Aplicado $title',
+        CouponKind.role => 'Mostre o código no balcão',
+      };
+  final bool isNew;
+
+  /// "R$ 5 no próximo transfer".
+  String get fullTitle => '$value $title';
 
   @override
   List<Object?> get props => [id];
+}
+
+/// Um dia dentro de uma pasta de viagem: "Sexta, 14 nov" (com datas) ou
+/// "Dia 1" (sem). Ela separa à mão ou a Maré organiza (D-28).
+class FolderDay extends Equatable {
+  const FolderDay({
+    required this.id,
+    required this.label,
+    this.roleIds = const [],
+  });
+
+  final String id;
+
+  /// "Sexta, 14 nov" ou "Dia 1".
+  final String label;
+  final List<String> roleIds;
+
+  FolderDay copyWith({List<String>? roleIds}) =>
+      FolderDay(id: id, label: label, roleIds: roleIds ?? this.roleIds);
+
+  @override
+  List<Object?> get props => [id, label, roleIds];
+}
+
+/// Pasta de viagem nos Salvos (ref. pastas do Pinterest, D-28). A pasta
+/// [tripId] é a da viagem atual: o nome vem das datas ("Recife, 14 a 16
+/// nov") e os dias também, quando ela já informou.
+class SavedFolder extends Equatable {
+  const SavedFolder({
+    required this.id,
+    required this.name,
+    this.roleIds = const [],
+    this.days = const [],
+  });
+
+  static const tripId = 'viagem';
+
+  final String id;
+
+  /// Nome que ela deu. Na pasta da viagem é ignorado (vem das datas).
+  final String name;
+
+  /// Rolês na ordem em que salvou.
+  final List<String> roleIds;
+  final List<FolderDay> days;
+
+  bool get isTrip => id == tripId;
+
+  /// Rolês que ainda não estão em nenhum dia.
+  List<String> get unsorted {
+    final inDays = {for (final d in days) ...d.roleIds};
+    return [for (final id in roleIds) if (!inDays.contains(id)) id];
+  }
+
+  SavedFolder copyWith({List<String>? roleIds, List<FolderDay>? days}) =>
+      SavedFolder(
+        id: id,
+        name: name,
+        roleIds: roleIds ?? this.roleIds,
+        days: days ?? this.days,
+      );
+
+  @override
+  List<Object?> get props => [id, name, roleIds, days];
 }

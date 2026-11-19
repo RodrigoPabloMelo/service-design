@@ -17,6 +17,7 @@ flowchart TD
   H -->|card| R[FL-01.3 Card do rolê]
   H -->|salvar no card| SV[FL-01.4 Salvar]
   H -->|botão da Maré| FL04[FL-04 Maré]
+  H -->|vídeo curto| V[FL-01.7 Vídeos curtos]
   H -->|tab bar| T[FL-01.5 Abas]
 ```
 
@@ -62,8 +63,8 @@ flowchart TD
   1. **Sem conta:** abre a conta rápida (Apple, e-mail ou Google, um passo, sem verificação).
      - Fechou sem escolher → nada é salvo.
      - Escolheu → a conta é criada e o rolê já fica salvo.
-  2. **Com conta:** salva ou tira dos salvos direto.
-  3. Aviso curto: "Salvo em {pasta da viagem}" ou "Tirado dos salvos".
+  2. **Com conta:** abre o sheet "Salvar em" com as viagens dela e "Nova viagem" (`FL-03.6`). Já salvo → tira de todas as pastas, sem sheet.
+  3. Aviso curto: "Salvo em {viagem}" ou "Tirado de {viagem}".
 - **Saídas:** volta à mesma tela; o rolê aparece em Salvos (`FL-03.2`).
 - **Estados:** `ST-CONTA.sem` → `ST-CONTA.com`; rolê salvo/não salvo.
 - **Etapa:** `E-04` · **Decisões:** D-16 (ver sem login, conta para salvar), D-23 · **Questões:** [Q-13](../questoes-em-aberto.md#q-13), [Q-37](../questoes-em-aberto.md#q-37) · **Achado:** F-11.
@@ -83,3 +84,16 @@ flowchart TD
 - **Passos:** a Maré entra da direita (push do iOS) por cima da home, numa conversa nova (`FL-04.1`).
 - **Saídas:** `FL-04`; volta pela gaveta → "Explorar", "Salvos" ou "Perfil" (`FL-04.3`), que abre a home já na aba tocada.
 - **Decisão:** D-24 (o agente não é aba).
+
+## FL-01.7 · Vídeos curtos
+
+- **Gatilho:** tocar num vídeo da seção "Vídeos curtos" (logo depois da seção da hora).
+- **Passos:**
+  1. O vídeo abre em tela cheia; ela rola na vertical pro próximo (ref. Shorts). Tocar pausa; som e fechar ficam no topo.
+  2. Cada vídeo mostra quem indicou, o @ e a origem, a legenda e o atalho pro rolê ("Casa Astral a 9,8 km"); salvar e compartilhar à direita.
+  3. A fila é curada e **acaba**: depois do último vídeo vem "Você viu tudo por hoje" + "Se cuida e bom rolê." e "Voltar pro Explorar".
+- **Saídas:** `FL-01.3` (atalho do rolê), `FL-01.4` (salvar), volta à home (X ou fim da fila).
+- **Decisões:** D-29, D-18 · **Achados:** F-02, F-06, F-13 · **Questão:** [Q-34](../questoes-em-aberto.md#q-34) (origem dos vídeos).
+- **Notas:** o "vídeo" é a foto do lugar com movimento lento **(simulado)**; um vídeo por rolê, até 10.
+- **Código:** `explore/presentation/widgets/shorts_shelf.dart`, `explore/presentation/views/shorts_feed_page.dart`.
+

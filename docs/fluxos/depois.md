@@ -29,10 +29,14 @@ flowchart TD
 - **Estados:** `ST-AVALIACAO.pendente` → `ST-AVALIACAO.enviada`; `ST-TRANSFER.saida-feita`.
 - **Notas:** a visita não é verificada ([Q-30](../questoes-em-aberto.md#q-30)); pontos e regras **(hipótese)** ([Q-27](../questoes-em-aberto.md#q-27)).
 
-## FL-06.2 · Carteira
+## FL-06.2 · Pontos e cupons
 
-- **Gatilho:** "Ver carteira" depois de avaliar, `/carteira` ou o fim do Perfil (`FL-03.5`).
-- **Passos:** saldo de pontos; "Trocar por" com cupons do próprio serviço ("R$ 5 no próximo transfer", 60 pontos; "10% num rolê em grupo", 100 pontos), cada um com "Trocar" (desligado sem saldo; "Trocado"/"Na carteira" depois); "Histórico" com ganhos e trocas.
-- **Saídas:** voltar.
-- **Estados:** `ST-CUPOM.sem-saldo` / `ST-CUPOM.disponivel` → `ST-CUPOM.trocado`.
-- **Questões:** [Q-27](../questoes-em-aberto.md#q-27) (valor dos pontos), [Q-02](../questoes-em-aberto.md#q-02) — cupons e valores **(hipótese)**.
+- **Gatilho:** "Ver carteira" depois de avaliar, `/carteira` ou o card "Seus pontos" no Perfil (`FL-03.5`).
+- **Passos:**
+  1. Página "Pontos" (ref. recompensas do Google Pay): saldo grande, com um "i" ao lado que abre "Como funcionam os pontos" (três páginas com arte: avaliar dá 20 por resposta, juntar, trocar por cupons); "Trocar por" com os cupons em grade — do serviço (R$ 5 no transfer, 10% num rolê em grupo) e de parceiros (99, Uber, drink na Casa Astral). Bloqueado fica cinza com "Faltam N"; trocado ganha o selo "Trocado"; novo, "Novo". "Histórico" embaixo.
+  2. Tocar num cupom abre o sheet dele: o cartão, a regra em uma linha, validade e custo.
+  3. Disponível → "Trocar por N pontos": o cartão vira e mostra o código; entra o botão segmentado **"Copiar código" | "Abrir na 99"** (ou "Usar no transfer", "Ver rolê"). Copiar vira "Copiado" por um instante.
+  4. Bloqueado → botão desligado "Faltam N pontos". Trocado → abre direto no código.
+- **Saídas:** voltar; "Abrir na {app}" só avisa que abriria o app **(simulado)**.
+- **Estados:** `ST-CUPOM.bloqueado` / `ST-CUPOM.disponivel` → `ST-CUPOM.trocado`.
+- **Questões:** [Q-27](../questoes-em-aberto.md#q-27) (valor dos pontos), [Q-28](../questoes-em-aberto.md#q-28) (parceiros), [Q-02](../questoes-em-aberto.md#q-02) — cupons, parceiros, códigos e valores **(hipótese)**.

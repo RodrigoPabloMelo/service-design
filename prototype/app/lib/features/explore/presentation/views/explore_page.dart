@@ -17,6 +17,7 @@ import 'package:studio_app/features/explore/presentation/views/search_page.dart'
 import 'package:studio_app/features/explore/presentation/views/search_results_page.dart';
 import 'package:studio_app/features/explore/presentation/widgets/explore_cards.dart';
 import 'package:studio_app/features/explore/presentation/widgets/explore_ui.dart';
+import 'package:studio_app/features/explore/presentation/widgets/shorts_shelf.dart';
 import 'package:studio_app/features/explore/presentation/widgets/glass_tab_bar.dart';
 import 'package:studio_app/features/travel_agent/presentation/views/travel_agent_page.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/mare_mark.dart';
@@ -362,7 +363,7 @@ class _HomeTabState extends State<_HomeTab> {
     final stay = ExploreMock.profile.stayLocation;
     return BlocBuilder<TravelerCubit, TravelerState>(
       bloc: travelerCubit(),
-      buildWhen: (a, b) => a.saved != b.saved ||
+      buildWhen: (a, b) => a.folders != b.folders ||
           a.transfer != b.transfer ||
           a.outingDone != b.outingDone,
       builder: (context, traveler) => ListView(
@@ -396,9 +397,14 @@ class _HomeTabState extends State<_HomeTab> {
           ),
         ),
         for (var si = 0; si < s.sections.length; si++) ...[
+          // Vídeos curtos logo depois da seção da hora (D-29).
+          if (si == 1) ...[
+            const SizedBox(height: TravelSpace.xxl),
+            const Reveal(index: 2, child: ShortsShelf()),
+          ],
           const SizedBox(height: TravelSpace.xxl),
           Reveal(
-            index: si + 2,
+            index: si + (si >= 1 ? 3 : 2),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -416,7 +422,7 @@ class _HomeTabState extends State<_HomeTab> {
                       role: role,
                       width: _cardW,
                       heroTag: tag,
-                      saved: traveler.saved.contains(role.id),
+                      saved: traveler.isSaved(role.id),
                       meta: section.showDistance
                           ? 'a ${formatKm(distanceKm(stay, role.location))} '
                               'do hotel'

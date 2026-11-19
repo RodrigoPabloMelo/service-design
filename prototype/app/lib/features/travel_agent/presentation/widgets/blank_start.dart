@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/agent_sheet.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/mare_mark.dart';
+import 'package:studio_app/features/travel_agent/presentation/widgets/recife_map.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
 
@@ -35,27 +36,10 @@ class _BlankStartHeroState extends State<BlankStartHero> {
 
   @override
   Widget build(BuildContext context) {
-    final p = TravelPalette.of(context);
     return Stack(
       fit: StackFit.expand,
       children: [
-        IgnorePointer(child: PixelTide(scene: _scene, seed: _seed)),
-        // Véu radial: o texto respira sobre o mapa (como o brilho da ref.).
-        IgnorePointer(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                radius: 0.95,
-                colors: [
-                  p.s0.withValues(alpha: 0.95),
-                  p.s0.withValues(alpha: 0.8),
-                  p.s0.withValues(alpha: 0),
-                ],
-                stops: const [0, 0.45, 1],
-              ),
-            ),
-          ),
-        ),
+        TideBackdrop(scene: _scene, seed: _seed),
         // Rola se faltar altura (teclado aberto em tela baixa).
         Center(
           child: SingleChildScrollView(
@@ -90,6 +74,75 @@ class _BlankStartHeroState extends State<BlankStartHero> {
       ],
     );
   }
+}
+
+/// Fundo da abertura: maré em pixels + véu radial `s0` (o texto respira no
+/// centro). Com [withMap], desenha também o mapa de Recife por baixo, parado
+/// e sem toque — é o que a conversa nova usa (o começo do zero já tem o mapa
+/// de verdade atrás). Só decoração: nada aqui recebe toque.
+class TideBackdrop extends StatelessWidget {
+  const TideBackdrop({
+    required this.scene,
+    required this.seed,
+    this.withMap = false,
+    super.key,
+  });
+
+  final TideScene scene;
+  final int seed;
+  final bool withMap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    return IgnorePointer(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (withMap)
+            ExcludeSemantics(
+              child: RepaintBoundary(
+                child: RecifeMap(
+                  roles: const [],
+                  stay: TravelMock.profile.stayLocation,
+                  mode: MapMode.explore,
+                  stops: const [],
+                  selectedId: null,
+                  highlightIds: const [],
+                  onSelect: (_) {},
+                  focusPadding: EdgeInsets.zero,
+                  fitKey: 'abertura',
+                  ghostSpots: TravelMock.curationSpots,
+                ),
+              ),
+            ),
+          PixelTide(scene: scene, seed: seed),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                radius: 0.95,
+                colors: [
+                  p.s0.withValues(alpha: 0.95),
+                  p.s0.withValues(alpha: 0.8),
+                  p.s0.withValues(alpha: 0),
+                ],
+                stops: const [0, 0.45, 1],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Cena e semente sorteadas por visita, para quem monta um [TideBackdrop].
+({TideScene scene, int seed}) rollTide() {
+  final rng = math.Random(DateTime.now().millisecondsSinceEpoch);
+  return (
+    scene: TideScene.values[rng.nextInt(TideScene.values.length)],
+    seed: rng.nextInt(1 << 20),
+  );
 }
 
 /// Saudação da Maré: símbolo, "Oi, {nome}." em `inkMuted` e uma pergunta

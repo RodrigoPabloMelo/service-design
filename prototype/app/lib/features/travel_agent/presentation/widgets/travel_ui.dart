@@ -366,6 +366,49 @@ abstract final class TravelIcons {
       fontFamily: _solid,
       fontPackage: _pkg,
       fontFamilyFallback: _keep)); // arrow-up-right-from-square
+  static const lock = FaIconData(IconData(0xf023,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // lock
+  static const copy = FaIconData(IconData(0xf0c5,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // copy
+  static const gift = FaIconData(IconData(0xf06b,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // gift
+  static const checkSquare = FaIconData(IconData(0xf14a,
+      fontFamily: _regular,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // square-check (organizar)
+  static const info = FaIconData(IconData(0xf05a,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // circle-info
+  static const star = FaIconData(IconData(0xf005,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // star
+  static const grid = FaIconData(IconData(0xf009,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // table-cells-large
+  static const list = FaIconData(IconData(0xf03a,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // list
+}
+
+/// Cantos do item [i] de [n] numa lista segmentada (M3 Expressive): 24 nas
+/// pontas, 8 entre itens. Separe os itens com `TravelSpace.segmentGap`.
+BorderRadius segmentRadius(int i, int n) {
+  const outer = Radius.circular(TravelSpace.rCard);
+  const inner = Radius.circular(TravelSpace.rTight);
+  return BorderRadius.vertical(
+    top: i == 0 ? outer : inner,
+    bottom: i == n - 1 ? outer : inner,
+  );
 }
 
 // ── Categoria: mesma cor + glifo + rótulo em todo lugar (similaridade) ─────

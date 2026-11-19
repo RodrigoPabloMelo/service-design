@@ -51,4 +51,25 @@ void main() {
 
     await tester.pump(const Duration(seconds: 5));
   });
+
+  testWidgets('conversa nova tem mapa e maré atrás; some no 1º envio',
+      (tester) async {
+    tester.view.physicalSize = const Size(390 * 3, 844 * 3);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(const MaterialApp(home: TravelAgentPage()));
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.byType(AgentGreeting), findsOneWidget);
+    expect(find.byType(TideBackdrop), findsOneWidget);
+    expect(find.byType(PixelTide), findsOneWidget);
+
+    await tester.tap(find.textContaining('Noite', findRichText: true).first);
+    for (var i = 0; i < 80; i++) {
+      await tester.pump(const Duration(milliseconds: 40));
+    }
+    expect(find.byType(TideBackdrop), findsNothing);
+    await tester.pump(const Duration(seconds: 10));
+  });
 }

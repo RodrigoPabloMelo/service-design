@@ -326,6 +326,13 @@ abstract final class ExploreMock {
 
   static Role roleById(String id) => roles.firstWhere((r) => r.id == id);
 
+  /// Vídeos curtos da home (D-29): um por rolê, na ordem da curadoria, até
+  /// 10. Fila **finita** — termina numa página de fim (F-06).
+  static final List<(Role, ShortVideo)> shorts = [
+    for (final r in roles)
+      if (r.videos.isNotEmpty) (r, r.videos.first),
+  ].take(10).toList();
+
   static const _all = {0, 1, 2};
 
   /// Etiquetas por rolê. `priceFrom` é gasto estimado por pessoa (mock). Café fica vazio de propósito: ainda não há café

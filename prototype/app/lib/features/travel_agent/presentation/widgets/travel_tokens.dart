@@ -231,6 +231,8 @@ abstract final class TravelType {
   static final cardTitle = _d(19, 23, tracking: 0.3);
 
   // Interface — Plus Jakarta Sans.
+  /// Número grande de saldo (página de pontos). Use com [tabular].
+  static final display = _b(56, 59, weight: FontWeight.w700, tracking: -1);
   static final title1 = _b(28, 34, weight: FontWeight.w700, tracking: -0.4);
   static final title2 = _b(22, 28, weight: FontWeight.w700, tracking: -0.3);
   static final title3 = _b(20, 25, weight: FontWeight.w500, tracking: -0.2);
@@ -378,6 +380,13 @@ abstract final class TravelCategoryTones {
 /// pra branco passar de 4,5:1 sobre o véu (alfa [overlayAlpha]); iguais no
 /// claro e no escuro, porque ficam sempre sobre foto. Só nos cards de
 /// categoria — no resto da interface vale a regra de uma cor de contraste.
+/// Cards de cupom (exceção de cor 3 da skill): superfície escura dos
+/// parceiros de transporte, igual nos dois temas (fica sempre com texto
+/// branco por cima).
+abstract final class CouponTones {
+  static const transport = Color(0xFF1C1C1F);
+}
+
 abstract final class ExploreCategoryTones {
   static const overlayAlpha = 0.74;
 

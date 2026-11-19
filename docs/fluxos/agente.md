@@ -35,10 +35,10 @@ flowchart TD
 
 - **Gatilho:** botão da Maré na home (`FL-01.6`), "Organizar com a Maré" em Salvos (`FL-03.3`) ou `/agente`.
 - **Passos:**
-  1. Conversa em tela cheia, fundo liso, cabeçalho `☰ · Maré · ⋯`.
+  1. Conversa em tela cheia, cabeçalho `☰ · Maré · ⋯`. Atrás da saudação, o mapa de Recife parado (pontinhos da curadoria) com os bichos do mar em pixels nadando pelas bordas; tudo some no primeiro envio.
   2. No centro, a saudação: símbolo da Maré, "Oi, Camila." e uma pergunta sorteada a cada visita ("O que você quer viver em Recife?" e outras).
   3. Acima do composer, três sugestões: "Organizar meus 8 rolês", "Noite com as amigas", "Perto do hotel". Composer: "Pergunte à Maré…".
-  4. Sem bloco-resumo azul e sem mapa até ela pedir.
+  4. Sem bloco-resumo azul. O mapa de fundo é só decoração: o mapa com pins e detents só abre quando ela pede.
 - **Saídas:** `FL-04.3` (☰), `FL-04.4` (pedido), menu ⋯ (`FL-04.7`, `FL-04.11`, `FL-04.12`).
 - **Estados:** `ST-CONVERSA.nova`, `ST-VISAO.conversa`, `ST-GAVETA.fechada`.
 - **Notas:** a conversa nova parte dos 8 rolês salvos do mock (cenário `padrao`) **(simulado)**.

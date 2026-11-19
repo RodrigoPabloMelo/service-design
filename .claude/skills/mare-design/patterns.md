@@ -2,13 +2,15 @@
 
 ## Fluxo da tela
 
-- **Conversa nova** (abertura padrão, com rolês salvos): tela cheia, fundo
-  liso, **sem bloco azul e sem mapa**. Saudação centrada no espaço acima do
+- **Conversa nova** (abertura padrão, com rolês salvos): tela cheia, **sem
+  bloco azul**. Atrás da saudação, `TideBackdrop`: o mapa de Recife parado
+  (sem toque, pontinhos da curadoria) + maré em pixels + véu radial `s0`;
+  esvai junto com a aurora no primeiro envio (1,8 s) e o ticker morre.
+  O mapa "de verdade" (pins, detents) continua só quando ela pede. Saudação centrada no espaço acima do
   rodapé (`AgentGreeting`: `MareMark` 28, "Oi, {nome}." em `inkMuted` +
   pergunta sorteada em `title1`), composer "Pergunte à Maré…" e só 3
   sugestões de maior valor (organizar, noite com as amigas, perto do
-  hotel) presas em cima do composer. Sem `PixelTide` (só no começo do
-  zero). Sem carrossel de salvos nem outros cards ali (polui); eles entram
+  hotel) presas em cima do composer. Sem carrossel de salvos nem outros cards ali (polui); eles entram
   quando o agente responde. Depois do primeiro envio o composer volta a
   "Peça um ajuste à Maré…".
 - Bloco-resumo azul: só em conversa que já tem roteiro ou erro (`showSummary`).
@@ -256,6 +258,70 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
   **saindo inteira da tela, e o blur do rodapé desce junto** (mesma curva,
   320 ms); volta ao rolar pra cima. Troca de aba em fade-through (opacidade + escala 0.98,
   220 ms).
+
+- **Vídeos curtos** (ref. Shorts, D-29): prateleira logo depois da seção
+  da hora, tiles 9:16 de 136 (raio 24), legenda em `footnoteStrong` branco
+  sobre véu escuro + nome do rolê. Tocar abre o feed vertical em tela
+  cheia (`ShortsFeedPage`): "vídeo" = foto com Ken Burns, tocar pausa,
+  progresso fino no pé, quem indicou + @ + legenda + pílula frost do rolê
+  à esquerda; salvar e compartilhar à direita; som e X no topo (o arrastar
+  vertical é da fila, não fecha). **Fila finita**: depois do último vem a
+  página de fim — `MareMark` com duas ondas `piscina` se abrindo (uma vez),
+  haptic leve, "Você viu tudo por hoje" + "Se cuida e bom rolê." e o
+  frost "Voltar pro Explorar". Nunca "carregar mais".
+
+## Salvos (pastas de viagem, ref. Pinterest)
+
+- **Salvar = sheet "Salvar em"** (depois da conta rápida, se não tiver):
+  "Suas viagens" em lista segmentada (tile 72, padding 8, capa 56 raio 16
+  — concêntrico com o 24 do tile —, nome em
+  `headline`, contagem), por último "Nova viagem" (tile `accent` com +),
+  que vira o passo do nome no mesmo sheet (campo `s2` 52, "Voltar" à
+  esquerda, primário "Criar e salvar"). Já salvo: o toque tira de todas
+  as pastas ("Tirado de …").
+- **Aba:** "Salvos" + botão + (nova viagem); grade de 2 colunas com
+  **capa-mosaico** (1 foto grande à esquerda + 2 pequenas, gap 2, raio
+  24), nome e "N rolês, N dias".
+- **Pasta:** voltar no cabeçalho, nome em `title1`, meta com ícone
+  (rolês, dias); dias como seções em lista segmentada `s1` (capa 56 raio 16,
+  "Sexta, 14 nov", contagem, chevron); "Sem dia" em grade 4:5 **ou lista
+  larga** (alternador grade/lista à direita da meta: segmented mini,
+  trilho `s2`, indicador `s1`, ícones neutros; a escolha vale pra sessão).
+  Lista (ref. YouTube): foto 16:9 de ponta a ponta e, embaixo, avatar 36
+  de quem indicou + nome em Oswald, "Indicado por…", bairro e faixa de
+  preço, custo. Barra de vidro flutuante (pílula 64 da tab bar) com "Organizar" e "Organizar com
+  a Maré". Organizando: toque escolhe (anel `accent` 1,5 + check no
+  canto), "Concluir" no cabeçalho, primário "Mover pra um dia" → sheet
+  "Mover pra" (dias, "Sem dia", "Novo dia").
+
+## Pontos e recompensas (ref. Google Pay)
+
+- **Perfil:** card `s1` raio 24 "Seus pontos" com o saldo em `title1`,
+  "Troque por cupons", presente e chevron, sem bolinha atrás do ícone.
+- **Página "Pontos":** saldo grande (56, tabular, conta animando) +
+  "pontos" com um **"i"** ao lado (glifo 18 `inkMuted`, alvo 44, sem
+  bolinha) que abre o sheet "Como funcionam os pontos": três páginas
+  deslizáveis com pontinhos e um secundário "Próximo"/"Entendi"; cada uma
+  com uma arte num card `s1` 16:10 feita dos próprios componentes e
+  animada uma vez ao entrar (avaliar: card "Como foi?" com "Foi bom" no
+  anel e um "+20" `accent` subindo; juntar: saldo contando com ondas
+  `piscina` e três "+20" em volta; trocar: três cupons em leque). Título
+  `title2` e uma linha `inkMuted`, centralizados. Nada de texto de regra
+  solto na página; "Trocar por" em grade 2 colunas de cards quadrados (exceção
+  de cor 3 da SKILL); selo pílula `s1` no canto: "Novo", "Faltam N" com
+  cadeado (card cinza) ou "Trocado" com check. Histórico embaixo.
+- **Sheet do cupom:** só o X; o card grande (16:10), título `title3`,
+  regra em uma linha, validade e custo com ícone. Antes de trocar: um
+  primário "Trocar por N pontos" (desligado com "Faltam N pontos"). Ao
+  trocar, haptic e o card **vira** (rotação Y) e mostra o código
+  (`title1` espaçado, picote de furos `s0`); entra o **botão segmentado**
+  de 48 "Copiar código" (`accent`; vira "Copiado" com check por 1,6 s) |
+  segunda ação em `s2`: "Abrir na 99/Uber" (ícone de link externo) só pra
+  app parceiro; cupom do serviço ou de rolê usa check ("Usar no
+  transfer", "Mostrar no balcão"). Rótulo diz o que acontece de fato.
+- Saldo usa `TravelType.display` (56, 700, tabular); cor do card de
+  transporte = `CouponTones.transport`. Contagem e trocas respeitam Reduce
+  Motion.
 
 ## Busca guiada e filtros (ref. Airbnb, no nosso sistema)
 
