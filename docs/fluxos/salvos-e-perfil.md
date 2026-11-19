@@ -45,6 +45,7 @@
 - **Gatilho:** tocar numa viagem em Salvos (`FL-03.2`).
 - **Passos:**
   1. Nome grande, "N rolês" e "N dias"; os **dias** como seções (capa, "Sexta, 14 nov", contagem) e, embaixo, os rolês **sem dia** em grade. Tocar num dia abre só os rolês daquele dia.
+     - À direita da contagem, alterna **grade** ↔ **lista** (um card largo por linha, ref. YouTube: foto, quem indicou, nome, bairro e faixa de preço, custo). A escolha vale pras outras pastas na sessão.
   2. Com datas informadas, a viagem já nasce com os dias delas; sem datas, os dias são criados por ela ("Dia 1", "Dia 2").
   3. Barra flutuante: **"Organizar"** (à mão) e **"Organizar com a Maré"** (`FL-03.3`).
   4. Organizando: tocar nos rolês escolhe (contorno azul + check); "Mover pra um dia" abre "Mover pra" com os dias, "Sem dia" (dentro de um dia) e "Novo dia"; aviso "Movido pra {dia}". "Concluir" sai do modo.

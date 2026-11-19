@@ -55,6 +55,9 @@ class FolderPage extends StatefulWidget {
   State<FolderPage> createState() => _FolderPageState();
 }
 
+/// Grade ou lista larga — vale pra todas as pastas da sessão.
+final _listView = ValueNotifier<bool>(false);
+
 class _FolderPageState extends State<FolderPage> {
   final _scroll = ScrollController();
   bool _organizing = false;
@@ -161,6 +164,15 @@ class _FolderPageState extends State<FolderPage> {
                               : '$daysWithRoles dias',
                         ),
                       ],
+                      const Spacer(),
+                      if (grid.isNotEmpty)
+                        ValueListenableBuilder<bool>(
+                          valueListenable: _listView,
+                          builder: (context, list, _) => _ViewToggle(
+                            list: list,
+                            onChanged: (v) => _listView.value = v,
+                          ),
+                        ),
                     ],
                   ),
                 ],
@@ -197,7 +209,28 @@ class _FolderPageState extends State<FolderPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: TravelSpace.gutter),
-                  child: LayoutBuilder(builder: (context, box) {
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: _listView,
+                    builder: (context, list, _) => list
+                        ? Column(
+                            children: [
+                              for (final (k, role) in grid.indexed) ...[
+                                if (k > 0)
+                                  const SizedBox(height: TravelSpace.xl),
+                                _RoleRow(
+                                  role: role,
+                                  organizing: _organizing,
+                                  selected: _selected.contains(role.id),
+                                  heroTag: 'pasta-${folder.id}-${role.id}',
+                                  onTap: _organizing
+                                      ? () => _toggle(role.id)
+                                      : () => openRole(context, role,
+                                          'pasta-${folder.id}-${role.id}'),
+                                ),
+                              ],
+                            ],
+                          )
+                        : LayoutBuilder(builder: (context, box) {
                     const gap = TravelSpace.md;
                     final w = (box.maxWidth - gap) / 2;
                     return Wrap(
@@ -222,6 +255,7 @@ class _FolderPageState extends State<FolderPage> {
                       ],
                     );
                   }),
+                  ),
                 ),
               ] else if (day != null) ...[
                 const SizedBox(height: TravelSpace.xxl),
@@ -450,42 +484,7 @@ class _RoleTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                  IgnorePointer(
-                    child: AnimatedContainer(
-                      duration: exploreMotion(context, 150),
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(TravelSpace.rCard),
-                        border: Border.all(
-                          color: selected ? p.accent : Colors.transparent,
-                          width: 1.5,
-                          strokeAlign: BorderSide.strokeAlignOutside,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (organizing)
-                    Positioned(
-                      top: 10,
-                      right: 10,
-                      child: AnimatedContainer(
-                        duration: exploreMotion(context, 150),
-                        width: 24,
-                        height: 24,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: selected
-                              ? p.accent
-                              : Colors.black.withValues(alpha: 0.24),
-                          border: Border.all(color: Colors.white, width: 1.5),
-                        ),
-                        child: selected
-                            ? const FaIcon(TravelIcons.check,
-                                size: 11, color: Colors.white)
-                            : null,
-                      ),
-                    ),
+                  _Selection(organizing: organizing, selected: selected),
                 ],
               ),
             ),
@@ -509,6 +508,229 @@ class _RoleTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Grade ↔ lista (segmented do iPhone em miniatura): trilho `s2`,
+/// indicador `s1`, ícones neutros.
+class _ViewToggle extends StatelessWidget {
+  const _ViewToggle({required this.list, required this.onChanged});
+
+  final bool list;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    const seg = 40.0;
+    Widget option(bool value, FaIconData icon, String label) => Semantics(
+          button: true,
+          selected: list == value,
+          label: label,
+          excludeSemantics: true,
+          onTap: () => onChanged(value),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => onChanged(value),
+            child: SizedBox(
+              width: seg,
+              height: 32,
+              child: Center(child: FaIcon(icon, size: 13, color: p.ink)),
+            ),
+          ),
+        );
+    return Container(
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: p.s2,
+        borderRadius: BorderRadius.circular(TravelSpace.rPill),
+      ),
+      child: Stack(
+        children: [
+          AnimatedPositioned(
+            duration: exploreMotion(context, 220),
+            curve: kExploreEase,
+            left: list ? seg : 0,
+            top: 0,
+            width: seg,
+            height: 32,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: p.s1,
+                borderRadius: BorderRadius.circular(TravelSpace.rPill),
+              ),
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              option(false, TravelIcons.grid, 'Ver em grade'),
+              option(true, TravelIcons.list, 'Ver em lista'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Rolê em lista larga (ref. lista do YouTube): foto 16:9 de ponta a
+/// ponta e, embaixo, quem indicou (avatar) + nome, quem indicou e onde/
+/// quanto custa. Organizando, mesmo anel + check da grade.
+class _RoleRow extends StatelessWidget {
+  const _RoleRow({
+    required this.role,
+    required this.organizing,
+    required this.selected,
+    required this.heroTag,
+    required this.onTap,
+  });
+
+  final Role role;
+  final bool organizing;
+  final bool selected;
+  final Object heroTag;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final width = MediaQuery.sizeOf(context).width;
+    return Semantics(
+      button: true,
+      selected: organizing ? selected : null,
+      label: '${role.shortName}, ${role.neighborhood}, ${role.cost}. '
+          'Indicado por ${role.recommender.name}',
+      excludeSemantics: true,
+      onTap: onTap,
+      child: Pressable(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Hero(
+                    tag: heroTag,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(TravelSpace.rCard),
+                      child: Image.asset(
+                        role.photos.first.asset,
+                        fit: BoxFit.cover,
+                        cacheWidth: (width * dpr).round(),
+                      ),
+                    ),
+                  ),
+                  _Selection(organizing: organizing, selected: selected),
+                ],
+              ),
+            ),
+            const SizedBox(height: TravelSpace.md),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RecommenderAvatar(role.recommender, size: 36),
+                  const SizedBox(width: TravelSpace.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(role.shortName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style:
+                                TravelType.cardTitle.copyWith(color: p.ink)),
+                        const SizedBox(height: 2),
+                        Text('Indicado por ${role.recommender.name}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TravelType.footnote
+                                .copyWith(color: p.inkMuted)),
+                        Text(
+                          '${role.neighborhood}, ${role.price}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TravelType.footnote.copyWith(
+                              color: p.inkMuted,
+                              fontFeatures: TravelType.tabular),
+                        ),
+                        Text(
+                          role.cost,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TravelType.footnote.copyWith(
+                              color: p.inkMuted,
+                              fontFeatures: TravelType.tabular),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Anel `accent` 1,5 + check no canto (regra 15), comum à grade e à lista.
+class _Selection extends StatelessWidget {
+  const _Selection({required this.organizing, required this.selected});
+
+  final bool organizing;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    return IgnorePointer(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          AnimatedContainer(
+            duration: exploreMotion(context, 150),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(TravelSpace.rCard),
+              border: Border.all(
+                color: selected ? p.accent : Colors.transparent,
+                width: 1.5,
+                strokeAlign: BorderSide.strokeAlignOutside,
+              ),
+            ),
+          ),
+          if (organizing)
+            Positioned(
+              top: 10,
+              right: 10,
+              child: AnimatedContainer(
+                duration: exploreMotion(context, 150),
+                width: 24,
+                height: 24,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: selected
+                      ? p.accent
+                      : Colors.black.withValues(alpha: 0.24),
+                  border: Border.all(color: Colors.white, width: 1.5),
+                ),
+                child: selected
+                    ? const FaIcon(TravelIcons.check,
+                        size: 11, color: Colors.white)
+                    : null,
+              ),
+            ),
+        ],
       ),
     );
   }

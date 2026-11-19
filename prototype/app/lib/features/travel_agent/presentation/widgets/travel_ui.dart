@@ -382,6 +382,22 @@ abstract final class TravelIcons {
       fontFamily: _regular,
       fontPackage: _pkg,
       fontFamilyFallback: _keep)); // square-check (organizar)
+  static const info = FaIconData(IconData(0xf05a,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // circle-info
+  static const star = FaIconData(IconData(0xf005,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // star
+  static const grid = FaIconData(IconData(0xf009,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // table-cells-large
+  static const list = FaIconData(IconData(0xf03a,
+      fontFamily: _solid,
+      fontPackage: _pkg,
+      fontFamilyFallback: _keep)); // list
 }
 
 /// Cantos do item [i] de [n] numa lista segmentada (M3 Expressive): 24 nas

@@ -49,4 +49,31 @@ void main() {
     expect(folder.unsorted, ['parraxaxa-casa-forte']);
     await tester.pump(const Duration(seconds: 3));
   });
+
+  testWidgets('alterna grade e lista larga com custo e quem indicou',
+      (tester) async {
+    tester.view.physicalSize = const Size(390 * 3, 844 * 3);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    final cubit = travelerCubit()..signIn(AccountProvider.google);
+    final id = cubit.createFolder('Olinda, dez');
+    cubit.saveTo(id, 'casa-astral');
+    final role = ExploreMock.roleById('casa-astral');
+
+    await tester.pumpWidget(MaterialApp(
+      home: FolderPage(folderId: id, onOrganize: () {}),
+    ));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text(role.cost), findsNothing);
+
+    await tester.tap(find.bySemanticsLabel('Ver em lista'));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text(role.cost), findsOneWidget);
+    expect(find.text('Indicado por ${role.recommender.name}'), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel('Ver em grade'));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text(role.cost), findsNothing);
+  });
 }

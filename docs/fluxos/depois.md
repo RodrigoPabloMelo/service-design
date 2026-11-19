@@ -33,7 +33,7 @@ flowchart TD
 
 - **Gatilho:** "Ver carteira" depois de avaliar, `/carteira` ou o card "Seus pontos" no Perfil (`FL-03.5`).
 - **Passos:**
-  1. Página "Pontos" (ref. recompensas do Google Pay): saldo grande; "Trocar por" com os cupons em grade — do serviço (R$ 5 no transfer, 10% num rolê em grupo) e de parceiros (99, Uber, drink na Casa Astral). Bloqueado fica cinza com "Faltam N"; trocado ganha o selo "Trocado"; novo, "Novo". "Histórico" embaixo.
+  1. Página "Pontos" (ref. recompensas do Google Pay): saldo grande, com um "i" ao lado que abre "Como funcionam os pontos" (três páginas com arte: avaliar dá 20 por resposta, juntar, trocar por cupons); "Trocar por" com os cupons em grade — do serviço (R$ 5 no transfer, 10% num rolê em grupo) e de parceiros (99, Uber, drink na Casa Astral). Bloqueado fica cinza com "Faltam N"; trocado ganha o selo "Trocado"; novo, "Novo". "Histórico" embaixo.
   2. Tocar num cupom abre o sheet dele: o cartão, a regra em uma linha, validade e custo.
   3. Disponível → "Trocar por N pontos": o cartão vira e mostra o código; entra o botão segmentado **"Copiar código" | "Abrir na 99"** (ou "Usar no transfer", "Ver rolê"). Copiar vira "Copiado" por um instante.
   4. Bloqueado → botão desligado "Faltam N pontos". Trocado → abre direto no código.

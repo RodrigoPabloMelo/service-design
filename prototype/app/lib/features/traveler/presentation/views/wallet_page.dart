@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/place_detail.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
@@ -8,6 +9,7 @@ import 'package:studio_app/features/traveler/domain/traveler_entities.dart';
 import 'package:studio_app/features/traveler/presentation/view_models/traveler_cubit.dart';
 import 'package:studio_app/features/traveler/presentation/widgets/coupon_card.dart';
 import 'package:studio_app/features/traveler/presentation/widgets/coupon_sheet.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/points_info_sheet.dart';
 
 /// Pontos e recompensas (ref. recompensas do Google Pay; hipótese,
 /// Q-27/Q-28): saldo grande no topo, cupons em grade (bloqueado cinza,
@@ -146,12 +148,27 @@ class _Balance extends StatelessWidget {
               ),
             ),
           ),
-          Text('pontos', style: TravelType.title3.copyWith(color: p.ink)),
-          const SizedBox(height: TravelSpace.sm),
-          Text(
-            'Você ganha ${TravelerMock.pointsPerRating} por avaliação, boa '
-            'ou ruim.',
-            style: TravelType.footnote.copyWith(color: p.inkMuted),
+          Row(
+            children: [
+              Text('pontos', style: TravelType.title3.copyWith(color: p.ink)),
+              // "i" ao lado: como ganhar e trocar (sheet com as artes).
+              Semantics(
+                button: true,
+                label: 'Como funcionam os pontos',
+                excludeSemantics: true,
+                onTap: () => showPointsInfoSheet(context),
+                child: Pressable(
+                  onTap: () => showPointsInfoSheet(context),
+                  child: SizedBox.square(
+                    dimension: TravelSpace.tap,
+                    child: Center(
+                      child: FaIcon(TravelIcons.info,
+                          size: 18, color: p.inkMuted),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

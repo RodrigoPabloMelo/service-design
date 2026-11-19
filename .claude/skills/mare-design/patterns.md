@@ -284,8 +284,12 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
   24), nome e "N rolês, N dias".
 - **Pasta:** voltar no cabeçalho, nome em `title1`, meta com ícone
   (rolês, dias); dias como seções em lista segmentada `s1` (capa 56 raio 16,
-  "Sexta, 14 nov", contagem, chevron); "Sem dia" em grade 4:5. Barra de
-  vidro flutuante (pílula 64 da tab bar) com "Organizar" e "Organizar com
+  "Sexta, 14 nov", contagem, chevron); "Sem dia" em grade 4:5 **ou lista
+  larga** (alternador grade/lista à direita da meta: segmented mini,
+  trilho `s2`, indicador `s1`, ícones neutros; a escolha vale pra sessão).
+  Lista (ref. YouTube): foto 16:9 de ponta a ponta e, embaixo, avatar 36
+  de quem indicou + nome em Oswald, "Indicado por…", bairro e faixa de
+  preço, custo. Barra de vidro flutuante (pílula 64 da tab bar) com "Organizar" e "Organizar com
   a Maré". Organizando: toque escolhe (anel `accent` 1,5 + check no
   canto), "Concluir" no cabeçalho, primário "Mover pra um dia" → sheet
   "Mover pra" (dias, "Sem dia", "Novo dia").
@@ -295,7 +299,15 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
 - **Perfil:** card `s1` raio 24 "Seus pontos" com o saldo em `title1`,
   "Troque por cupons", presente e chevron, sem bolinha atrás do ícone.
 - **Página "Pontos":** saldo grande (56, tabular, conta animando) +
-  "pontos"; "Trocar por" em grade 2 colunas de cards quadrados (exceção
+  "pontos" com um **"i"** ao lado (glifo 18 `inkMuted`, alvo 44, sem
+  bolinha) que abre o sheet "Como funcionam os pontos": três páginas
+  deslizáveis com pontinhos e um secundário "Próximo"/"Entendi"; cada uma
+  com uma arte num card `s1` 16:10 feita dos próprios componentes e
+  animada uma vez ao entrar (avaliar: card "Como foi?" com "Foi bom" no
+  anel e um "+20" `accent` subindo; juntar: saldo contando com ondas
+  `piscina` e três "+20" em volta; trocar: três cupons em leque). Título
+  `title2` e uma linha `inkMuted`, centralizados. Nada de texto de regra
+  solto na página; "Trocar por" em grade 2 colunas de cards quadrados (exceção
   de cor 3 da SKILL); selo pílula `s1` no canto: "Novo", "Faltam N" com
   cadeado (card cinza) ou "Trocado" com check. Histórico embaixo.
 - **Sheet do cupom:** só o X; o card grande (16:10), título `title3`,
