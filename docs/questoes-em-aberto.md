@@ -44,7 +44,7 @@
 | [Q-34](#q-34) | Origem e curadoria dos vídeos curtos | Conteúdo/Confiança | alta | aberta |
 | [Q-35](#q-35) | Limite de mensagens do agente durante a viagem | IA/Receita | alta | aberta |
 | [Q-36](#q-36) | Prestadores podem pedir para entrar na plataforma? | Curadoria/Confiança | alta | aberta |
-| [Q-37](#q-37) | Salvos em pastas | UX/Ecossistema | média | aberta |
+| [Q-37](#q-37) | Salvos em pastas | UX/Ecossistema | média | em discussão |
 | [Q-38](#q-38) | Categorias da home x categorias do agente | Conteúdo | média | aberta |
 | [Q-39](#q-39) | Dado de alagamento no trajeto sugerido | Segurança/Dados | média | aberta |
 | [Q-40](#q-40) | Histórico de conversas com a Maré: conta e retenção | IA/Privacidade | média | aberta |
@@ -188,10 +188,12 @@ Não há identidade visual. Quando houver, registrar num `DESIGN.md` na raiz (to
 ### Q-27 · Programa de pontos/moedas da viajante
 Ref.: [blueprint rascunho](../diagrams/2026-11-04-blueprint-rascunho.md) etapas 8–9, D-04, `Q-07`, `Q-17`. No panorama, os descontos funcionam como pontos/moedas trocáveis por serviços e cupons. Falta definir: o que gera pontos (visitar, avaliar, indicar amiga, completar roteiro?); quanto vale cada ação; se expiram; quem financia o desconto (app, parceiro, os dois); se locais e viajantes usam a mesma moeda. Risco: premiar a avaliação pode enviesar notas ou gerar avaliações falsas (`Q-13`). Premiar o ato de avaliar, não a nota?
 **2026-11-18 — protótipo (hipótese):** 20 pontos por resposta (rolê e transfer), boa ou ruim; carteira com cupons do próprio serviço (R$ 5 no transfer, 10% num rolê em grupo). Valores de mock.
+**2026-11-18 — pontos no Perfil (hipótese):** página "Pontos" (ref. recompensas do Google Pay) com saldo e cupons em grade — bloqueado (cinza, "Faltam N"), disponível, trocado; o código só aparece depois de trocar, com "copiar código" e "usar no app". O mock começa com 120 pontos (inclui um bônus de boas-vindas de 160 e uma troca de 80) só pra mostrar os três estados: bônus de boas-vindas **não** é regra decidida.
 
 <a id="q-28"></a>
 ### Q-28 · Parceiros de benefício
 Ref.: blueprint etapa 9. O panorama cita cupons em 99/Uber, restaurantes locais (modelo clube de descontos) e experiências. São um novo ator do ecossistema (`A-8`?). Qual o acordo com cada um (co-marketing, pagamento por resgate)? Isso se mistura com o transporte com motoristas mulheres (`Q-03`)?
+**2026-11-18 — protótipo (hipótese):** a carteira mistura cupons do serviço e de parceiros — 99 (R$ 8 em 2 corridas), Uber (15% numa corrida) e um rolê (drink de boas-vindas na Casa Astral, código mostrado no balcão). Parceiros, valores e códigos são fictícios; nenhum acordo existe.
 
 <a id="q-29"></a>
 ### Q-29 · Agente de IA: calendário e notificações
@@ -229,6 +231,7 @@ Ref.: D-03, D-05, D-23, `Q-06`, `Q-08`. Hoje um rolê entra pela indicação de 
 <a id="q-37"></a>
 ### Q-37 · Salvos em pastas
 Ref.: D-24, D-16, `Q-22`, `F-11`, `F-12`. A aba Salvos organiza rolês em pastas (estilo Pinterest). Quem cria as pastas: ela, o agente (por dia, por bairro) ou os dois? A pasta é compartilhável com a companhia e editável a duas? Salvar pede conta (D-16) — o que acontece com o que ela salvou antes de entrar? Uma pasta pode virar roteiro no agente com um toque?
+**2026-11-18 (D-28):** ela cria as pastas (viagens) na hora de salvar e separa por dia à mão; a Maré também organiza por dia. Seguem abertos: pasta compartilhada e editável a duas (`Q-22`), o que acontece com o que salvou antes de entrar, e a Maré ler a pasta e escrever os dias nela com um toque (no protótipo a Maré ainda parte dos 8 rolês do mock).
 
 <a id="q-38"></a>
 ### Q-38 · Categorias da home x categorias do agente

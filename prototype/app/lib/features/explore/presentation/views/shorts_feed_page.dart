@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -58,7 +59,12 @@ class _ShortsFeedPageState extends State<ShortsFeedPage> {
       body: Builder(
         builder: (context) => Stack(
           children: [
-            PageView.builder(
+            // Mouse também arrasta (preview no desktop); no celular é toque.
+            ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(
+                dragDevices: PointerDeviceKind.values.toSet(),
+              ),
+              child: PageView.builder(
               controller: _pages,
               scrollDirection: Axis.vertical,
               physics: const BouncingScrollPhysics(
@@ -84,6 +90,7 @@ class _ShortsFeedPageState extends State<ShortsFeedPage> {
                   heroTag: 'short-${video.id}',
                 );
               },
+              ),
             ),
             // Topo: som + fechar (o progresso fica no pé de cada vídeo).
             Positioned(
