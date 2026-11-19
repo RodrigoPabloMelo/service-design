@@ -27,6 +27,47 @@ void main() {
       verify: (c) => expect(c.state.saved, ['parraxaxa-casa-forte']),
     );
 
+    test('salvar em outra viagem, separar por dia e tirar (D-28)', () {
+      final c = TravelerCubit()..signIn(AccountProvider.email);
+      addTearDown(c.close);
+      final olinda = c.createFolder(' Olinda, dez ');
+      expect(c.state.folderById(olinda).name, 'Olinda, dez');
+
+      c
+        ..saveTo(SavedFolder.tripId, 'casa-astral')
+        ..saveTo(olinda, 'box-vitoria-regia')
+        ..saveTo(olinda, 'parraxaxa-casa-forte')
+        ..saveTo(olinda, 'box-vitoria-regia');
+      expect(c.state.saved,
+          ['casa-astral', 'box-vitoria-regia', 'parraxaxa-casa-forte']);
+
+      // Sem datas, o dia novo é "Dia 1".
+      final dia = c.addDay(olinda);
+      expect(c.state.folderById(olinda).days.single.label, 'Dia 1');
+      c.moveToDay(olinda, ['parraxaxa-casa-forte'], dia);
+      expect(c.state.folderById(olinda).unsorted, ['box-vitoria-regia']);
+
+      // Volta pra "Sem dia".
+      c.moveToDay(olinda, ['parraxaxa-casa-forte'], null);
+      expect(c.state.folderById(olinda).days.single.roleIds, isEmpty);
+
+      c.unsave('box-vitoria-regia');
+      expect(c.state.isSaved('box-vitoria-regia'), isFalse);
+      expect(c.state.folderOf('casa-astral')?.id, SavedFolder.tripId);
+    });
+
+    test('com datas, a pasta da viagem nasce com os dias', () {
+      final c = TravelerCubit.inRecife();
+      addTearDown(c.close);
+      final days = c.state.folderById(SavedFolder.tripId).days;
+      expect(days.map((d) => d.label),
+          ['Sexta, 14 nov', 'Sábado, 15 nov', 'Domingo, 16 nov']);
+      final novo = c.addDay(SavedFolder.tripId);
+      expect(novo, 'd17');
+      expect(c.state.folderById(SavedFolder.tripId).days.last.label,
+          'Segunda, 17 nov');
+    });
+
     test('pontos premiam responder, não a nota (Q-27)', () {
       final c = TravelerCubit.afterOuting();
       addTearDown(c.close);

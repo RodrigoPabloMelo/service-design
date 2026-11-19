@@ -16,6 +16,32 @@ abstract final class TravelerMock {
   static String folderName(TripInfo? trip) =>
       '$city, ${trip?.dates ?? tripMonth}';
 
+  /// Nome que aparece na pasta: a da viagem segue as datas.
+  static String folderLabel(SavedFolder folder, TripInfo? trip) =>
+      folder.isTrip ? folderName(trip) : folder.name;
+
+  static const _weekdays = [
+    'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo', //
+  ];
+
+  /// "Sexta, 14 nov" — o calendário do mock é o de nov/2025 (sex 14 a dom
+  /// 16, igual ao roteiro da Maré).
+  static String dayLabel(int day) =>
+      '${_weekdays[DateTime(2025, 11, day).weekday - 1]}, $day $tripMonth';
+
+  /// Dias da viagem a partir do rótulo das datas ("14 a 16 nov").
+  static List<FolderDay> daysOf(TripInfo trip) {
+    final m = RegExp(r'(\d+) a (\d+)').firstMatch(trip.dates);
+    if (m == null) return const [];
+    final from = int.parse(m.group(1)!), to = int.parse(m.group(2)!);
+    return [
+      for (var d = from; d <= to; d++) FolderDay(id: 'd$d', label: dayLabel(d)),
+    ];
+  }
+
+  /// Sugestão de nome para a próxima viagem no sheet "Salvar em".
+  static const newFolderHint = 'Olinda, dez';
+
   /// Opções de datas no card do agente. Todas cobrem o fim de semana do
   /// roteiro mock (sex 14 a dom 16).
   static const dateOptions = ['13 a 16 nov', '14 a 16 nov', '14 a 17 nov'];

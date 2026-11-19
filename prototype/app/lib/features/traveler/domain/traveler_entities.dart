@@ -135,3 +135,67 @@ class Coupon extends Equatable {
   @override
   List<Object?> get props => [id];
 }
+
+/// Um dia dentro de uma pasta de viagem: "Sexta, 14 nov" (com datas) ou
+/// "Dia 1" (sem). Ela separa à mão ou a Maré organiza (D-28).
+class FolderDay extends Equatable {
+  const FolderDay({
+    required this.id,
+    required this.label,
+    this.roleIds = const [],
+  });
+
+  final String id;
+
+  /// "Sexta, 14 nov" ou "Dia 1".
+  final String label;
+  final List<String> roleIds;
+
+  FolderDay copyWith({List<String>? roleIds}) =>
+      FolderDay(id: id, label: label, roleIds: roleIds ?? this.roleIds);
+
+  @override
+  List<Object?> get props => [id, label, roleIds];
+}
+
+/// Pasta de viagem nos Salvos (ref. pastas do Pinterest, D-28). A pasta
+/// [tripId] é a da viagem atual: o nome vem das datas ("Recife, 14 a 16
+/// nov") e os dias também, quando ela já informou.
+class SavedFolder extends Equatable {
+  const SavedFolder({
+    required this.id,
+    required this.name,
+    this.roleIds = const [],
+    this.days = const [],
+  });
+
+  static const tripId = 'viagem';
+
+  final String id;
+
+  /// Nome que ela deu. Na pasta da viagem é ignorado (vem das datas).
+  final String name;
+
+  /// Rolês na ordem em que salvou.
+  final List<String> roleIds;
+  final List<FolderDay> days;
+
+  bool get isTrip => id == tripId;
+
+  /// Rolês que ainda não estão em nenhum dia.
+  List<String> get unsorted {
+    final inDays = {for (final d in days) ...d.roleIds};
+    return [for (final id in roleIds) if (!inDays.contains(id)) id];
+  }
+
+  SavedFolder copyWith({List<String>? roleIds, List<FolderDay>? days}) =>
+      SavedFolder(
+        id: id,
+        name: name,
+        roleIds: roleIds ?? this.roleIds,
+        days: days ?? this.days,
+      );
+
+  @override
+  List<Object?> get props => [id, name, roleIds, days];
+}

@@ -362,7 +362,7 @@ class _HomeTabState extends State<_HomeTab> {
     final stay = ExploreMock.profile.stayLocation;
     return BlocBuilder<TravelerCubit, TravelerState>(
       bloc: travelerCubit(),
-      buildWhen: (a, b) => a.saved != b.saved ||
+      buildWhen: (a, b) => a.folders != b.folders ||
           a.transfer != b.transfer ||
           a.outingDone != b.outingDone,
       builder: (context, traveler) => ListView(
@@ -416,7 +416,7 @@ class _HomeTabState extends State<_HomeTab> {
                       role: role,
                       width: _cardW,
                       heroTag: tag,
-                      saved: traveler.saved.contains(role.id),
+                      saved: traveler.isSaved(role.id),
                       meta: section.showDistance
                           ? 'a ${formatKm(distanceKm(stay, role.location))} '
                               'do hotel'
