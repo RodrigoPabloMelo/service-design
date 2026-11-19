@@ -34,13 +34,16 @@ class GlassTabBar extends StatefulWidget {
   final int index;
   final ValueChanged<int> onChanged;
 
+  /// Altura da pílula (quem anima a barra pra fora da tela precisa dela).
+  static const height = 64.0;
+
   @override
   State<GlassTabBar> createState() => _GlassTabBarState();
 }
 
 class _GlassTabBarState extends State<GlassTabBar>
     with SingleTickerProviderStateMixin {
-  static const _h = 64.0;
+  static const _h = GlassTabBar.height;
   static const _pad = 6.0;
   static const _spring =
       SpringDescription(mass: 1, stiffness: 420, damping: 32);

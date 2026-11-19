@@ -27,8 +27,6 @@ class BlankStartHero extends StatefulWidget {
 class _BlankStartHeroState extends State<BlankStartHero> {
   late final math.Random _rng =
       math.Random(DateTime.now().millisecondsSinceEpoch);
-  late final String _greeting =
-      TravelMock.blankGreetings[_rng.nextInt(TravelMock.blankGreetings.length)];
   late final String _chip = TravelMock
       .blankSuggestions[_rng.nextInt(TravelMock.blankSuggestions.length)];
   late final TideScene _scene =
@@ -38,7 +36,6 @@ class _BlankStartHeroState extends State<BlankStartHero> {
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
-    final name = TravelMock.profile.travelerName;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -73,23 +70,7 @@ class _BlankStartHeroState extends State<BlankStartHero> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const MareMark(size: 28),
-                  const SizedBox(height: TravelSpace.lg),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: TravelSpace.content),
-                    child: Text.rich(
-                      TextSpan(children: [
-                        TextSpan(
-                          text: 'Oi, $name.\n',
-                          style: TextStyle(color: p.inkMuted),
-                        ),
-                        TextSpan(text: _greeting),
-                      ]),
-                      textAlign: TextAlign.center,
-                      style: TravelType.title1.copyWith(color: p.ink),
-                    ),
-                  ),
+                  const AgentGreeting(),
                   const SizedBox(height: TravelSpace.lg),
                   // Nada embaixo do composer: o chip vem antes.
                   _SoftChip(label: _chip, onTap: () => widget.onSend(_chip)),
@@ -104,6 +85,49 @@ class _BlankStartHeroState extends State<BlankStartHero> {
                 ],
               ),
             ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Saudação da Maré: símbolo, "Oi, {nome}." em `inkMuted` e uma pergunta
+/// sorteada a cada visita, em `title1`. Usada no começo do zero (sobre o
+/// mapa) e na conversa nova (tela cheia).
+class AgentGreeting extends StatefulWidget {
+  const AgentGreeting({super.key});
+
+  @override
+  State<AgentGreeting> createState() => _AgentGreetingState();
+}
+
+class _AgentGreetingState extends State<AgentGreeting> {
+  late final String _greeting = TravelMock.blankGreetings[
+      math.Random(DateTime.now().millisecondsSinceEpoch)
+          .nextInt(TravelMock.blankGreetings.length)];
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    final name = TravelMock.profile.travelerName;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const MareMark(size: 28),
+        const SizedBox(height: TravelSpace.lg),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: TravelSpace.content),
+          child: Text.rich(
+            TextSpan(children: [
+              TextSpan(
+                text: 'Oi, $name.\n',
+                style: TextStyle(color: p.inkMuted),
+              ),
+              TextSpan(text: _greeting),
+            ]),
+            textAlign: TextAlign.center,
+            style: TravelType.title1.copyWith(color: p.ink),
           ),
         ),
       ],

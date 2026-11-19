@@ -5,6 +5,8 @@ import 'package:studio_app/features/explore/domain/explore_entities.dart';
 import 'package:studio_app/features/explore/presentation/view_models/search_cubit.dart';
 import 'package:studio_app/features/explore/presentation/views/search_results_page.dart';
 import 'package:studio_app/features/explore/presentation/widgets/explore_ui.dart';
+import 'package:studio_app/features/explore/presentation/widgets/when_picker.dart';
+import 'package:studio_app/features/explore/presentation/widgets/where_picker.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
 
@@ -75,21 +77,13 @@ class SearchPage extends StatelessWidget {
                           value: placeLabel(q),
                           open: s.step == SearchStep.onde,
                           onOpen: () => cubit.openStep(SearchStep.onde),
-                          child: _Chips(children: [
-                            for (final place in [
-                              null,
-                              SearchQuery.nearHotel,
-                              ...ExploreMock.neighborhoods,
-                            ])
-                              ExploreChip(
-                                label: place ?? 'Qualquer lugar',
-                                selected: q.place == place,
-                                onTap: () {
-                                  cubit.setPlace(place);
-                                  _advance(cubit, SearchStep.onde);
-                                },
-                              ),
-                          ]),
+                          child: WherePicker(
+                            place: q.place,
+                            onPick: (place) {
+                              cubit.setPlace(place);
+                              _advance(cubit, SearchStep.onde);
+                            },
+                          ),
                         ),
                         const SizedBox(height: TravelSpace.sm),
                         _StepCard(
@@ -98,19 +92,12 @@ class SearchPage extends StatelessWidget {
                           value: dayLabel(q),
                           open: s.step == SearchStep.quando,
                           onOpen: () => cubit.openStep(SearchStep.quando),
-                          child: _Chips(children: [
-                            for (final day in [null, 0, 1, 2])
-                              ExploreChip(
-                                label: day == null
-                                    ? 'Qualquer dia'
-                                    : ExploreMock.tripDays[day],
-                                selected: q.day == day,
-                                onTap: () {
-                                  cubit.setDay(day);
-                                  _advance(cubit, SearchStep.quando);
-                                },
-                              ),
-                          ]),
+                          child: WhenPicker(
+                            query: q,
+                            onPickDate: cubit.pickDate,
+                            onSlack: cubit.setSlack,
+                            onFlexible: cubit.setFlexible,
+                          ),
                         ),
                         const SizedBox(height: TravelSpace.sm),
                         _StepCard(
@@ -207,6 +194,11 @@ class _StepCard extends StatelessWidget {
   /// O fundo deste card recebe a pílula de busca da home (Hero).
   final bool hero;
 
+  /// Respiro do card: fechado (60 de altura) o texto fica a ~20 do topo e
+  /// da base, então a lateral é 20 também — rótulo à esquerda, valor à
+  /// direita, mesma distância da borda.
+  static const _inset = 20.0;
+
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
@@ -219,8 +211,7 @@ class _StepCard extends StatelessWidget {
     final Widget body = open
         ? Padding(
             key: const ValueKey('open'),
-            padding: const EdgeInsets.fromLTRB(TravelSpace.cardPad, 20,
-                TravelSpace.cardPad, TravelSpace.cardPad),
+            padding: const EdgeInsets.all(_inset),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -245,8 +236,7 @@ class _StepCard extends StatelessWidget {
               child: SizedBox(
                 height: 60,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: TravelSpace.cardPad),
+                  padding: const EdgeInsets.symmetric(horizontal: _inset),
                   child: Row(
                     children: [
                       Text(label,

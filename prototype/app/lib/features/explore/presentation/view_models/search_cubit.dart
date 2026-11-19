@@ -27,6 +27,7 @@ class SearchState extends Equatable {
         stay: ExploreMock.profile.stayLocation,
         query: query,
         filters: filters,
+        cityOf: ExploreMock.cityOf,
       );
 
   SearchState copyWith({
@@ -75,8 +76,48 @@ class SearchCubit extends Cubit<SearchState> {
   void setPlace(String? place) =>
       emit(state.copyWith(query: state.query.copyWith(place: () => place)));
 
-  void setDay(int? day) =>
-      emit(state.copyWith(query: state.query.copyWith(day: () => day)));
+  /// Toque num dia do calendário: 1º toque começa, 2º fecha o intervalo
+  /// (antes do início, recomeça). Datas tiram o modo flexível.
+  void pickDate(DateTime day) {
+    final q = state.query;
+    final s = q.start;
+    final SearchQuery next;
+    if (s == null || q.end != null || day.isBefore(s)) {
+      next = q.copyWith(start: () => day, end: () => null);
+    } else {
+      next = q.copyWith(end: () => day.isAtSameMomentAs(s) ? null : day);
+    }
+    emit(state.copyWith(
+        query: next.copyWith(flexStay: () => null, flexMonth: () => null)));
+  }
+
+  void setSlack(int slack) =>
+      emit(state.copyWith(query: state.query.copyWith(slack: slack)));
+
+  /// Aba "Flexível": duração + mês. Tira as datas exatas.
+  void setFlexible({FlexStay? stay, DateTime? month}) {
+    final q = state.query;
+    emit(state.copyWith(
+      query: q.copyWith(
+        flexStay: () => stay ?? q.flexStay ?? FlexStay.fimDeSemana,
+        flexMonth: () => month ?? q.flexMonth,
+        start: () => null,
+        end: () => null,
+        slack: 0,
+      ),
+    ));
+  }
+
+  /// "Qualquer dia".
+  void clearWhen() => emit(state.copyWith(
+        query: state.query.copyWith(
+          start: () => null,
+          end: () => null,
+          slack: 0,
+          flexStay: () => null,
+          flexMonth: () => null,
+        ),
+      ));
 
   void setCompany(Company company) =>
       emit(state.copyWith(query: state.query.copyWith(company: company)));

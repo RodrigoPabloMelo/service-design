@@ -11,6 +11,9 @@ enum ExploreCategory { restaurantes, cafe, museu, cultura, arte, historia }
 /// Com quem ela vai (D-11). Vem do perfil e é editável na busca.
 enum Company { sozinha, amiga, parceiro }
 
+/// Quando, sem data exata: duração da estadia (aba "Flexível").
+enum FlexStay { fimDeSemana, semana }
+
 /// Etiquetas do rolê usadas só pela home e pela busca.
 class ExploreTags extends Equatable {
   const ExploreTags({
@@ -24,7 +27,8 @@ class ExploreTags extends Equatable {
   final Set<ExploreCategory> categories;
   final Set<StopPeriod> periods;
 
-  /// Dias da viagem em que o rolê funciona (0 = sex, 1 = sáb, 2 = dom).
+  /// Dias em que o rolê funciona (0 = sex, 1 = sáb, 2 = dom). Fora do
+  /// fim de semana, o mock não tem dado — a busca não filtra.
   final Set<int> days;
 
   /// Por que pra você — uma linha (F-13).
@@ -42,36 +46,71 @@ class ExploreTags extends Equatable {
 class SearchQuery extends Equatable {
   const SearchQuery({
     this.place,
-    this.day,
+    this.start,
+    this.end,
+    this.slack = 0,
+    this.flexStay,
+    this.flexMonth,
     this.company = Company.sozinha,
     this.categories = const {},
   });
 
-  /// Bairro, [nearHotel] ou null (qualquer lugar).
+  /// Cidade ("Recife", "Olinda"), bairro, [nearHotel] ou null (qualquer).
   final String? place;
 
-  /// Dia da viagem (0..2) ou null (qualquer dia).
-  final int? day;
+  /// Datas exatas (aba "Datas"). Só [start] = um dia.
+  final DateTime? start;
+  final DateTime? end;
+
+  /// Folga nas datas: ±1 ou ±2 dias (0 = datas exatas).
+  final int slack;
+
+  /// Aba "Flexível": fim de semana ou semana, num mês.
+  final FlexStay? flexStay;
+  final DateTime? flexMonth;
   final Company company;
   final Set<ExploreCategory> categories;
 
-  static const nearHotel = 'Perto do hotel';
+  /// "Por perto": a até [kNearHotelKm] da hospedagem.
+  static const nearHotel = 'Por perto';
+
+  bool get hasDates => start != null;
+  bool get isFlexible => flexStay != null;
+
+  /// Dias cobertos pela busca (com a folga). Vazio = qualquer dia.
+  List<DateTime> get days {
+    final s = start;
+    if (s == null) return const [];
+    final e = end ?? s;
+    final from = s.subtract(Duration(days: slack));
+    final n = e.difference(s).inDays + 1 + 2 * slack;
+    return [for (var i = 0; i < n; i++) from.add(Duration(days: i))];
+  }
 
   SearchQuery copyWith({
     String? Function()? place,
-    int? Function()? day,
+    DateTime? Function()? start,
+    DateTime? Function()? end,
+    int? slack,
+    FlexStay? Function()? flexStay,
+    DateTime? Function()? flexMonth,
     Company? company,
     Set<ExploreCategory>? categories,
   }) =>
       SearchQuery(
         place: place == null ? this.place : place(),
-        day: day == null ? this.day : day(),
+        start: start == null ? this.start : start(),
+        end: end == null ? this.end : end(),
+        slack: slack ?? this.slack,
+        flexStay: flexStay == null ? this.flexStay : flexStay(),
+        flexMonth: flexMonth == null ? this.flexMonth : flexMonth(),
         company: company ?? this.company,
         categories: categories ?? this.categories,
       );
 
   @override
-  List<Object?> get props => [place, day, company, categories];
+  List<Object?> get props =>
+      [place, start, end, slack, flexStay, flexMonth, company, categories];
 }
 
 /// Filtros aplicados depois da busca (sheet "Filtros").
@@ -177,26 +216,47 @@ List<Role> searchRoles({
   required GeoPoint stay,
   required SearchQuery query,
   required ExploreFilters filters,
+  String Function(Role role)? cityOf,
 }) {
   bool near(Role r) => distanceKm(stay, r.location) <= kNearHotelKm;
+  final city = cityOf ?? (_) => 'Recife';
   return [
     for (final r in roles)
-      if (_matches(r, tags[r.id], query, filters, near(r))) r,
+      if (_matches(r, tags[r.id], query, filters, near(r), city(r))) r,
   ];
 }
 
-bool _matches(
-    Role r, ExploreTags? t, SearchQuery q, ExploreFilters f, bool isNear) {
+/// Índice do dia nas etiquetas (0 sex, 1 sáb, 2 dom) ou null fora do fim
+/// de semana.
+int? weekendIndex(DateTime d) => switch (d.weekday) {
+      DateTime.friday => 0,
+      DateTime.saturday => 1,
+      DateTime.sunday => 2,
+      _ => null,
+    };
+
+bool _openOn(ExploreTags t, List<DateTime> days) {
+  if (days.isEmpty) return true;
+  for (final d in days) {
+    final i = weekendIndex(d);
+    // Dia útil: o mock não tem horário — não filtra (sem inventar).
+    if (i == null || t.days.contains(i)) return true;
+  }
+  return false;
+}
+
+bool _matches(Role r, ExploreTags? t, SearchQuery q, ExploreFilters f,
+    bool isNear, String city) {
   if (t == null) return false;
   final place = q.place;
   if (place != null) {
     if (place == SearchQuery.nearHotel) {
       if (!isNear) return false;
-    } else if (r.neighborhood != place) {
+    } else if (place != city && r.neighborhood != place) {
       return false;
     }
   }
-  if (q.day != null && !t.days.contains(q.day)) return false;
+  if (!_openOn(t, q.days)) return false;
   if (q.categories.isNotEmpty &&
       t.categories.intersection(q.categories).isEmpty) {
     return false;

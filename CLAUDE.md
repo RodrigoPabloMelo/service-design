@@ -18,6 +18,7 @@ Comece por [docs/README.md](docs/README.md): resumo, índice e IDs de referênci
 - Evidências da pesquisa → `docs/pesquisa.md`
 - Já decidido `D-xx` → `docs/decisoes.md` · Em aberto `Q-xx` → `docs/questoes-em-aberto.md`
 - O que o protótipo cobre (telas ↔ etapas, personas, decisões) → `docs/prototipo.md`
+- Fluxos, subfluxos e estados das telas (`FL-xx`, `ST-*`) → `docs/fluxos/` — mudou um caminho ou estado no protótipo, atualize ali
 
 ## Regras ao trabalhar aqui
 

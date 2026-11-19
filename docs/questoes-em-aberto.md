@@ -1,6 +1,6 @@
 # Questões em aberto
 
-> **Atualizado:** 2026-11-09 · **Origem:** levantadas na documentação do ciclo 1 (conversa com Rodrigo, 2026-10-16); `Q-27` a `Q-32` no rascunho do blueprint (2026-11-04)
+> **Atualizado:** 2026-11-18 · **Origem:** levantadas na documentação do ciclo 1 (conversa com Rodrigo, 2026-10-16); `Q-27` a `Q-32` no rascunho do blueprint (2026-11-04)
 > **Status:** `aberta` · `em discussão` · `resolvida` (→ registrar em [decisoes.md](decisoes.md) com o `D-xx`)
 > **Prioridade:** **alta** = bloqueia ideação/blueprint · **média** = precisa antes do protótipo · **baixa** = pode esperar
 
@@ -46,6 +46,8 @@
 | [Q-36](#q-36) | Prestadores podem pedir para entrar na plataforma? | Curadoria/Confiança | alta | aberta |
 | [Q-37](#q-37) | Salvos em pastas | UX/Ecossistema | média | aberta |
 | [Q-38](#q-38) | Categorias da home x categorias do agente | Conteúdo | média | aberta |
+| [Q-39](#q-39) | Dado de alagamento no trajeto sugerido | Segurança/Dados | média | aberta |
+| [Q-40](#q-40) | Histórico de conversas com a Maré: conta e retenção | IA/Privacidade | média | aberta |
 
 ---
 
@@ -59,6 +61,24 @@ Ainda sem nome. Nos docs: "o app" / "o serviço".
 ### Q-02 · Estrutura dos planos/pacotes
 Ref.: D-01. Quantos planos? O que é grátis e o que é pago? Preço? Plano por viagem (passe) ou recorrente? Pacote é por rolê (ex.: jantar com reserva + prato + motorista) ou por período?
 **2026-11-04 (D-17):** modelo freemium definido: grátis = rolês curados + agente com mensagens limitadas; pagos = transfer com motoristas mulheres e rolês em grupo só com mulheres. Ainda em aberto: preço, se os extras são avulsos ou num plano, se o plano pago amplia as mensagens do agente.
+**2026-11-18 (proposta do Rodrigo, não decidida):** **pacotes de planejamento com o agente**, comprados por ano em vez de assinatura recorrente, com o pagamento dividido em parcelas. Um planejamento é o roteiro de uma viagem (datas + hospedagem + rolês organizados por dia, com mapa e calendário).
+
+| | Free | Pacote 3 viagens | Pacote 5 viagens |
+| --- | --- | --- | --- |
+| Viagens planejadas | 1 | 3 no ano | 5 no ano |
+| Preço | grátis | R$ 15,90 por semestre (2 parcelas) | R$ 14,90 por trimestre (4 parcelas) |
+| Total no ano | R$ 0 | R$ 31,80 | R$ 59,60 |
+| Custo por viagem | — | ~R$ 10,60 | ~R$ 11,92 |
+
+Sugestões levadas junto **(hipótese)**: reajustes durante a mesma viagem não gastam outro planejamento; ver, filtrar e salvar rolês segue grátis; pacotes só aparecem ao começar uma viagem nova, nunca num reajuste na rua ([Q-35](#q-35)); pacote de 5 a R$ 11,90/trimestre (~R$ 9,52 por viagem), porque hoje o pacote maior sai mais caro por viagem; Free com 1 planejamento que renova a cada ano; validade de 12 meses; tudo liberado na 1ª parcela e, se ela parar de pagar, perde só o que não usou. Transfer com motorista mulher e rolês em grupo seguem avulsos, para todas, e o pacote dá desconto nas viagens que cobre:
+
+| Pacote | Transfer com motorista mulher | Rolês em grupo só com mulheres | Onde vale |
+| --- | --- | --- | --- |
+| Free | avulso, preço cheio | avulso, preço cheio | sem desconto |
+| 3 viagens | 10% de desconto | 10% de desconto | nas 3 viagens do pacote |
+| 5 viagens | 15% + prioridade no agendamento com motoristas parceiras | 15% + prioridade de vaga em grupos lotados | nas 5 viagens do pacote |
+
+Em aberto: os pacotes substituem o limite de mensagens de D-17 ou somam a ele? O desconto nos extras sai da comissão do serviço ou do valor pago à motorista e à guia? Preço dos extras depende de [Q-03](#q-03) e [Q-33](#q-33). Detalhe no Google Doc "Estrutura narrativa do serviço", seção Ideias. O protótipo ainda mostra a assinatura de R$ 14,90/mês e não foi alterado.
 
 <a id="q-03"></a>
 ### Q-03 · Transporte com motoristas mulheres
@@ -73,6 +93,7 @@ Ref.: D-02, D-08. Qual percentual/modelo? Quando o rolê é pago **direto no loc
 ### Q-05 · O que se paga no app x no local
 Ref.: D-08. Quais tipos de rolê entram como pacote/reserva no app e quais ficam avulsos? Bares e cafés têm comissão?
 **2026-11-04 (D-13):** não há reserva integrada no app. Resta saber: o que ainda se paga no app (só os planos?) e como fica o benefício "reservas pré-feitas" de D-01 (feito à mão pelo grupo? sai do plano?).
+**2026-11-18 (D-26):** o transfer com motorista parceira se paga no app. Segue aberto o resto (planos, rolês em grupo, meio de pagamento).
 
 <a id="q-06"></a>
 ### Q-06 · Curadoria: critérios e operação
@@ -94,6 +115,7 @@ Ref.: D-03. A pesquisa diz que **avaliações de outras mulheres** são as mais 
 <a id="q-10"></a>
 ### Q-10 · Selo de segurança
 Ref.: D-06. O selo é dado pela comunidade, pela curadoria ou pelos dois? Quais critérios (sozinha, em dupla, à noite, transporte de volta)? É por lugar, por horário ou por trajeto? Como evitar estigmatizar bairros periféricos (conflito com ODS 8.9 / 11.7)?
+**2026-11-18 — protótipo (hipótese):** o selo aparece como **"Rolê seguro"** (rótulo pedido pelo Rodrigo em 2026-11-18, sem a palavra "Selo"): marca no card da home, pílula na foto do card de resultado e bloco no detalhe, dizendo quem avaliou (moradoras e curadoria), para quais situações (ir sozinha, chegar e sair à noite) e a data. Nome, quem concede e critérios seguem em aberto.
 
 <a id="q-11"></a>
 ### Q-11 · IA de roteiro
@@ -165,6 +187,7 @@ Não há identidade visual. Quando houver, registrar num `DESIGN.md` na raiz (to
 <a id="q-27"></a>
 ### Q-27 · Programa de pontos/moedas da viajante
 Ref.: [blueprint rascunho](../diagrams/2026-11-04-blueprint-rascunho.md) etapas 8–9, D-04, `Q-07`, `Q-17`. No panorama, os descontos funcionam como pontos/moedas trocáveis por serviços e cupons. Falta definir: o que gera pontos (visitar, avaliar, indicar amiga, completar roteiro?); quanto vale cada ação; se expiram; quem financia o desconto (app, parceiro, os dois); se locais e viajantes usam a mesma moeda. Risco: premiar a avaliação pode enviesar notas ou gerar avaliações falsas (`Q-13`). Premiar o ato de avaliar, não a nota?
+**2026-11-18 — protótipo (hipótese):** 20 pontos por resposta (rolê e transfer), boa ou ruim; carteira com cupons do próprio serviço (R$ 5 no transfer, 10% num rolê em grupo). Valores de mock.
 
 <a id="q-28"></a>
 ### Q-28 · Parceiros de benefício
@@ -173,6 +196,7 @@ Ref.: blueprint etapa 9. O panorama cita cupons em 99/Uber, restaurantes locais 
 <a id="q-29"></a>
 ### Q-29 · Agente de IA: calendário e notificações
 Ref.: `D-07`, `Q-11`, blueprint etapas 4 e 6. No panorama, o agente trabalha com mapa e calendário integrados e manda notificações durante a viagem. O calendário é exportado (.ics) ou sincronizado (Google/Apple)? Quais gatilhos de reajuste ("necessidades multifatoriais": clima, horário, distância, noite/volta, cansaço, orçamento)? O ajuste é automático ou sempre pede confirmação? Qual o limite de notificações por dia?
+**2026-11-18 — protótipo (hipótese):** duas notificações simuladas: alerta de chuva no dia do rolê (abre a troca no chat) e pedido de avaliação depois da saída.
 
 <a id="q-30"></a>
 ### Q-30 · Como o app sabe que ela foi ao rolê
@@ -210,3 +234,10 @@ Ref.: D-24, D-16, `Q-22`, `F-11`, `F-12`. A aba Salvos organiza rolês em pastas
 ### Q-38 · Categorias da home x categorias do agente
 Ref.: D-24, D-07. A home usa 6 categorias (restaurantes, café, museu, cultura, arte, história); o agente e o mapa usam 5 tipos (comida, cultura, noite, natureza, praia). Qual é a taxonomia do serviço? Um rolê pode ter várias? "Noite", "praia" e "natureza" entram na home? Hoje não há **café** curado no mock: a categoria aparece vazia, de propósito (D-07).
 
+<a id="q-39"></a>
+### Q-39 · Alagamento no trajeto sugerido
+Ref.: D-06, D-07, `Q-11`, `Q-10`, narrativa do serviço (momento 5). Na troca por chuva, a Maré diz que o trajeto sugerido não tem pontos de alagamento conhecidos. De onde vem esse dado (relatos de moradoras, curadoria, Defesa Civil/Prefeitura, app de trânsito)? Com que frequência é atualizado? Como dizer isso sem prometer segurança e sem rotular bairro (UX.md §6)? No protótipo o texto descreve a rota com **fonte e data** ("Relatos de moradoras, em 05 nov") — **(hipótese)**.
+
+<a id="q-40"></a>
+### Q-40 · Histórico de conversas com a Maré: conta e retenção
+Ref.: D-16, D-17, D-07, `Q-11`, `Q-13`, [fluxos/agente.md](fluxos/agente.md#fl-043--conversas-anteriores-gaveta) (`FL-04.3`). O protótipo abre a Maré numa conversa nova e guarda as anteriores numa gaveta (fixadas e recentes, ref. ChatGPT). Guardar conversas exige conta? D-16 só pede conta para salvar — conversar sem conta e perder o histórico ao sair seria aceitável? Por quanto tempo as conversas ficam guardadas e quem pode vê-las (a companhia, `Q-22`)? Conversas contam para o limite de mensagens só uma vez (`Q-35`)? No protótipo o histórico vive só na sessão, não pede conta e as conversas antigas são mock — **(hipótese)**.

@@ -1,7 +1,15 @@
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 
 /// Cenários de design da tela do agente (variações do registry).
-enum TravelAgentScenario { padrao, vazio, erro, carregando }
+enum TravelAgentScenario {
+  padrao,
+  vazio,
+  erro,
+  carregando,
+
+  /// Já em Recife, roteiro pronto, chega o alerta de chuva (cena 5).
+  chuva,
+}
 
 /// Dados mockados — rolês reais de Recife indicados por moradores (pessoas
 /// e @handles são fictícios). Fotos: Wikimedia Commons, ver
@@ -43,7 +51,7 @@ abstract final class TravelMock {
     ProcessStep(
       title: 'Recolhendo rolês no catálogo',
       detail: 'Só indicações de quem mora aqui',
-      sources: ['Catálogo local', 'Selo Rolê Seguro'],
+      sources: ['Catálogo local', 'Rolê seguro'],
       collect: true,
     ),
     ProcessStep(
@@ -82,8 +90,8 @@ abstract final class TravelMock {
     'dona-lindu',
     'casa-de-bamba',
     'mercado-encruzilhada',
-    'sitio-trindade',
     'poco-da-panela',
+    'box-vitoria-regia',
     'casa-astral',
     'mercado-boa-vista',
     'cinema-sao-luiz',
@@ -104,6 +112,33 @@ abstract final class TravelMock {
     'Organizar meus 8 rolês',
     'Noite com as amigas',
     'Perto do hotel',
+  ];
+
+  /// Conversas anteriores na gaveta (☰): a fixada é o roteiro da viagem;
+  /// as recentes vêm das sugestões da abertura (cenas da narrativa).
+  static const conversations = [
+    ConversationSeed(
+      id: 'roteiro',
+      title: 'Roteiro Recife, 14 a 16 nov',
+      prompt: 'Organizar meus 8 rolês',
+      pinned: true,
+    ),
+    ConversationSeed(
+      id: 'noite',
+      title: 'Noite com as amigas',
+      prompt: 'Noite com as amigas',
+    ),
+    ConversationSeed(
+      id: 'hotel',
+      title: 'Perto do hotel',
+      prompt: 'Perto do hotel',
+    ),
+    ConversationSeed(
+      id: 'erro',
+      title: 'Organizar meus 8 rolês',
+      prompt: 'Organizar meus 8 rolês',
+      failed: true,
+    ),
   ];
 
   // ── Começo do zero (cenário Vazio) ───────────────────────────────────
@@ -779,6 +814,121 @@ abstract final class TravelMock {
     ],
   );
 
+
+  // ── Troca por chuva da narrativa (Casa Forte) ────────────────────────
+  // Lugares reais. Horário do Box: Catraca Livre (atualizada em set/2026).
+  // A confirmar no Maps: mesas descobertas do Box, horário do Parraxaxá e
+  // distância a pé. Quem indica é fictício.
+
+  /// Bar jardim ao ar livre — o plano salvo antes da viagem.
+  static const boxVitoriaRegia = Role(
+    id: 'box-vitoria-regia',
+    name: 'Fim de tarde no Box Vitória Régia',
+    shortName: 'Box Vitória Régia',
+    neighborhood: 'Casa Forte',
+    category: RoleCategory.noite,
+    location: GeoPoint(-8.0359, -34.9180),
+    price: r'$',
+    hours: 'Ter a dom, 16h às 23h',
+    photos: [
+      PhotoCredit(
+        asset: '$_img/casa_forte_praca_1.jpg',
+        author: 'Laís Castro',
+        license: 'CC BY-SA 3.0',
+      ),
+    ],
+    recommender: Recommender(
+      name: 'Joana Lima',
+      photo: '$_people/joana.jpg',
+      tie: 'mora em Casa Forte há 9 anos',
+      quote: 'Cerveja gelada, vinil tocando e a praça do Burle Marx do '
+          'lado. É o bar do bairro.',
+    ),
+    about: 'Bar simples de bairro na Praça de Casa Forte, jardim de Burle '
+        'Marx. Mesas ao ar livre, vinil de quinta a sábado.',
+    whatToDo: 'Cerveja gelada e uma ficha na jukebox.',
+    bestTime: 'Sábado, 18h às 21h',
+    cost: r'Ficha da jukebox R$ 1',
+    surroundings: [
+      'Na Praça de Casa Forte',
+      'Mesas ao ar livre, sem cobertura',
+      'Fecha às 23h',
+    ],
+    verifiedAt: '05 nov',
+    tips: [
+      RoleTip(TipKind.drink, 'Cerveja gelada'),
+      RoleTip(TipKind.music, 'Vinil de quinta a sábado'),
+      RoleTip(TipKind.nature, 'Volta na praça'),
+    ],
+    videos: [
+      ShortVideo(
+        id: 'v-box-1',
+        source: VideoSource.local,
+        handle: '@joana.casaforte',
+        caption: 'Sábado de vinil na praça.',
+        duration: Duration(seconds: 18),
+        poster: '$_img/casa_forte_praca_1.jpg',
+      ),
+    ],
+  );
+
+  /// Bar regional coberto — a troca que a Maré sugere quando chove.
+  static const parraxaxa = Role(
+    id: 'parraxaxa-casa-forte',
+    name: 'Comida pernambucana no Parraxaxá',
+    shortName: 'Parraxaxá',
+    neighborhood: 'Casa Forte',
+    category: RoleCategory.comida,
+    location: GeoPoint(-8.0340, -34.9168),
+    price: r'$$',
+    hours: 'Horário não verificado',
+    photos: [
+      PhotoCredit(
+        asset: '$_img/parraxaxa_1.jpg',
+        author: 'Grupo Dicas (divulgação)',
+        license: 'Uso acadêmico',
+      ),
+    ],
+    recommender: Recommender(
+      name: 'Joana Lima',
+      photo: '$_people/joana.jpg',
+      tie: 'mora em Casa Forte há 9 anos',
+      quote: 'Quando chove eu vou pro Parraxaxá. Carne de sol com '
+          'macaxeira, tudo coberto.',
+    ),
+    about: 'Cozinha pernambucana em salão coberto, com decoração de '
+        'fazenda e cangaço. Fica perto da Praça de Casa Forte.',
+    whatToDo: 'Carne de sol com macaxeira e queijo coalho.',
+    bestTime: 'Sábado à noite',
+    cost: r'Pratos a partir de R$ 45',
+    surroundings: [
+      'Salão coberto',
+      'Na Rua Igarassu, perto da praça',
+    ],
+    verifiedAt: '05 nov',
+    covered: true,
+    access: RouteAccess(
+      text: 'Trajeto sugerido sem pontos de alagamento conhecidos',
+      source: 'Relatos de moradoras',
+      checkedAt: '05 nov',
+    ),
+    tips: [
+      RoleTip(TipKind.food, 'Carne de sol com macaxeira'),
+      RoleTip(TipKind.food, 'Queijo coalho'),
+      RoleTip(TipKind.drink, 'Bebida regional'),
+    ],
+    videos: [
+      ShortVideo(
+        id: 'v-prx-1',
+        source: VideoSource.local,
+        handle: '@joana.casaforte',
+        caption: 'Choveu? Carne de sol no Parraxaxá.',
+        duration: Duration(seconds: 17),
+        poster: '$_img/parraxaxa_1.jpg',
+      ),
+    ],
+  );
+
   /// Os 8 rolês salvos (etapa 03 do blueprint).
   static const savedRoles = [
     casaAstral,
@@ -786,12 +936,17 @@ abstract final class TravelMock {
     cinemaSaoLuiz,
     casaDeBamba,
     pocoDaPanela,
-    sitioTrindade,
+    boxVitoriaRegia,
     mercadoEncruzilhada,
     donaLindu,
   ];
 
-  static const allRoles = [...savedRoles, mercadoCasaAmarela];
+  static const allRoles = [
+    ...savedRoles,
+    sitioTrindade,
+    mercadoCasaAmarela,
+    parraxaxa,
+  ];
 
   static Role roleById(String id) => allRoles.firstWhere((r) => r.id == id);
 
@@ -832,23 +987,23 @@ abstract final class TravelMock {
           mode: TravelMode.carro,
         ),
         ItineraryStop(
-          roleId: 'sitio-trindade',
+          roleId: 'poco-da-panela',
           time: '15h',
           period: StopPeriod.tarde,
-          fromPrevious: '9 min de carro',
+          fromPrevious: '20 min de carro',
           mode: TravelMode.carro,
         ),
         ItineraryStop(
-          roleId: 'poco-da-panela',
-          time: '17h',
-          period: StopPeriod.tarde,
-          fromPrevious: '17 min a pé',
+          roleId: 'box-vitoria-regia',
+          time: '18h',
+          period: StopPeriod.noite,
+          fromPrevious: '15 min a pé',
         ),
         ItineraryStop(
           roleId: 'casa-astral',
           time: '21h',
           period: StopPeriod.noite,
-          fromPrevious: '2 min a pé',
+          fromPrevious: '15 min a pé',
         ),
       ],
     ),
@@ -875,10 +1030,12 @@ abstract final class TravelMock {
     ),
   ];
 
-  /// Troca proposta por chuva: sábado 15h.
+  /// Troca proposta por chuva: sábado 18h, bar jardim → bar coberto.
   static const swapDayId = 'sab';
-  static const swapFromId = 'sitio-trindade';
-  static const swapToId = 'mercado-casa-amarela';
+  static const swapFromId = 'box-vitoria-regia';
+  static const swapToId = 'parraxaxa-casa-forte';
+  static const swapTime = '18h';
+  static const rainAt = '17h';
 
   static const extras = [
     TravelExtra(

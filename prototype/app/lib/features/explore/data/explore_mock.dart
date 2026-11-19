@@ -24,6 +24,24 @@ class ExploreCategoryInfo {
   final String photo;
 }
 
+/// Sugestão do "Onde?" (ref. Airbnb): ilustração + nome + uma linha.
+class PlaceSuggestion {
+  const PlaceSuggestion({
+    required this.place,
+    required this.label,
+    required this.line,
+    required this.icon,
+  });
+
+  /// Valor da busca ([SearchQuery.place]).
+  final String place;
+  final String label;
+  final String line;
+
+  /// SVG de traço (`assets/icons/places/`).
+  final String icon;
+}
+
 /// Dados mockados da home. Reaproveita os rolês do agente ([TravelMock]) e
 /// soma três rolês reais do Recife Antigo. Quem indica e @handles são
 /// fictícios; lugares e fotos são reais.
@@ -74,6 +92,46 @@ abstract final class ExploreMock {
 
   static ExploreCategoryInfo categoryInfo(ExploreCategory c) =>
       categories.firstWhere((i) => i.category == c);
+
+  /// "Hoje" do protótipo: antes da viagem (14 a 16 nov), pra o calendário
+  /// não riscar as datas do roteiro.
+  static final today = DateTime(2026, 11, 10);
+
+  /// Sugestões do "Onde?": só o piloto (D-10) e "Por perto".
+  static const placeSuggestions = [
+    PlaceSuggestion(
+      place: SearchQuery.nearHotel,
+      label: 'Por perto',
+      line: 'Rolês perto da sua hospedagem',
+      icon: 'assets/icons/places/perto.svg',
+    ),
+    PlaceSuggestion(
+      place: 'Recife',
+      label: 'Recife',
+      line: 'Por lugares como o Paço do Frevo',
+      icon: 'assets/icons/places/recife.svg',
+    ),
+    PlaceSuggestion(
+      place: 'Olinda',
+      label: 'Olinda',
+      line: 'Ladeiras e casario do Sítio Histórico',
+      icon: 'assets/icons/places/olinda.svg',
+    ),
+  ];
+
+  /// Bairros de Olinda (nenhum rolê curado ainda — a busca diz isso).
+  static const olindaNeighborhoods = {'Olinda', 'Carmo', 'Amparo'};
+
+  static String cityOf(Role r) =>
+      olindaNeighborhoods.contains(r.neighborhood) ? 'Olinda' : 'Recife';
+
+  /// O que dá pra buscar digitando: cidades e bairros com rolê curado.
+  static List<(String place, String detail)> get searchablePlaces => [
+        ('Recife', 'Pernambuco'),
+        ('Olinda', 'Pernambuco'),
+        for (final n in {for (final r in roles) r.neighborhood})
+          (n, cityOf(roleById(roles.firstWhere((r) => r.neighborhood == n).id))),
+      ];
 
   /// Dias da viagem (14 a 16 nov) — rótulos curtos da busca.
   static const tripDays = ['Sex, 14', 'Sáb, 15', 'Dom, 16'];
@@ -335,6 +393,20 @@ abstract final class ExploreMock {
       days: {0, 1},
       reason: 'Petisco de mercado com quem é do bairro',
       priceFrom: 25,
+    ),
+    'box-vitoria-regia': ExploreTags(
+      categories: {ExploreCategory.cultura},
+      periods: {StopPeriod.tarde, StopPeriod.noite},
+      days: _all,
+      reason: 'Bar de bairro ao ar livre, na praça do Burle Marx',
+      priceFrom: 10,
+    ),
+    'parraxaxa-casa-forte': ExploreTags(
+      categories: {ExploreCategory.restaurantes},
+      periods: {StopPeriod.tarde, StopPeriod.noite},
+      days: _all,
+      reason: 'Comida pernambucana em salão coberto',
+      priceFrom: 45,
     ),
     'paco-do-frevo': ExploreTags(
       categories: {ExploreCategory.museu, ExploreCategory.cultura},

@@ -7,6 +7,7 @@ import 'package:studio_app/features/explore/presentation/view_models/explore_cub
 import 'package:studio_app/features/explore/presentation/view_models/explore_state.dart';
 import 'package:studio_app/features/explore/presentation/view_models/search_cubit.dart';
 import 'package:studio_app/features/explore/presentation/views/explore_page.dart';
+import 'package:studio_app/features/explore/presentation/widgets/explore_ui.dart';
 import 'package:studio_app/features/explore/presentation/widgets/filter_pickers.dart';
 import 'package:studio_app/features/explore/presentation/widgets/glass_tab_bar.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
@@ -46,15 +47,6 @@ void main() {
       ];
       expect(kms, orderedEquals([...kms]..sort()));
     });
-
-    blocTest<ExploreCubit, ExploreState>(
-      'salvar e tirar dos salvos',
-      build: ExploreCubit.new,
-      act: (c) => c
-        ..toggleSaved('paco-do-frevo')
-        ..toggleSaved('paco-do-frevo'),
-      verify: (c) => expect(c.state.saved, isEmpty),
-    );
 
     blocTest<ExploreCubit, ExploreState>(
       'erro → tentar de novo → carrega',
@@ -114,6 +106,42 @@ void main() {
       }
       cubit.setPriceRange(0, kPriceCap);
       expect(cubit.state.filters.count, 0);
+    });
+
+    test('onde: Recife traz a base; Olinda ainda sem rolê curado', () {
+      final cubit = SearchCubit()..setPlace('Recife');
+      addTearDown(cubit.close);
+      expect(cubit.state.results.length, ExploreMock.roles.length);
+      cubit.setPlace('Olinda');
+      expect(cubit.state.results, isEmpty);
+      cubit.setPlace('Casa Forte');
+      expect(cubit.state.results.map((r) => r.neighborhood).toSet(),
+          {'Casa Forte'});
+    });
+
+    test('quando: dois toques fazem o intervalo, folga e rótulo', () {
+      final cubit = SearchCubit()
+        ..pickDate(DateTime(2026, 11, 14))
+        ..pickDate(DateTime(2026, 11, 16));
+      addTearDown(cubit.close);
+      final q = cubit.state.query;
+      expect(q.days.length, 3);
+      expect(dayLabel(q), '14 a 16 nov');
+      cubit.setSlack(1);
+      expect(cubit.state.query.days.length, 5);
+      expect(dayLabel(cubit.state.query), '14 a 16 nov, ±1 dia');
+      // Toque antes do início recomeça.
+      cubit.pickDate(DateTime(2026, 11, 12));
+      expect(cubit.state.query.end, isNull);
+    });
+
+    test('quando: flexível tira as datas exatas', () {
+      final cubit = SearchCubit()
+        ..pickDate(DateTime(2026, 11, 14))
+        ..setFlexible(month: DateTime(2026, 12));
+      addTearDown(cubit.close);
+      expect(cubit.state.query.hasDates, isFalse);
+      expect(dayLabel(cubit.state.query), 'Fim de semana em dez');
     });
 
     test('perto do hotel só traz rolês a até 4 km', () {

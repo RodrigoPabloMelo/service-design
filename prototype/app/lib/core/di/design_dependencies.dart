@@ -2,6 +2,7 @@ import 'package:studio_app/core/components/widgets/flushbar/flushbar_area_cubit.
 import 'package:studio_app/core/di/app_dependencies.dart';
 import 'package:studio_app/core/flavor/flavor_config.dart';
 import 'package:studio_app/core/logs/app_logger.dart';
+import 'package:studio_app/features/traveler/presentation/view_models/traveler_cubit.dart';
 
 // DI leve para o loop de design (Flutter Web hospedado).
 // Registra apenas dependências web-safe: sem serviços nativos, sem dart:io.
@@ -22,4 +23,6 @@ Future<void> setupDesignDependencies() async {
   injector.registerLazySingleton<FlushbarAreaCubit>(() => FlushbarAreaCubit());
 
   // Features: registre aqui conforme o designer criar cada uma.
+  // Viajante: conta, salvos, viagem, transfer e pontos — um por app.
+  injector.registerSingleton<TravelerCubit>(TravelerCubit());
 }

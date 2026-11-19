@@ -30,3 +30,5 @@ Fotos do Wikimedia Commons, usadas como mock de design com licença livre.
 | sitio_trindade_1.jpg | Fábio de Oliveira Geber | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:S%C3%ADtio_da_Trindade.jpg |
 | sitio_trindade_2.jpg | NayaraRN | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Recife_Junino_2024_no_S%C3%ADtio_Trindade.jpg |
 | sitio_trindade_3.jpg | NayaraRN | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Apresenta%C3%A7%C3%A3o_de_quadrilha_junina_no_S%C3%ADtio_Trindade.jpg |
+| casa_forte_praca_1.jpg | Laís Castro | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:Pra%C3%A7a_de_Casa_Forte_2.jpg |
+| parraxaxa_1.jpg | Grupo Dicas (foto de divulgação; pode ser a unidade de Boa Viagem) | Sem licença livre; uso acadêmico autorizado pelo grupo em 2026-11-18 | https://uploads.grupodicas.com/2024/03/parraxaxa.jpg |

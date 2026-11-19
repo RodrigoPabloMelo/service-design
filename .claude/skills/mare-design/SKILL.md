@@ -58,10 +58,11 @@ feedback do designer; não reabra sem ele pedir.
     (`SheetTopInset`), nunca cortado numa borda dura. Fundo escuro passando
     por baixo (`DarkBackdrop`) → título e ícones do cabeçalho em claro.
 11. **Fade de rolagem suave** (rampa senoidal) sob o composer e a alça.
-12. **Pouca coisa por vez.** Abertura da conversa = bloco azul + sugestões,
-    nada entre eles. Começo do zero (nada salvo) = mapa + saudação central,
-    sem bloco azul. Conteúdo (cards de rolês, roteiro) só aparece quando o
-    agente responde.
+12. **Pouca coisa por vez.** Conversa nova = saudação central (fundo liso)
+    + sugestões acima do composer, **sem bloco azul**. Começo do zero
+    (nada salvo) = mapa + saudação central. O bloco azul só aparece em
+    conversa que já tem roteiro ou erro. Conteúdo (cards de rolês,
+    roteiro) só aparece quando o agente responde.
 13. **Botão acessível:** `Semantics(button: true, excludeSemantics: true)`
     sempre com `onTap:` (o mesmo do `Pressable` filho) — sem ele o leitor
     de tela anuncia um botão que não faz nada. Lint D11.

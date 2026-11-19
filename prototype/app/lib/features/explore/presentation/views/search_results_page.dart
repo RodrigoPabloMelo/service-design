@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:studio_app/features/traveler/presentation/view_models/traveler_cubit.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/account_sheet.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studio_app/features/explore/data/explore_mock.dart';
 import 'package:studio_app/features/explore/domain/explore_entities.dart';
-import 'package:studio_app/features/explore/presentation/view_models/explore_cubit.dart';
-import 'package:studio_app/features/explore/presentation/view_models/explore_state.dart';
 import 'package:studio_app/features/explore/presentation/view_models/search_cubit.dart';
 import 'package:studio_app/features/explore/presentation/views/role_page.dart';
 import 'package:studio_app/features/explore/presentation/views/search_page.dart';
@@ -194,12 +194,13 @@ class _Summary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
-    final line1 = [
-      placeLabel(query),
-      if (query.day != null) ExploreMock.tripDaysShort[query.day!],
-      companyLabel(query.company).toLowerCase(),
+    // Ref. Airbnb: onde em cima; quando, com quem e tipo embaixo.
+    final line1 = placeLabel(query);
+    final line2 = [
+      if (query.hasDates || query.isFlexible) dayLabel(query),
+      companyLabel(query.company),
+      if (query.categories.isNotEmpty) categoriesLabel(query.categories),
     ].join(', ');
-    final line2 = categoriesLabel(query.categories);
     return Semantics(
       button: true,
       label: 'Editar busca: $line1. $line2',
@@ -247,7 +248,8 @@ class _ResultList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stay = ExploreMock.profile.stayLocation;
-    return BlocSelector<ExploreCubit, ExploreState, Set<String>>(
+    return BlocSelector<TravelerCubit, TravelerState, List<String>>(
+      bloc: travelerCubit(),
       selector: (s) => s.saved,
       builder: (context, saved) => Column(
         children: [
@@ -255,17 +257,15 @@ class _ResultList extends StatelessWidget {
             if (i > 0) const SizedBox(height: TravelSpace.xxl),
             Reveal(
               index: i,
-              child: RoleCard(
+              child: RoleResultCard(
                 role: roles[i],
                 heroTag: 'busca-${roles[i].id}',
                 saved: saved.contains(roles[i].id),
-                photoAspect: 16 / 11,
-                meta: '${roles[i].neighborhood}, ${roles[i].price}, '
-                    'a ${formatKm(distanceKm(stay, roles[i].location))} do hotel',
+                distance:
+                    'a ${formatKm(distanceKm(stay, roles[i].location))}',
                 onTap: () =>
                     openRole(context, roles[i], 'busca-${roles[i].id}'),
-                onToggleSave: () =>
-                    context.read<ExploreCubit>().toggleSaved(roles[i].id),
+                onToggleSave: () => saveRole(context, roles[i].id),
               ),
             ),
           ],
