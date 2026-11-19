@@ -118,19 +118,57 @@ class PointsEntry extends Equatable {
   List<Object?> get props => [label, points, date];
 }
 
-/// Cupom do próprio serviço trocado por pontos (hipótese, Q-27/Q-28).
+/// De onde vem o cupom: do próprio serviço, de um app de transporte
+/// parceiro ou de um lugar de rolê (hipótese, Q-27/Q-28).
+enum CouponKind { servico, transporte, role }
+
+/// Cupom trocado por pontos (hipótese, Q-27/Q-28). O código só aparece
+/// depois de trocar.
 class Coupon extends Equatable {
   const Coupon({
     required this.id,
+    required this.value,
     required this.title,
     required this.detail,
     required this.cost,
+    required this.kind,
+    required this.code,
+    required this.validUntil,
+    required this.action,
+    this.partner,
+    this.roleId,
+    this.isNew = false,
   });
 
   final String id;
+
+  /// Valor grande no card: "R$ 5", "15%", "Drink".
+  final String value;
+
+  /// "no próximo transfer".
   final String title;
+
+  /// Regra em uma linha.
   final String detail;
   final int cost;
+  final CouponKind kind;
+
+  /// Nome do parceiro ("99", "Uber", "Casa Astral"); null = do serviço.
+  final String? partner;
+
+  /// Rolê do cupom (tipo [CouponKind.role]).
+  final String? roleId;
+  final String code;
+
+  /// "Até 30 dez".
+  final String validUntil;
+
+  /// Segunda ação do botão segmentado: "Abrir na 99", "Usar no transfer".
+  final String action;
+  final bool isNew;
+
+  /// "R$ 5 no próximo transfer".
+  String get fullTitle => '$value $title';
 
   @override
   List<Object?> get props => [id];

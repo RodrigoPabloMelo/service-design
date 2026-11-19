@@ -111,29 +111,85 @@ abstract final class TravelerMock {
     'Diferente do descrito',
   ];
 
-  /// Histórico de antes desta saída.
+  /// Histórico de antes desta saída (mais novo primeiro). Boas-vindas e a
+  /// troca da 99 existem pra a carteira mostrar os três estados de cupom.
   static const pointsHistory = [
     PointsEntry(label: 'Avaliou o Paço do Frevo', points: 20, date: '14 nov'),
     PointsEntry(label: 'Avaliou o Mercado da Boa Vista', points: 20,
         date: '14 nov'),
+    PointsEntry(label: 'Trocou por R\$ 8 na 99', points: -80, date: '12 nov'),
+    PointsEntry(label: 'Boas-vindas', points: 160, date: '10 nov'),
   ];
 
   static int get startingPoints =>
       pointsHistory.fold(0, (sum, e) => sum + e.points);
 
-  /// Cupons do próprio serviço (sem parceiro inventado).
+  /// Cupons já trocados no começo (cenários "já em Recife" e "depois").
+  static const startingRedeemed = {'99-corridas'};
+
+  /// Cupons do serviço e de parceiros. Parceiros, valores e códigos são
+  /// **(hipótese)** (Q-27, Q-28): nenhum acordo existe.
   static const coupons = [
     Coupon(
       id: 'transfer-5',
-      title: r'R$ 5 no próximo transfer',
-      detail: 'Com motorista parceira',
+      value: r'R$ 5',
+      title: 'no próximo transfer',
+      detail: 'Com motorista parceira, ida ou volta. Um uso.',
       cost: 60,
+      kind: CouponKind.servico,
+      code: 'MARE5TRANSFER',
+      validUntil: 'Até 30 dez',
+      action: 'Usar no transfer',
+      isNew: true,
+    ),
+    Coupon(
+      id: 'uber-15',
+      value: '15%',
+      title: 'numa corrida na Uber',
+      detail: 'Até R\$ 10 de desconto, em Recife e Olinda.',
+      cost: 120,
+      kind: CouponKind.transporte,
+      partner: 'Uber',
+      code: 'MAREUBER15',
+      validUntil: 'Até 15 dez',
+      action: 'Abrir na Uber',
+      isNew: true,
+    ),
+    Coupon(
+      id: '99-corridas',
+      value: r'R$ 8',
+      title: 'em 2 corridas na 99',
+      detail: 'R\$ 4 em cada corrida, em qualquer cidade.',
+      cost: 80,
+      kind: CouponKind.transporte,
+      partner: '99',
+      code: 'MARE99X2',
+      validUntil: 'Até 30 nov',
+      action: 'Abrir na 99',
     ),
     Coupon(
       id: 'grupo-10',
-      title: '10% num rolê em grupo',
-      detail: 'Só com mulheres, com guia',
+      value: '10%',
+      title: 'num rolê em grupo',
+      detail: 'Só com mulheres, com guia.',
       cost: 100,
+      kind: CouponKind.servico,
+      code: 'MAREGRUPO10',
+      validUntil: 'Até 31 jan',
+      action: 'Ver rolês em grupo',
+    ),
+    Coupon(
+      id: 'casa-astral-drink',
+      value: 'Drink',
+      title: 'de boas-vindas na Casa Astral',
+      detail: 'Mostre o código no balcão. Sexta e sábado.',
+      cost: 200,
+      kind: CouponKind.role,
+      partner: 'Casa Astral',
+      roleId: 'casa-astral',
+      code: 'ASTRAL-MARE',
+      validUntil: 'Até 20 dez',
+      action: 'Ver rolê',
     ),
   ];
 }

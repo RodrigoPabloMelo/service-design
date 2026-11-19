@@ -24,6 +24,7 @@ class TravelerCubit extends Cubit<TravelerState> {
           trip: TravelerMock.trip,
           points: TravelerMock.startingPoints,
           history: TravelerMock.pointsHistory,
+          redeemed: TravelerMock.startingRedeemed,
         ),
       ));
 
@@ -62,6 +63,7 @@ class TravelerCubit extends Cubit<TravelerState> {
       transfer: transferDone ? (state.transfer ?? seed.transfer) : null,
       points: state.history.isEmpty ? seed.points : null,
       history: state.history.isEmpty ? seed.history : null,
+      redeemed: state.history.isEmpty ? seed.redeemed : null,
       outingDone: transferDone ? true : null,
     )));
   }
@@ -194,7 +196,7 @@ class TravelerCubit extends Cubit<TravelerState> {
       redeemed: {...state.redeemed, coupon.id},
       history: [
         PointsEntry(
-            label: 'Trocou por ${coupon.title}',
+            label: 'Trocou por ${coupon.fullTitle}',
             points: -coupon.cost,
             date: '15 nov'),
         ...state.history,

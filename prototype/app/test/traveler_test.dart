@@ -6,6 +6,7 @@ import 'package:studio_app/features/travel_agent/presentation/view_models/travel
 import 'package:studio_app/features/traveler/data/traveler_mock.dart';
 import 'package:studio_app/features/traveler/domain/traveler_entities.dart';
 import 'package:studio_app/features/traveler/presentation/view_models/traveler_cubit.dart';
+import 'package:studio_app/features/traveler/presentation/widgets/coupon_card.dart';
 
 void main() {
   group('TravelerCubit', () {
@@ -66,6 +67,25 @@ void main() {
       expect(novo, 'd17');
       expect(c.state.folderById(SavedFolder.tripId).days.last.label,
           'Segunda, 17 nov');
+    });
+
+    test('cupons mostram bloqueado, disponível e trocado', () {
+      final c = TravelerCubit.inRecife();
+      addTearDown(c.close);
+      CouponStatus status(String id) => couponStatus(
+          TravelerMock.coupons.firstWhere((x) => x.id == id),
+          c.state.points,
+          c.state.redeemed);
+      expect(c.state.points, 120);
+      expect(status('99-corridas'), CouponStatus.redeemed);
+      expect(status('uber-15'), CouponStatus.available);
+      expect(status('casa-astral-drink'), CouponStatus.locked);
+
+      final uber = TravelerMock.coupons.firstWhere((x) => x.id == 'uber-15');
+      expect(c.redeem(uber), isTrue);
+      expect(c.state.points, 0);
+      expect(status('uber-15'), CouponStatus.redeemed);
+      expect(c.state.history.first.label, 'Trocou por 15% numa corrida na Uber');
     });
 
     test('pontos premiam responder, não a nota (Q-27)', () {

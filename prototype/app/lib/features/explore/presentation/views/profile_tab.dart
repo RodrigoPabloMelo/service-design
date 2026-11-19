@@ -70,6 +70,12 @@ class ProfileTab extends StatelessWidget {
                   style: TravelType.title3.copyWith(color: p.ink)),
             ),
             const SizedBox(height: TravelSpace.xl),
+            _PointsCard(
+              points: s.points,
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                  builder: (_) => const WalletPage())),
+            ),
+            const SizedBox(height: TravelSpace.xl),
             const SectionHeader('Sua viagem'),
             SolidBlock(
               child: Column(
@@ -94,8 +100,6 @@ class ProfileTab extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: TravelSpace.xl),
-            const WalletContent(),
           ],
         );
       },
@@ -124,6 +128,60 @@ class _Stat extends StatelessWidget {
               style: TravelType.subheadStrong
                   .copyWith(color: p.ink, fontFeatures: TravelType.tabular)),
         ],
+      ),
+    );
+  }
+}
+
+/// Atalho pros pontos no Perfil: saldo grande e o quanto falta pro próximo
+/// cupom; tocar abre a página de pontos.
+class _PointsCard extends StatelessWidget {
+  const _PointsCard({required this.points, required this.onTap});
+
+  final int points;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = TravelPalette.of(context);
+    return Semantics(
+      button: true,
+      label: '$points pontos. Ver recompensas',
+      excludeSemantics: true,
+      onTap: onTap,
+      child: Pressable(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(TravelSpace.lg),
+          decoration: BoxDecoration(
+            color: p.s1,
+            borderRadius: BorderRadius.circular(TravelSpace.rCard),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Seus pontos',
+                        style: TravelType.footnote.copyWith(color: p.inkMuted)),
+                    const SizedBox(height: 2),
+                    Text(
+                      '$points',
+                      style: TravelType.title1.copyWith(
+                          color: p.ink, fontFeatures: TravelType.tabular),
+                    ),
+                    Text('Troque por cupons',
+                        style: TravelType.subhead.copyWith(color: p.inkMuted)),
+                  ],
+                ),
+              ),
+              FaIcon(TravelIcons.gift, size: 22, color: p.ink),
+              const SizedBox(width: TravelSpace.md),
+              FaIcon(TravelIcons.chevronRight, size: 13, color: p.inkMuted),
+            ],
+          ),
+        ),
       ),
     );
   }
