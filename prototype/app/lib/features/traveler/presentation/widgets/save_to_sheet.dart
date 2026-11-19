@@ -115,7 +115,7 @@ class _SaveToSheetState extends State<SaveToSheet> {
                     detail: _count(folders[i].roleIds.length),
                     cover: FolderCover(
                       roleIds: folders[i].roleIds,
-                      radius: TravelSpace.rInner,
+                      radius: 16,
                       mosaic: false,
                     ),
                     radius: segmentRadius(i, n),
@@ -185,8 +185,9 @@ class _FolderRow extends StatelessWidget {
             children: [
               SizedBox.square(
                 dimension: 56,
+                // Concêntrico: tile 24 − padding 8 = 16.
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(TravelSpace.rInner),
+                  borderRadius: BorderRadius.circular(16),
                   child: cover,
                 ),
               ),

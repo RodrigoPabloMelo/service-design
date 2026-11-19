@@ -120,7 +120,7 @@ class _CouponSheetState extends State<CouponSheet>
                           _Meta(icon: TravelIcons.clock, text: c.validUntil),
                           const SizedBox(width: TravelSpace.lg),
                           _Meta(
-                              icon: TravelIcons.ticket,
+                              icon: TravelIcons.money,
                               text: '${c.cost} pontos'),
                         ],
                       ),
@@ -137,15 +137,14 @@ class _CouponSheetState extends State<CouponSheet>
                         key: const ValueKey('usar'),
                         code: c.code,
                         secondaryLabel: c.action,
-                        secondaryIcon: TravelIcons.arrowUpRight,
+                        // Link externo só pra app de parceiro; no resto o
+                        // cupom é aplicado aqui mesmo (simulado).
+                        secondaryIcon: c.kind == CouponKind.transporte
+                            ? TravelIcons.arrowUpRight
+                            : TravelIcons.check,
                         onSecondary: () {
                           final nav = Navigator.of(context);
-                          showMareNotice(
-                            context,
-                            c.partner != null && c.kind == CouponKind.transporte
-                                ? 'Abrindo a ${c.partner} com o código'
-                                : 'Cupom pronto pra usar',
-                          );
+                          showMareNotice(context, c.actionNotice);
                           nav.maybePop();
                         },
                       ),
@@ -222,7 +221,7 @@ class _CodeSide extends StatelessWidget {
             ),
           ),
           const SizedBox(height: TravelSpace.md),
-          // Picote: furinhos `s0` cruzando o cartão.
+          // Picote: furinhos na cor do fundo (`s0`) cruzando o cartão.
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: TravelSpace.lg),
             child: LayoutBuilder(builder: (context, box) {
@@ -235,7 +234,7 @@ class _CodeSide extends StatelessWidget {
                       width: 4,
                       height: 4,
                       decoration:
-                          BoxDecoration(color: p.s2, shape: BoxShape.circle),
+                          BoxDecoration(color: p.s0, shape: BoxShape.circle),
                     ),
                 ],
               );
@@ -292,6 +291,9 @@ class _SplitActionState extends State<SplitAction> {
     final p = TravelPalette.of(context);
     const outer = Radius.circular(TravelSpace.rCard);
     const inner = Radius.circular(TravelSpace.rTight);
+    final reduce = MediaQuery.disableAnimationsOf(context);
+    final motion =
+        reduce ? Duration.zero : const Duration(milliseconds: 150);
     Widget segment({
       required String label,
       required FaIconData icon,
@@ -309,16 +311,17 @@ class _SplitActionState extends State<SplitAction> {
             child: Pressable(
               onTap: onTap,
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                height: 56,
+                duration: motion,
+                height: 48,
                 decoration: BoxDecoration(color: fill, borderRadius: radius),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 150),
-                      transitionBuilder: (child, a) =>
-                          ScaleTransition(scale: a, child: child),
+                      duration: motion,
+                      transitionBuilder: (child, a) => reduce
+                          ? child
+                          : ScaleTransition(scale: a, child: child),
                       child: FaIcon(icon,
                           key: ValueKey(icon), size: 15, color: fg),
                     ),
@@ -352,7 +355,7 @@ class _SplitActionState extends State<SplitAction> {
         segment(
           label: widget.secondaryLabel,
           icon: widget.secondaryIcon,
-          fill: p.s2,
+          fill: p.s2, // design-lint: ignore D12 (segmento secundário aprovado)
           fg: p.ink,
           radius: const BorderRadius.horizontal(left: inner, right: outer),
           onTap: widget.onSecondary,

@@ -356,7 +356,7 @@ class _DayRow extends StatelessWidget {
     final p = TravelPalette.of(context);
     final row = Container(
       height: 72,
-      padding: const EdgeInsets.only(left: 8, right: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(color: p.s1, borderRadius: radius),
       child: Row(
         children: [
@@ -364,7 +364,8 @@ class _DayRow extends StatelessWidget {
             dimension: 56,
             child: FolderCover(
               roleIds: day.roleIds,
-              radius: TravelSpace.rInner,
+              // Concêntrico: tile 24 − padding 8 = 16.
+              radius: 16,
               mosaic: false,
             ),
           ),
@@ -383,6 +384,7 @@ class _DayRow extends StatelessWidget {
             ),
           ),
           FaIcon(TravelIcons.chevronRight, size: 13, color: p.inkMuted),
+          const SizedBox(width: 8),
         ],
       ),
     );
@@ -708,7 +710,7 @@ class _MoveSheet extends StatelessWidget {
                               _ => TravelIcons.calendar,
                             },
                             size: 18,
-                            color: rows[i].$1 == newDay ? p.accent : p.ink,
+                            color: p.ink,
                           ),
                         ),
                         const SizedBox(width: TravelSpace.sm),

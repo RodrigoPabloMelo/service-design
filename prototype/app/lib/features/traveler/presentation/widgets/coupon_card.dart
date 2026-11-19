@@ -41,8 +41,6 @@ class CouponCard extends StatelessWidget {
   /// Versão grande do sheet (valor maior, regra visível).
   final bool large;
 
-  static const _transportBg = Color(0xFF1C1C1F);
-
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
@@ -55,7 +53,7 @@ class CouponCard extends StatelessWidget {
           color: p.accent,
           child: CustomPaint(painter: _WavesPainter(p.piscina)),
         ),
-      CouponKind.transporte => const ColoredBox(color: _transportBg),
+      CouponKind.transporte => const ColoredBox(color: CouponTones.transport),
       CouponKind.role => Stack(
           fit: StackFit.expand,
           children: [
@@ -75,15 +73,12 @@ class CouponCard extends StatelessWidget {
           kind: c.partner == 'Uber' ? ConnectorKind.uber : ConnectorKind.noveNove,
           size: 32,
         ),
-      CouponKind.role => Container(
-          width: 32,
+      CouponKind.role => const SizedBox(
           height: 32,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.18),
-            shape: BoxShape.circle,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: FaIcon(TravelIcons.drink, size: 20, color: Colors.white),
           ),
-          child: const FaIcon(TravelIcons.drink, size: 14, color: Colors.white),
         ),
     };
 

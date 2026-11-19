@@ -165,6 +165,13 @@ class Coupon extends Equatable {
 
   /// Segunda ação do botão segmentado: "Abrir na 99", "Usar no transfer".
   final String action;
+
+  /// Aviso depois da segunda ação ("Aplicado no próximo transfer").
+  String get actionNotice => switch (kind) {
+        CouponKind.transporte => 'Abrindo a $partner com o código',
+        CouponKind.servico => 'Aplicado $title',
+        CouponKind.role => 'Mostre o código no balcão',
+      };
   final bool isNew;
 
   /// "R$ 5 no próximo transfer".

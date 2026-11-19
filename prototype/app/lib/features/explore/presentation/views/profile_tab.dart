@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:studio_app/features/explore/presentation/widgets/explore_ui.dart';
 import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
@@ -72,8 +73,8 @@ class ProfileTab extends StatelessWidget {
             const SizedBox(height: TravelSpace.xl),
             _PointsCard(
               points: s.points,
-              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                  builder: (_) => const WalletPage())),
+              onTap: () => Navigator.of(context)
+                  .push(exploreRoute(context, const WalletPage())),
             ),
             const SizedBox(height: TravelSpace.xl),
             const SectionHeader('Sua viagem'),

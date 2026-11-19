@@ -134,14 +134,14 @@ class _Balance extends StatelessWidget {
         children: [
           TweenAnimationBuilder<double>(
             tween: Tween(end: points.toDouble()),
-            duration: const Duration(milliseconds: 600),
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : const Duration(milliseconds: 600),
             curve: Curves.easeOutCubic,
             builder: (context, v, _) => Text(
               '${v.round()}',
-              style: TravelType.title1.copyWith(
+              style: TravelType.display.copyWith(
                 color: p.ink,
-                fontSize: 56,
-                height: 1.05,
                 fontFeatures: TravelType.tabular,
               ),
             ),

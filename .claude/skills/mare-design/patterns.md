@@ -273,7 +273,8 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
 ## Salvos (pastas de viagem, ref. Pinterest)
 
 - **Salvar = sheet "Salvar em"** (depois da conta rápida, se não tiver):
-  "Suas viagens" em lista segmentada (tile 72, capa 56 raio 12, nome em
+  "Suas viagens" em lista segmentada (tile 72, padding 8, capa 56 raio 16
+  — concêntrico com o 24 do tile —, nome em
   `headline`, contagem), por último "Nova viagem" (tile `accent` com +),
   que vira o passo do nome no mesmo sheet (campo `s2` 52, "Voltar" à
   esquerda, primário "Criar e salvar"). Já salvo: o toque tira de todas
@@ -282,7 +283,7 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
   **capa-mosaico** (1 foto grande à esquerda + 2 pequenas, gap 2, raio
   24), nome e "N rolês, N dias".
 - **Pasta:** voltar no cabeçalho, nome em `title1`, meta com ícone
-  (rolês, dias); dias como seções em lista segmentada `s1` (capa 56,
+  (rolês, dias); dias como seções em lista segmentada `s1` (capa 56 raio 16,
   "Sexta, 14 nov", contagem, chevron); "Sem dia" em grade 4:5. Barra de
   vidro flutuante (pílula 64 da tab bar) com "Organizar" e "Organizar com
   a Maré". Organizando: toque escolhe (anel `accent` 1,5 + check no
@@ -301,9 +302,14 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
   regra em uma linha, validade e custo com ícone. Antes de trocar: um
   primário "Trocar por N pontos" (desligado com "Faltam N pontos"). Ao
   trocar, haptic e o card **vira** (rotação Y) e mostra o código
-  (`title1` espaçado, picote de ticket); entra o **botão segmentado**
-  "Copiar código" (`accent`; vira "Copiado" com check por 1,6 s) |
-  "Abrir na 99"/"Usar no transfer" (`s2`).
+  (`title1` espaçado, picote de furos `s0`); entra o **botão segmentado**
+  de 48 "Copiar código" (`accent`; vira "Copiado" com check por 1,6 s) |
+  segunda ação em `s2`: "Abrir na 99/Uber" (ícone de link externo) só pra
+  app parceiro; cupom do serviço ou de rolê usa check ("Usar no
+  transfer", "Mostrar no balcão"). Rótulo diz o que acontece de fato.
+- Saldo usa `TravelType.display` (56, 700, tabular); cor do card de
+  transporte = `CouponTones.transport`. Contagem e trocas respeitam Reduce
+  Motion.
 
 ## Busca guiada e filtros (ref. Airbnb, no nosso sistema)
 

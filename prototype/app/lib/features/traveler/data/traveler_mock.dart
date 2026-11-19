@@ -176,7 +176,7 @@ abstract final class TravelerMock {
       kind: CouponKind.servico,
       code: 'MAREGRUPO10',
       validUntil: 'Até 31 jan',
-      action: 'Ver rolês em grupo',
+      action: 'Usar no próximo',
     ),
     Coupon(
       id: 'casa-astral-drink',
@@ -189,7 +189,7 @@ abstract final class TravelerMock {
       roleId: 'casa-astral',
       code: 'ASTRAL-MARE',
       validUntil: 'Até 20 dez',
-      action: 'Ver rolê',
+      action: 'Mostrar no balcão',
     ),
   ];
 }

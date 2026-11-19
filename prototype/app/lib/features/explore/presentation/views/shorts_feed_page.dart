@@ -247,7 +247,7 @@ class _ShortPageState extends State<_ShortPage>
               ),
             Positioned(
               left: TravelSpace.lg,
-              right: TravelSpace.gutter,
+              right: TravelSpace.lg,
               bottom: pad.bottom + 24,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -332,13 +332,18 @@ class _ShortPageState extends State<_ShortPage>
               left: 0,
               right: 0,
               bottom: pad.bottom,
-              child: AnimatedBuilder(
-                animation: _c,
-                builder: (context, _) => LinearProgressIndicator(
-                  minHeight: 2,
-                  value: _c.value,
-                  backgroundColor: Colors.white.withValues(alpha: 0.2),
-                  color: Colors.white,
+              child: SizedBox(
+                height: 2,
+                child: ColoredBox(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  child: AnimatedBuilder(
+                    animation: _c,
+                    builder: (context, _) => FractionallySizedBox(
+                      alignment: Alignment.centerLeft,
+                      widthFactor: _c.value,
+                      child: const ColoredBox(color: Colors.white),
+                    ),
+                  ),
                 ),
               ),
             ),
