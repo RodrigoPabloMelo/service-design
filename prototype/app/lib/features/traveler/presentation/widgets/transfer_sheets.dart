@@ -225,7 +225,7 @@ class TransferBookedCard extends StatelessWidget {
         if (b == null) return const SizedBox.shrink();
         final role = TravelMock.roleById(b.roleId);
         String when(String v) =>
-            '${today ? 'hoje' : 'sábado'} às ${_hour(v)}';
+            '${today ? 'hoje' : TravelMock.swapDayName} às ${_hour(v)}';
         return SolidBlock(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

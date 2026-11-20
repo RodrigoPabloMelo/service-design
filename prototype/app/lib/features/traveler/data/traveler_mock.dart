@@ -78,8 +78,8 @@ abstract final class TravelerMock {
   /// Pessoa fictícia. Preço de mock (Q-02/Q-03): ida + volta.
   static const driverName = 'Ana Paula';
   static const driverCar = 'Sedan prata';
-  static const transferPickup = 'Sáb, 17h30';
-  static const transferBack = 'Sáb, 23h30';
+  static const transferPickup = 'Sex, 16h';
+  static const transferBack = 'Sex, 19h';
   static const transferPrice = r'R$ 84';
   static const transferPriceDetail = r'Ida R$ 42 e volta R$ 42';
   static const paymentMethod = 'Cartão final 4242';

@@ -7,7 +7,7 @@
 
 ```mermaid
 flowchart TD
-  N[Notificação: chuva às 17h em Casa Forte] -->|toque| P[Proposta de troca]
+  N[Notificação: chuva às 16h em Casa Forte] -->|toque| P[Proposta de troca]
   AG[FL-04.11 agenda conectada] -->|alguns segundos| P
   P -->|Trocar| T[Troca feita: mapa e calendário atualizados]
   P -->|Manter| K[Mantive. Te aviso se piorar]
@@ -27,7 +27,7 @@ flowchart TD
   1. Tocar na notificação abre a conversa (fecha mapa, roteiro e card abertos).
   2. A Maré explica: chuva prevista, o Box Vitória Régia é ao ar livre, propõe o Parraxaxá (coberto, comida pernambucana, mesmo bairro), com o acesso sem pontos de alagamento conhecidos (fonte e data).
   3. Secundário "Manter" em cima, primário "Trocar" embaixo.
-     - **Trocar:** "Troquei. Sábado {hora}: Parraxaxá. Mapa e calendário atualizados." O roteiro do sábado troca a parada e o pin fica em foco. Sem transfer pago, entra a oferta (`FL-05.2`).
+     - **Trocar:** "Troquei. Sexta {hora}: Parraxaxá. Mapa e calendário atualizados." O roteiro da sexta troca a parada e o pin fica em foco. Sem transfer pago, entra a oferta (`FL-05.2`).
      - **Manter:** "Mantive o Box Vitória Régia. Te aviso se a previsão piorar."
 - **Saídas:** `FL-05.2`, `FL-04.7` (mapa), `FL-04.9` (roteiro).
 - **Estados:** `ST-TROCA.nenhuma` → `ST-TROCA.proposta` → `ST-TROCA.aceita` | `ST-TROCA.recusada`.
