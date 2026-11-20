@@ -847,7 +847,7 @@ abstract final class TravelMock {
     about: 'Bar simples de bairro na Praça de Casa Forte, jardim de Burle '
         'Marx. Mesas ao ar livre, vinil de quinta a sábado.',
     whatToDo: 'Cerveja gelada e uma ficha na jukebox.',
-    bestTime: 'Sábado, 18h às 21h',
+    bestTime: 'Sexta ou sábado, a partir das 16h',
     cost: r'Ficha da jukebox R$ 1',
     surroundings: [
       'Na Praça de Casa Forte',
@@ -956,13 +956,14 @@ abstract final class TravelMock {
       id: 'sex',
       tab: 'Sex',
       title: 'Sexta, 14 nov',
-      area: 'Zona sul e centro',
+      area: 'Zona norte e centro',
       stops: [
         ItineraryStop(
-          roleId: 'dona-lindu',
+          roleId: 'box-vitoria-regia',
           time: '16h30',
           period: StopPeriod.tarde,
-          fromPrevious: '15 min a pé',
+          fromPrevious: '25 min de carro',
+          mode: TravelMode.carro,
         ),
         ItineraryStop(
           roleId: 'casa-de-bamba',
@@ -994,12 +995,6 @@ abstract final class TravelMock {
           mode: TravelMode.carro,
         ),
         ItineraryStop(
-          roleId: 'box-vitoria-regia',
-          time: '18h',
-          period: StopPeriod.noite,
-          fromPrevious: '15 min a pé',
-        ),
-        ItineraryStop(
           roleId: 'casa-astral',
           time: '21h',
           period: StopPeriod.noite,
@@ -1011,7 +1006,7 @@ abstract final class TravelMock {
       id: 'dom',
       tab: 'Dom',
       title: 'Domingo, 16 nov',
-      area: 'Centro',
+      area: 'Centro e zona sul',
       stops: [
         ItineraryStop(
           roleId: 'mercado-boa-vista',
@@ -1022,20 +1017,28 @@ abstract final class TravelMock {
         ),
         ItineraryStop(
           roleId: 'cinema-sao-luiz',
-          time: '16h',
+          time: '14h',
           period: StopPeriod.tarde,
           fromPrevious: '9 min a pé',
+        ),
+        ItineraryStop(
+          roleId: 'dona-lindu',
+          time: '16h30',
+          period: StopPeriod.tarde,
+          fromPrevious: '20 min de carro',
+          mode: TravelMode.carro,
         ),
       ],
     ),
   ];
 
-  /// Troca proposta por chuva: sábado 18h, bar jardim → bar coberto.
-  static const swapDayId = 'sab';
+  /// Troca proposta por chuva: sexta 16h30, bar jardim → bar coberto.
+  static const swapDayId = 'sex';
+  static const swapDayName = 'sexta';
   static const swapFromId = 'box-vitoria-regia';
   static const swapToId = 'parraxaxa-casa-forte';
-  static const swapTime = '18h';
-  static const rainAt = '17h';
+  static const swapTime = '16h30';
+  static const rainAt = '16h';
 
   static const extras = [
     TravelExtra(

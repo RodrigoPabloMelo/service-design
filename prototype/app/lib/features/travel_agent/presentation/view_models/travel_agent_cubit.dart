@@ -602,8 +602,12 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
     ));
   }
 
+  static String _capitalized(String v) =>
+      v.isEmpty ? v : '${v[0].toUpperCase()}${v.substring(1)}';
+
   static final _swapProposalText =
-      'Chuva prevista sábado a partir das ${TravelMock.rainAt}. O '
+      'Chuva prevista ${TravelMock.swapDayName} a partir das '
+      '${TravelMock.rainAt}. O '
       '${TravelMock.roleById(TravelMock.swapFromId).shortName} é ao ar '
       'livre. Troco pelo ${TravelMock.roleById(TravelMock.swapToId).shortName}'
       '? É coberto, comida pernambucana, no mesmo bairro.';
@@ -632,7 +636,8 @@ class TravelAgentCubit extends Cubit<TravelAgentState> {
           id: _id(),
           author: MessageAuthor.agent,
           kind: MessageKind.swapDone,
-          text: 'Troquei. Sábado ${TravelMock.swapTime}: '
+          text: 'Troquei. ${_capitalized(TravelMock.swapDayName)} '
+              '${TravelMock.swapTime}: '
               '${TravelMock.roleById(TravelMock.swapToId).shortName}. '
               'Mapa e calendário atualizados.',
         ),

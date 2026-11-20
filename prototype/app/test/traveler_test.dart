@@ -172,10 +172,10 @@ void main() {
       agent.startRainAlert();
       expect(agent.state.swapStatus, SwapStatus.proposed);
       agent.acceptSwap();
-      final sab = agent.state.days
+      final dia = agent.state.days
           .firstWhere((d) => d.id == TravelMock.swapDayId);
-      expect(sab.stops.map((s) => s.roleId), contains(TravelMock.swapToId));
-      expect(sab.stops.map((s) => s.roleId),
+      expect(dia.stops.map((s) => s.roleId), contains(TravelMock.swapToId));
+      expect(dia.stops.map((s) => s.roleId),
           isNot(contains(TravelMock.swapFromId)));
       expect(agent.state.messages.last.kind, MessageKind.transferOffer);
 
