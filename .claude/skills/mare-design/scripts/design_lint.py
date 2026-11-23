@@ -23,6 +23,7 @@ from pathlib import Path
 SCOPES = (
     "prototype/app/lib/features/travel_agent/",
     "prototype/app/lib/features/explore/",
+    "prototype/app/lib/features/traveler/",
 )
 
 # Arquivos que DEFINEM os tokens podem usar o que os outros não podem.
@@ -56,7 +57,10 @@ RULES = [
      "Bold fora dos tokens: só títulos (TravelType.title1/title2).", (TOKEN_FILE,)),
     ("D12", "aviso", re.compile(r"\bfill:\s*p\.s2\b"),
      "Opção de escolha dentro de card s1: contorno (outlineChoiceDecoration), "
-     "não superfície s2 mais escura.", ()),
+     "não superfície s2 mais escura.", ()),    ("D13", "erro", re.compile(r"\bp\.star\b"),
+     "Amarelo `star` só nas estrelas de avaliação (exceção de cor 4): use "
+     "StarRow/StarsSmall.", (TOKEN_FILE, "star_rating.dart", "role_reviews.dart",
+                             "points_info_sheet.dart")),
 ]
 
 IGNORE = re.compile(r"design-lint:\s*ignore\s+([\w, ]+)")

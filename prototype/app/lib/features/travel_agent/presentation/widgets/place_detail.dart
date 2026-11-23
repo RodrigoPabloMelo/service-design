@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:studio_app/core/components/glass/app_glass.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/photo_viewer.dart';
+import 'package:studio_app/features/travel_agent/presentation/widgets/role_reviews.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_tokens.dart';
 import 'package:studio_app/features/travel_agent/presentation/widgets/travel_ui.dart';
 import 'package:studio_app/features/traveler/presentation/widgets/account_sheet.dart';
@@ -14,7 +15,7 @@ const kDetailHeaderSpace = 18.0 + 44 + 8;
 ///
 /// Ordem: hero de fotos → título + texto do rolê → por que é rolê →
 /// o que fazer (cards horizontais) → horário e preço → vídeos curtos →
-/// selo e entorno → fotos (carrossel). Listas horizontais sangram até a
+/// selo e entorno → fotos (carrossel) → avaliações. Listas horizontais sangram até a
 /// borda do sheet; o resto respeita a margem de 12pt. O cabeçalho
 /// ([DetailHeader]) fica fora da lista, flutuando sobre o fade do sheet.
 class PlaceDetail extends StatelessWidget {
@@ -76,6 +77,7 @@ class PlaceDetail extends StatelessWidget {
                   _Meta(TravelIcons.place, role.neighborhood),
                   _Meta(TravelIcons.ticket, role.price),
                   _Meta(TravelIcons.clock, role.hours),
+                  RoleRatingMeta(roleId: role.id),
                 ],
               ),
               const SizedBox(height: TravelSpace.md),
@@ -162,9 +164,13 @@ class PlaceDetail extends StatelessWidget {
         // Selo e entorno.
         const SizedBox(height: TravelSpace.xl),
         _g(const SectionHeader('Selo e entorno')),
-        _g(_SealBlock(seal: role.seal, verifiedAt: role.verifiedAt)),
+        _g(const _SealBlock()),
         const SizedBox(height: TravelSpace.sm),
-        _g(_GroupedChecks(items: role.surroundings)),
+        // Situações do selo viram checks, antes do entorno (designer).
+        _g(_GroupedChecks(items: [
+          for (final c in role.seal.checks) 'Avaliado pra ${c.toLowerCase()}',
+          ...role.surroundings,
+        ])),
         if (role.access != null) ...[
           const SizedBox(height: TravelSpace.sm),
           _g(RouteAccessBlock(access: role.access!)),
@@ -200,6 +206,11 @@ class PlaceDetail extends StatelessWidget {
             style: TravelType.caption.copyWith(color: p.inkMuted),
           ),
         ),
+
+        // Avaliações — depois das fotos: o card dela + as das outras (D-30).
+        const SizedBox(height: TravelSpace.xl),
+        _g(const SectionHeader('Avaliações')),
+        _g(RoleReviewsSection(role: role)),
       ],
     );
   }
@@ -456,42 +467,24 @@ class _TipCard extends StatelessWidget {
   }
 }
 
-/// Selo de segurança — bloco próprio, separado da lista de checks. Diz
-/// quem avaliou, para que situações e quando; não promete segurança.
-/// Nome e critérios são hipótese (Q-10).
+/// Selo de segurança — só o nome, num bloco próprio. As situações
+/// avaliadas viram checks na lista de baixo; quem avaliou e a data saíram
+/// do card (pedido do designer, D-31). Nome e critérios são hipótese
+/// (Q-10); não promete segurança.
 class _SealBlock extends StatelessWidget {
-  const _SealBlock({required this.seal, required this.verifiedAt});
-
-  final RoleSeal seal;
-  final String verifiedAt;
+  const _SealBlock();
 
   @override
   Widget build(BuildContext context) {
     final p = TravelPalette.of(context);
     return SolidBlock(
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const _RowIcon(TravelIcons.safety),
           const SizedBox(width: TravelSpace.md),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Rolê seguro',
-                    style: TravelType.subheadStrong.copyWith(color: p.ink)),
-                const SizedBox(height: 2),
-                Text(
-                  'Avaliado para: ${seal.checks.join(', ').toLowerCase()}',
-                  style: TravelType.footnote.copyWith(color: p.ink),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${seal.by}, em $verifiedAt',
-                  style: TravelType.footnote.copyWith(color: p.inkMuted),
-                ),
-              ],
-            ),
+            child: Text('Rolê seguro',
+                style: TravelType.subheadStrong.copyWith(color: p.ink)),
           ),
         ],
       ),

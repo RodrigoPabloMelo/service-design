@@ -115,7 +115,7 @@ flowchart TD
 ## FL-04.8 · Card do rolê e vídeos
 
 - **Gatilho:** tocar num card de rolê, numa parada ou num pin.
-- **Passos:** o detalhe abre dentro do sheet (alto, no mapa): quem indicou, fotos, vídeos curtos (player com fila), entorno e selo. CTA: "Ver no mapa" e, se ainda não está no roteiro, "Adicionar ao roteiro".
+- **Passos:** o detalhe abre dentro do sheet (alto, no mapa): quem indicou, fotos, vídeos curtos (player com fila), entorno e selo, avaliações (D-30; avaliar abre `FL-06.3` por cima). CTA: "Ver no mapa" e, se ainda não está no roteiro, "Adicionar ao roteiro".
 - **Saídas:** voltar à conversa (ou ao roteiro).
 - **Estados:** `ST-VISAO.rolê`.
 - **Ver também:** `FL-01.3` (mesmo detalhe, na home).

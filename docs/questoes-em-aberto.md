@@ -48,6 +48,7 @@
 | [Q-38](#q-38) | Categorias da home x categorias do agente | Conteúdo | média | aberta |
 | [Q-39](#q-39) | Dado de alagamento no trajeto sugerido | Segurança/Dados | média | aberta |
 | [Q-40](#q-40) | Histórico de conversas com a Maré: conta e retenção | IA/Privacidade | média | aberta |
+| [Q-41](#q-41) | Moderação de texto e fotos nas avaliações | Avaliações/Confiança | alta | aberta |
 
 ---
 
@@ -116,6 +117,7 @@ Ref.: D-03. A pesquisa diz que **avaliações de outras mulheres** são as mais 
 ### Q-10 · Selo de segurança
 Ref.: D-06. O selo é dado pela comunidade, pela curadoria ou pelos dois? Quais critérios (sozinha, em dupla, à noite, transporte de volta)? É por lugar, por horário ou por trajeto? Como evitar estigmatizar bairros periféricos (conflito com ODS 8.9 / 11.7)?
 **2026-11-18 — protótipo (hipótese):** o selo aparece como **"Rolê seguro"** (rótulo pedido pelo Rodrigo em 2026-11-18, sem a palavra "Selo"): marca no card da home, pílula na foto do card de resultado e bloco no detalhe, dizendo quem avaliou (moradoras e curadoria), para quais situações (ir sozinha, chegar e sair à noite) e a data. Nome, quem concede e critérios seguem em aberto.
+**2026-11-23 — protótipo (D-31):** no detalhe, o bloco mostra só "Rolê seguro"; as situações viraram checks ("Avaliado pra ir sozinha"…) e quem avaliou e a data saíram do card, a pedido do Rodrigo. Isso tira a data que F-07 pede: falta decidir se fonte e data voltam em outro lugar (toque no selo, sheet "Como avaliamos"?) ou se saem do serviço.
 
 <a id="q-11"></a>
 ### Q-11 · IA de roteiro
@@ -189,6 +191,7 @@ Não há identidade visual. Quando houver, registrar num `DESIGN.md` na raiz (to
 Ref.: [blueprint rascunho](../diagrams/2026-11-04-blueprint-rascunho.md) etapas 8–9, D-04, `Q-07`, `Q-17`. No panorama, os descontos funcionam como pontos/moedas trocáveis por serviços e cupons. Falta definir: o que gera pontos (visitar, avaliar, indicar amiga, completar roteiro?); quanto vale cada ação; se expiram; quem financia o desconto (app, parceiro, os dois); se locais e viajantes usam a mesma moeda. Risco: premiar a avaliação pode enviesar notas ou gerar avaliações falsas (`Q-13`). Premiar o ato de avaliar, não a nota?
 **2026-11-18 — protótipo (hipótese):** 20 pontos por resposta (rolê e transfer), boa ou ruim; carteira com cupons do próprio serviço (R$ 5 no transfer, 10% num rolê em grupo). Valores de mock.
 **2026-11-18 — pontos no Perfil (hipótese):** página "Pontos" (ref. recompensas do Google Pay) com saldo e cupons em grade — bloqueado (cinza, "Faltam N"), disponível, trocado; o código só aparece depois de trocar, com "copiar código" e "usar no app". O mock começa com 120 pontos (inclui um bônus de boas-vindas de 160 e uma troca de 80) só pra mostrar os três estados: bônus de boas-vindas **não** é regra decidida.
+**2026-11-23 — avaliação em estrelas (hipótese):** com D-30, segue 20 pontos por nota (rolê e transfer), igual de 1 a 5 estrelas; **+10 por contar mais** (texto ou foto), pago uma vez por rolê, inclusive quando ela completa depois de enviar. Pedido do Rodrigo; valores de mock. Risco a observar: premiar texto pode gerar texto vazio só pelo bônus.
 
 <a id="q-28"></a>
 ### Q-28 · Parceiros de benefício
@@ -244,3 +247,7 @@ Ref.: D-06, D-07, `Q-11`, `Q-10`, narrativa do serviço (momento 5). Na troca po
 <a id="q-40"></a>
 ### Q-40 · Histórico de conversas com a Maré: conta e retenção
 Ref.: D-16, D-17, D-07, `Q-11`, `Q-13`, [fluxos/agente.md](fluxos/agente.md#fl-043--conversas-anteriores-gaveta) (`FL-04.3`). O protótipo abre a Maré numa conversa nova e guarda as anteriores numa gaveta (fixadas e recentes, ref. ChatGPT). Guardar conversas exige conta? D-16 só pede conta para salvar — conversar sem conta e perder o histórico ao sair seria aceitável? Por quanto tempo as conversas ficam guardadas e quem pode vê-las (a companhia, `Q-22`)? Conversas contam para o limite de mensagens só uma vez (`Q-35`)? No protótipo o histórico vive só na sessão, não pede conta e as conversas antigas são mock — **(hipótese)**.
+
+<a id="q-41"></a>
+### Q-41 · Moderação de texto e fotos nas avaliações
+Ref.: D-30, D-09, D-05, D-06, `Q-06`, `Q-10`, `Q-13`, `Q-30`. Com texto e fotos nas avaliações (D-30), quem revisa o que entra e em quanto tempo? Publica na hora e modera depois, ou só depois de revisar? Como denunciar uma avaliação? Fotos com rosto de outras pessoas podem entrar? A autora aparece com primeiro nome + inicial (como no protótipo) ou pode ficar anônima? Um relato de nota baixa com "Não me senti à vontade" chega à curadoria e pesa no selo "Rolê seguro" (D-06, `Q-10`) ou derruba a recomendação (D-05, `Q-06`)? No protótipo tudo publica na hora, sem revisão, e as avaliações das outras viajantes são mock — **(hipótese)**.

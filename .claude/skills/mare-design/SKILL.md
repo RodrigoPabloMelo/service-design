@@ -31,6 +31,9 @@ feedback do designer; não reabra sem ele pedir.
    `accent` com as ondas da marca em `piscina`; transporte parceiro =
    superfície escura com o ícone do app; rolê = foto + véu escuro.
    Bloqueado = sem cor (cinza) + cadeado. Só nesses cards.
+   Exceção 4: **estrelas de avaliação** em amarelo `star` (cheia); vazia
+   em contorno `ink` 24%. Só nas estrelas (`StarRow`, `StarsSmall`, nota
+   do cabeçalho do rolê, arte de avaliar). Lint D13.
 3. **Plus Jakarta Sans em 99%.** Oswald 700 só no título de card visual
    (nome do rolê). Pesos: 400 regular, 500 ênfase, 700 só títulos. **Nunca
    semibold.** Texto livre com entrelinha 150%. Peso de fonte variável muda

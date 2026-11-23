@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:equatable/equatable.dart';
 import 'package:studio_app/features/travel_agent/domain/entities/travel_entities.dart';
 
@@ -77,29 +79,78 @@ class TransferBooking extends Equatable {
   List<Object?> get props => [roleId, driverName, pickup, back, price];
 }
 
-/// Avaliação em um toque: foi bom ou não (E-08, D-09).
-enum RatingValue { bom, naoCurti }
+/// Foto ou vídeo que ela anexou à avaliação (bytes do seletor — sem
+/// `dart:io`, roda no web). Igualdade pelo id: nunca comparar bytes.
+class ReviewPhoto extends Equatable {
+  const ReviewPhoto({required this.id, required this.bytes, this.video = false});
 
-/// Avaliação de uma saída: o rolê e, se houve, o transfer.
+  final String id;
+
+  /// Bytes da foto; vazio no vídeo (o protótipo não decodifica quadro).
+  final Uint8List bytes;
+  final bool video;
+
+  @override
+  List<Object?> get props => [id];
+}
+
+/// Avaliação de uma saída (E-08, D-09, D-30): 0,5 a 5 estrelas pro rolê e,
+/// se houve, pro transfer; motivos rápidos (chips da faixa da nota) e, se
+/// ela quiser, texto e fotos.
 class OutingRating extends Equatable {
   const OutingRating({
     required this.roleId,
-    this.role,
-    this.transfer,
-    this.reason,
+    required this.roleName,
+    this.roleStars,
+    this.transferStars,
+    this.tags = const [],
+    this.text,
+    this.photos = const [],
   });
 
   final String roleId;
-  final RatingValue? role;
-  final RatingValue? transfer;
 
-  /// Motivo opcional (chip).
-  final String? reason;
+  /// Nome curto do rolê (histórico da carteira). Vem de quem chama: o rolê
+  /// pode ser só do Explorar, fora do `TravelMock`.
+  final String roleName;
 
-  int get answered => (role != null ? 1 : 0) + (transfer != null ? 1 : 0);
+  /// 0,5 a 5, de meia em meia estrela. Null = não respondeu.
+  final double? roleStars;
+  final double? transferStars;
+
+  /// Motivos rápidos escolhidos (chips da faixa da nota).
+  final List<String> tags;
+  final String? text;
+  final List<ReviewPhoto> photos;
+
+  /// Quantas notas ela deu (rolê, transfer).
+  int get answered =>
+      (roleStars != null ? 1 : 0) + (transferStars != null ? 1 : 0);
+
+  /// Contou mais: escreveu ou mandou foto.
+  bool get detailed =>
+      (text?.trim().isNotEmpty ?? false) || photos.isNotEmpty;
+
+  OutingRating copyWith({
+    double? roleStars,
+    double? transferStars,
+    List<String>? tags,
+    String? text,
+    List<ReviewPhoto>? photos,
+  }) =>
+      OutingRating(
+        roleId: roleId,
+        roleName: roleName,
+        roleStars: roleStars ?? this.roleStars,
+        transferStars: transferStars ?? this.transferStars,
+        tags: tags ?? this.tags,
+        text: text ?? this.text,
+        photos: photos ?? this.photos,
+      );
 
   @override
-  List<Object?> get props => [roleId, role, transfer, reason];
+  List<Object?> get props =>
+      [roleId, roleName, roleStars, transferStars, tags, text, photos];
 }
 
 /// Linha do histórico da carteira.

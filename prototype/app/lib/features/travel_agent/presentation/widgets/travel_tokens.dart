@@ -47,6 +47,7 @@ class TravelPalette {
     required this.mata,
     required this.cultura,
     required this.danger,
+    required this.star,
   });
 
   final Brightness brightness;
@@ -109,6 +110,10 @@ class TravelPalette {
 
   final Color danger;
 
+  /// Estrela de avaliação cheia (exceção de cor 4 da skill: só nas
+  /// estrelas). Vazia = `ink` 24%.
+  final Color star;
+
   bool get isDark => brightness == Brightness.dark;
 
   static const light = TravelPalette(
@@ -146,6 +151,7 @@ class TravelPalette {
     mata: Color(0xFF2E7D4F),
     cultura: Color(0xFF0E7C86),
     danger: Color(0xFFD13B2E),
+    star: Color(0xFFF2A81D),
   );
 
   static const dark = TravelPalette(
@@ -182,6 +188,7 @@ class TravelPalette {
     mata: Color(0xFF7CC08F),
     cultura: Color(0xFF5FD0CB),
     danger: Color(0xFFFF7B6B),
+    star: Color(0xFFF7B638),
   );
 
   static TravelPalette of(BuildContext context) =>

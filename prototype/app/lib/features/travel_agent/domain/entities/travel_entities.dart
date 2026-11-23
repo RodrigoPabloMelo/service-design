@@ -160,6 +160,56 @@ class RouteAccess extends Equatable {
   List<Object?> get props => [text, source, checkedAt];
 }
 
+/// Com quem ela foi — o contexto que pesa na confiança (UX §2, F-02).
+enum ReviewSituation {
+  sozinha('Foi sozinha'),
+  amiga('Com uma amiga'),
+  amigas('Com as amigas'),
+  parceiro('Com o parceiro'),
+  parceira('Com a parceira');
+
+  const ReviewSituation(this.label);
+  final String label;
+}
+
+/// Avaliação de outra viajante no card do rolê (D-30). Quem e em que
+/// situação (F-02), data (F-07), estrelas de 1 a 5, motivos rápidos e, às
+/// vezes, texto e fotos. Sem selo de "visita verificada" (Q-30 aberta).
+class RoleReview extends Equatable {
+  const RoleReview({
+    required this.id,
+    required this.author,
+    required this.situation,
+    required this.stars,
+    required this.date,
+    this.tags = const [],
+    this.text,
+    this.photos = const [],
+  });
+
+  final String id;
+
+  /// Primeiro nome + inicial ("Marina S."); sem foto → iniciais.
+  final String author;
+  final ReviewSituation situation;
+  final int stars;
+  final DateTime date;
+  final List<String> tags;
+  final String? text;
+  final List<PhotoCredit> photos;
+
+  String get initials => author
+      .split(' ')
+      .where((p) => p.isNotEmpty)
+      .take(2)
+      .map((p) => p[0])
+      .join()
+      .toUpperCase();
+
+  @override
+  List<Object?> get props => [id];
+}
+
 /// Um rolê indicado por local, curado pela equipe.
 class Role extends Equatable {
   const Role({

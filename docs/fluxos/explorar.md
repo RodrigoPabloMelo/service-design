@@ -50,10 +50,10 @@ flowchart TD
 - **Gatilho:** tocar num card da home, dos resultados (`FL-02.3`) ou de Salvos (`FL-03.2`).
 - **Passos:**
   1. A foto cresce até a página do rolê ("Rolê de local").
-  2. Ela vê quem indicou e por quê, fotos reais (tocar abre em tela cheia), vídeos curtos (tocar abre o player), o que fazer, melhor horário, quanto custa, selo e entorno com data.
-  3. Salvar fica no cabeçalho (`FL-01.4`).
+  2. Ela vê a nota no cabeçalho (estrela + média e quantas), quem indicou e por quê, fotos reais (tocar abre em tela cheia), vídeos curtos (tocar abre o player), o que fazer, melhor horário, quanto custa, selo ("Rolê seguro") e checks do selo e do entorno, fotos e, por último, a seção **"Avaliações"** ("Como foi pra você?" com a média ao lado do título, a dela, as mais recentes das outras; mais de 3 → "Ver todas as N").
+  3. Salvar fica no cabeçalho (`FL-01.4`). Tocar uma estrela em "Como foi pra você?" abre a avaliação (`FL-06.3`).
 - **Saídas:** voltar à tela de origem; player de vídeos e volta.
-- **Etapa:** `E-04` · **Decisões:** D-03, D-05, D-06, D-18 · **Questões:** [Q-08](../questoes-em-aberto.md#q-08), [Q-10](../questoes-em-aberto.md#q-10) (selo), [Q-34](../questoes-em-aberto.md#q-34) (vídeos).
+- **Etapa:** `E-04` · **Decisões:** D-03, D-05, D-06, D-18, D-30 · **Questões:** [Q-08](../questoes-em-aberto.md#q-08), [Q-10](../questoes-em-aberto.md#q-10) (selo), [Q-34](../questoes-em-aberto.md#q-34) (vídeos), [Q-41](../questoes-em-aberto.md#q-41) (moderação).
 - **Notas:** é o mesmo detalhe que o agente abre dentro do sheet (`FL-04.8`).
 
 ## FL-01.4 · Salvar um rolê (pede conta)

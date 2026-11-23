@@ -281,8 +281,9 @@ final designScreens = <RegisteredScreen>[
     route: '/avaliar',
     flow: 'Depois da viagem',
     next: const ['/carteira'],
-    descricao: 'Cena 8: notificação pede avaliação; rolê e transfer em 1 ou '
-        '2 toques; pontos pelo ato de avaliar (hipótese, Q-27).',
+    descricao: 'Cena 8: notificação pede avaliação; estrelas pro rolê e o '
+        'transfer, motivos rápidos e Enviar (D-30); pontos pelo ato de '
+        'avaliar, +10 por contar mais (hipótese, Q-27).',
     builder: (_) => const RatingMomentPage(),
   ),
   RegisteredScreen(

@@ -346,14 +346,10 @@ abstract final class TravelIcons {
       fontFamily: _regular,
       fontPackage: _pkg,
       fontFamilyFallback: _keep)); // bell
-  static const thumbsUp = FaIconData(IconData(0xf164,
+  static const starOutline = FaIconData(IconData(0xf005,
       fontFamily: _regular,
       fontPackage: _pkg,
-      fontFamilyFallback: _keep)); // thumbs-up
-  static const thumbsDown = FaIconData(IconData(0xf165,
-      fontFamily: _regular,
-      fontPackage: _pkg,
-      fontFamilyFallback: _keep)); // thumbs-down
+      fontFamilyFallback: _keep)); // star (regular) — estrela vazia
   static const wallet = FaIconData(IconData(0xf555,
       fontFamily: _solid,
       fontPackage: _pkg,
