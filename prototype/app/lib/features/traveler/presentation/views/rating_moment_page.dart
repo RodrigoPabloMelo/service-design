@@ -34,6 +34,9 @@ class _RatingMomentPageState extends State<RatingMomentPage> {
           onTap: () => showRatingSheet(
             context,
             roleId: role.id,
+            roleName: role.shortName,
+            photo: role.photos.first.asset,
+            withTransfer: true,
             onWallet: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(builder: (_) => const WalletPage())),
           ),

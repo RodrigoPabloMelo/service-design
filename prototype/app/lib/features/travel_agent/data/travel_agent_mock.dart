@@ -950,6 +950,279 @@ abstract final class TravelMock {
 
   static Role roleById(String id) => allRoles.firstWhere((r) => r.id == id);
 
+  // ── Avaliações de outras viajantes (D-30, simulado) ───────────────────
+  // Nomes, notas, textos e datas são inventados pro protótipo; fotos são
+  // as do próprio rolê (Commons). Sem verificação de visita (Q-30).
+
+  static DateTime _nov(int day) => DateTime(2026, 11, day);
+  static DateTime _out(int day) => DateTime(2026, 10, day);
+
+  static final Map<String, List<RoleReview>> _reviews = {
+    'mercado-boa-vista': [
+      RoleReview(
+        id: 'mbv-1',
+        author: 'Marina S.',
+        situation: ReviewSituation.sozinha,
+        stars: 5,
+        date: _nov(9),
+        tags: const ['Ok pra ir sozinha', 'Fui bem recebida'],
+        text: 'Sentei no balcão e em dez minutos já tinha gente me '
+            'indicando o caldinho. Movimento até umas 22h.',
+        photos: [mercadoBoaVista.photos[1]],
+      ),
+      RoleReview(
+        id: 'mbv-2',
+        author: 'Lívia R.',
+        situation: ReviewSituation.amiga,
+        stars: 4,
+        date: _nov(2),
+        tags: const ['Vale o preço', 'Lugar como no vídeo'],
+      ),
+      RoleReview(
+        id: 'mbv-3',
+        author: 'Tati M.',
+        situation: ReviewSituation.amigas,
+        stars: 3,
+        date: _out(26),
+        tags: const ['Mais cheio que no vídeo'],
+        text: 'Sábado à noite lota. Se quiser mesa, chega antes das 19h.',
+      ),
+      RoleReview(
+        id: 'mbv-4',
+        author: 'Bruna C.',
+        situation: ReviewSituation.sozinha,
+        stars: 5,
+        date: _out(19),
+        tags: const ['Ok pra ir sozinha', 'Volta tranquila'],
+      ),
+    ],
+    'cinema-sao-luiz': [
+      RoleReview(
+        id: 'csl-1',
+        author: 'Helena P.',
+        situation: ReviewSituation.sozinha,
+        stars: 5,
+        date: _nov(11),
+        tags: const ['Lugar como no vídeo', 'Ok pra ir sozinha'],
+        text: 'O teto vale o ingresso. Saí da sessão das 19h e a Rua da '
+            'Aurora ainda tinha movimento.',
+        photos: [cinemaSaoLuiz.photos[2]],
+      ),
+      RoleReview(
+        id: 'csl-2',
+        author: 'Duda F.',
+        situation: ReviewSituation.parceira,
+        stars: 4,
+        date: _nov(1),
+        tags: const ['Vale o preço'],
+      ),
+      RoleReview(
+        id: 'csl-3',
+        author: 'Carla N.',
+        situation: ReviewSituation.amiga,
+        stars: 3,
+        date: _out(22),
+        tags: const ['Volta demorada'],
+        text: 'Depois das 22h o carro de app demorou uns 15 minutos.',
+      ),
+    ],
+    'casa-de-bamba': [
+      RoleReview(
+        id: 'cdb-1',
+        author: 'Júlia A.',
+        situation: ReviewSituation.amiga,
+        stars: 5,
+        date: _nov(8),
+        tags: const ['Fui bem recebida', 'Lugar como no vídeo'],
+        text: 'Roda boa, gente dançando junto, ninguém incomodando.',
+      ),
+      RoleReview(
+        id: 'cdb-2',
+        author: 'Rita V.',
+        situation: ReviewSituation.amigas,
+        stars: 4,
+        date: _out(31),
+        tags: const ['Mais cheio que no vídeo'],
+      ),
+      RoleReview(
+        id: 'cdb-3',
+        author: 'Ana L.',
+        situation: ReviewSituation.sozinha,
+        stars: 4,
+        date: _out(18),
+        tags: const ['Ok pra ir sozinha'],
+      ),
+    ],
+    'casa-astral': [
+      RoleReview(
+        id: 'ca-1',
+        author: 'Camila T.',
+        situation: ReviewSituation.sozinha,
+        stars: 5,
+        date: _nov(12),
+        tags: const ['Ok pra ir sozinha', 'Volta tranquila'],
+        text: 'Equipe atenta, bar no meio da pista e dava pra chamar o '
+            'carro da porta.',
+        photos: [casaAstral.photos.last],
+      ),
+      RoleReview(
+        id: 'ca-2',
+        author: 'Nina B.',
+        situation: ReviewSituation.amiga,
+        stars: 5,
+        date: _nov(5),
+        tags: const ['Fui bem recebida', 'Lugar como no vídeo'],
+      ),
+      RoleReview(
+        id: 'ca-3',
+        author: 'Mari G.',
+        situation: ReviewSituation.amigas,
+        stars: 4,
+        date: _out(29),
+        tags: const ['Espera longa'],
+        text: 'Fila de uns 30 minutos depois da meia-noite.',
+      ),
+      RoleReview(
+        id: 'ca-4',
+        author: 'Lu D.',
+        situation: ReviewSituation.parceira,
+        stars: 5,
+        date: _out(15),
+        tags: const ['Vale o preço'],
+      ),
+    ],
+    'poco-da-panela': [
+      RoleReview(
+        id: 'pp-1',
+        author: 'Isa K.',
+        situation: ReviewSituation.parceiro,
+        stars: 5,
+        date: _nov(10),
+        tags: const ['Lugar como no vídeo', 'Entorno como descrito'],
+        text: 'Fim de tarde lindo. Fui de dia e voltei antes de escurecer, '
+            'como a moradora indicou.',
+        photos: [pocoDaPanela.photos[1]],
+      ),
+      RoleReview(
+        id: 'pp-2',
+        author: 'Gabi O.',
+        situation: ReviewSituation.sozinha,
+        stars: 4,
+        date: _out(27),
+        tags: const ['Entorno como descrito'],
+      ),
+    ],
+    'sitio-trindade': [
+      RoleReview(
+        id: 'st-1',
+        author: 'Clara E.',
+        situation: ReviewSituation.amigas,
+        stars: 4,
+        date: _nov(3),
+        tags: const ['Fui bem recebida'],
+      ),
+      RoleReview(
+        id: 'st-2',
+        author: 'Sofia H.',
+        situation: ReviewSituation.sozinha,
+        stars: 2,
+        date: _out(20),
+        tags: const ['Fechado ou mudou'],
+        text: 'Fui numa quarta e não tinha nada rolando. Confira a agenda '
+            'antes.',
+      ),
+    ],
+    'mercado-encruzilhada': [
+      RoleReview(
+        id: 'me-1',
+        author: 'Paula J.',
+        situation: ReviewSituation.amiga,
+        stars: 5,
+        date: _nov(7),
+        tags: const ['Vale o preço', 'Fui bem recebida'],
+        text: 'Peixe frito e cerveja gelada por menos de R\$ 40 pra duas.',
+      ),
+      RoleReview(
+        id: 'me-2',
+        author: 'Bia F.',
+        situation: ReviewSituation.sozinha,
+        stars: 4,
+        date: _out(24),
+        tags: const ['Ok pra ir sozinha'],
+      ),
+    ],
+    'dona-lindu': [
+      RoleReview(
+        id: 'dl-1',
+        author: 'Fernanda Q.',
+        situation: ReviewSituation.sozinha,
+        stars: 4,
+        date: _nov(6),
+        tags: const ['Entorno como descrito', 'Ok pra ir sozinha'],
+        text: 'Cheio de gente correndo de manhã. À noite fica mais vazio.',
+        photos: [donaLindu.photos[1]],
+      ),
+      RoleReview(
+        id: 'dl-2',
+        author: 'Jéssica U.',
+        situation: ReviewSituation.amiga,
+        stars: 5,
+        date: _out(30),
+        tags: const ['Lugar como no vídeo'],
+      ),
+    ],
+    'box-vitoria-regia': [
+      RoleReview(
+        id: 'bvr-1',
+        author: 'Lara W.',
+        situation: ReviewSituation.amigas,
+        stars: 5,
+        date: _nov(4),
+        tags: const ['Vale o preço', 'Fui bem recebida'],
+      ),
+    ],
+    'parraxaxa-casa-forte': [
+      RoleReview(
+        id: 'px-1',
+        author: 'Renata Y.',
+        situation: ReviewSituation.parceiro,
+        stars: 4,
+        date: _out(28),
+        tags: const ['Vale o preço'],
+        text: 'Carne de sol farta. Dá pra dividir um prato em duas.',
+      ),
+    ],
+  };
+
+  /// Avaliações do rolê, a mais nova primeiro — nunca por nota. Rolê sem
+  /// avaliação (ou só do Explorar) → lista vazia.
+  static List<RoleReview> reviewsFor(String roleId) {
+    final list = [...?_reviews[roleId]];
+    list.sort((a, b) => b.date.compareTo(a.date));
+    return list;
+  }
+
+  /// Média das notas (0 se vazia). Calculada da lista, nada inventado.
+  static double averageOf(Iterable<num> stars) {
+    if (stars.isEmpty) return 0;
+    return stars.reduce((a, b) => a + b) / stars.length;
+  }
+
+  /// Os [n] motivos mais citados, com quantas vezes (empate: ordem de
+  /// aparição).
+  static List<(String, int)> topTags(Iterable<List<String>> tags,
+      {int n = 3}) {
+    final count = <String, int>{};
+    for (final list in tags) {
+      for (final t in list) {
+        count[t] = (count[t] ?? 0) + 1;
+      }
+    }
+    final entries = count.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return [for (final e in entries.take(n)) (e.key, e.value)];
+  }
+
   // ── Roteiro agrupado por dia e distância ─────────────────────────────
   static const itinerary = [
     ItineraryDay(

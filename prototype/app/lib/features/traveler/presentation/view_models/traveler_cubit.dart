@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:studio_app/core/di/app_dependencies.dart';
-import 'package:studio_app/features/travel_agent/data/travel_agent_mock.dart';
 import 'package:studio_app/features/traveler/data/traveler_mock.dart';
 import 'package:studio_app/features/traveler/domain/traveler_entities.dart';
 
@@ -192,26 +191,55 @@ class TravelerCubit extends Cubit<TravelerState> {
   void bookTransfer(TransferBooking booking) =>
       emit(state.copyWith(transfer: booking));
 
-  /// Registra a avaliação e devolve os pontos ganhos (por resposta, não
-  /// pela nota — Q-27). Avaliar de novo a mesma saída não soma.
+  /// Registra a avaliação e devolve os pontos ganhos (D-30). Premia o
+  /// ato, nunca a nota (Q-27): 20 por nota respondida e, uma vez por rolê,
+  /// 10 por contar mais (texto ou foto — hipótese). Reenviar o mesmo rolê
+  /// troca a avaliação e só paga o que for novo. O rascunho some.
   int rate(OutingRating rating) {
     if (rating.answered == 0) return 0;
-    if (state.ratings.any((r) => r.roleId == rating.roleId)) return 0;
-    final earned = rating.answered * TravelerMock.pointsPerRating;
+    final prev = state.ratingFor(rating.roleId);
+    final newAnswers = rating.answered - (prev?.answered ?? 0);
+    final bonus = rating.detailed && !state.detailPaid.contains(rating.roleId)
+        ? TravelerMock.pointsPerDetail
+        : 0;
+    final earned =
+        (newAnswers > 0 ? newAnswers : 0) * TravelerMock.pointsPerRating +
+            bonus;
+    final what = prev == null
+        ? 'Avaliou o ${rating.roleName}'
+            '${rating.transferStars != null ? ' e o transfer' : ''}'
+        : 'Contou mais sobre o ${rating.roleName}';
     emit(state.copyWith(
-      ratings: [...state.ratings, rating],
-      points: state.points + earned,
-      history: [
-        PointsEntry(
-          label: 'Avaliou o ${TravelMock.roleById(rating.roleId).shortName}'
-              '${rating.transfer != null ? ' e o transfer' : ''}',
-          points: earned,
-          date: '15 nov',
-        ),
-        ...state.history,
+      ratings: [
+        for (final r in state.ratings)
+          if (r.roleId != rating.roleId) r,
+        rating,
       ],
+      drafts: {...state.drafts}..remove(rating.roleId),
+      detailPaid: bonus > 0
+          ? {...state.detailPaid, rating.roleId}
+          : state.detailPaid,
+      points: state.points + earned,
+      history: earned == 0
+          ? state.history
+          : [
+              PointsEntry(label: what, points: earned, date: '15 nov'),
+              ...state.history,
+            ],
     ));
     return earned;
+  }
+
+  /// Guarda o que ela começou e fechou sem enviar. Sem nota nem nada, apaga.
+  void saveDraft(OutingRating draft) {
+    final empty = draft.answered == 0 &&
+        draft.tags.isEmpty &&
+        !draft.detailed;
+    emit(state.copyWith(
+      drafts: empty
+          ? ({...state.drafts}..remove(draft.roleId))
+          : {...state.drafts, draft.roleId: draft},
+    ));
   }
 
   /// Troca pontos por cupom. Sem saldo, não troca.

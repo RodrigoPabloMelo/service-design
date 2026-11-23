@@ -20,6 +20,7 @@ atualizada.
 | `accentSoft` | #E0ECFA | #0D2A4A | tint de selecionado |
 | `piscina` | #0ABAB5 | — | marca (símbolo, água, aurora); nunca texto |
 | `sol` / `danger` | #E2A21F / #D13B2E | | uso ≥75% / ≥90% no limite |
+| `star` | #F2A81D | #F7B638 | estrela de avaliação cheia (exceção 4); vazia = `ink` 24% |
 
 - Categorias da home (`ExploreCategoryTones`, véu sobre foto, alfa 0.74,
   iguais no claro/escuro): restaurantes #B4410E, café #6E4326, museu

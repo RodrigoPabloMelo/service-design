@@ -148,7 +148,7 @@ Só uma proposta por conversa. Fluxo: `FL-05.1`.
 
 ### ST-AVALIACAO · Avaliação da saída
 
-`pendente` (notificação) → `enviada` (pontos somados uma vez por saída). Fechar sem enviar mantém `pendente` e não bloqueia nada. Fluxo: `FL-06.1`.
+`pendente` (notificação, ou card do rolê sem avaliação dela) → `rascunho` (escolheu estrela e fechou sem enviar: reabrir devolve nota, motivos, texto e fotos) → `enviada` (20 pontos por nota, uma vez; aparece como "Você" no topo das avaliações do rolê) → `detalhada` (contou mais com texto ou foto: +10 uma vez). Fechar sem enviar não bloqueia nada. Fluxos: `FL-06.1`, `FL-06.3`. Valores **(hipótese)** ([Q-27](../questoes-em-aberto.md#q-27)).
 
 ### ST-CUPOM · Cupom da carteira
 

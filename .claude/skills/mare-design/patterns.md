@@ -137,8 +137,10 @@ bolinhas separadoras.
   alinhados com ele.
 - Carrossel de fotos estilo M3 Expressive (`CarouselView.weighted`), sem
   contagem.
-- Selo de curadoria só uma vez, em "Selo e entorno"; "Rolê seguro" separado
-  dos checks; lista agrupada Apple (ícone à parte, divisor recuado).
+- Selo de curadoria só uma vez, em "Selo e entorno": bloco só com o escudo
+  e "Rolê seguro" (sem quem avaliou, sem data — D-31). As situações do
+  selo viram checks ("Avaliado pra ir sozinha") no topo da lista do
+  entorno; lista agrupada Apple (ícone à parte, divisor recuado).
 - **Linhas de lista agrupada = Ajustes do iPhone, sem quadrado:** glifo
   20 em `ink`, centrado na linha numa coluna de 30, sem fundo; divisor de
   1 pixel físico começando no texto. Vale pra "Bom saber" (melhor horário,
@@ -152,6 +154,55 @@ bolinhas separadoras.
   "Adicionar ao roteiro" (primário) embaixo.
 - Ao rolar: botão voltar flutua (vidro), conteúdo some sob ele com fade e o
   título transita pro centro com fade — só quando rola.
+- **Nota no cabeçalho:** estrela `star` 12 + "4,3 (4)" em `footnote`
+  `inkMuted` tabular, junto de bairro, preço e horário. Some sem avaliação.
+
+## Avaliações (D-30, ref. AllTrails, Lyft, Turo)
+
+- **Seção "Avaliações"** no card do rolê, **por último, depois das
+  fotos** (o card dela junto das avaliações das outras). Card "Como foi pra
+  você?": título `headline` à esquerda e, **à direita na mesma linha**, a
+  média (estrela `star` 14 + "4,3" `headline` tabular + "(4)" `footnote`
+  `inkMuted`) ou "Sem avaliações" em `footnote` `inkMuted`. Nada de card
+  de resumo separado nem frase de vazio embaixo do título. **Respiro de 12
+  + a folga do alvo de 44 entre texto e estrelas** (coladas, não). Depois
+  da dela, as 3 mais recentes das outras, **por data, nunca por nota**;
+  mais de 3 → secundário "Ver todas as N" (o mesmo total do card; sheet
+  com a dela primeiro, texto inteiro, lista rolando sob véu `s0` em
+  rampa).
+- **Avaliação** (card `s1`): avatar 36 de iniciais em `s2`, nome +
+  inicial em `subheadStrong`, com quem foi em `footnote` `inkMuted`, data à
+  direita; estrelas 13; 12 até os motivos (pílulas de contorno que
+  **abraçam o texto**, lado a lado em wrap — nunca largura total) e o texto
+  `subhead` até 4 linhas; fotos 64 raio 12 (tocar abre o viewer). Sem selo de "visita
+  verificada" (Q-30). Sem texto nem foto, a dela leva o secundário
+  "Contar mais" dentro do card.
+- **Estrelas:** `StarRow` de **meia em meia** (0,5 a 5), alvo 44 por
+  estrela. Metade esquerda = meia, do centro pra direita = inteira;
+  **segurar e arrastar** preenche ao vivo (tique de haptic a cada meia) e
+  só entrega a nota ao soltar — nada abre nem pula no meio do gesto. Meia
+  estrela = contorno + metade esquerda cheia recortada. Pulo de 150 ms na
+  estrela onde a nota para (Reduce Motion: parada); cheia `star`, vazia
+  contorno `ink` 24% (exceção 4 da SKILL). Rótulo à direita em
+  `subheadStrong`, com ellipsis: Não curti, Fraco, Ok, Bom, Muito bom,
+  Amei. Leitor de tela: estrela inteira por toque.
+- **Sheet "Como foi?":** tocar uma estrela no card abre o sheet **já com
+  a nota**. Rolê (foto 36 + nome) e, na cena 8, o transfer, cada um num
+  card com estrelas. Depois da estrela, a pergunta da faixa em `section`
+  e os chips soltos no fundo (pílula `s1`, anel `accent`, vários).
+  "Contar mais" = linha `s1` com lápis e "+10 pontos" em `inkMuted`;
+  aberto: campo `s2` raio 12 ("O que outra mulher precisa saber?") e o
+  botão da câmera (`s2` raio 12, 64 de altura): **sem mídia ocupa a
+  largura toda**; com mídia encolhe (260 ms) pra 64×64 **fixo à esquerda**
+  e as miniaturas de foto/vídeo (64, X frost) ficam lado a lado, rolando
+  ao lado dele (até 4; vídeo = `s2` com play). Um primário "Enviar", ligado
+  desde a primeira estrela. Fechar guarda rascunho; no card do rolê, a
+  pílula neutra "Continuar" (`s2` 32, texto `ink`, alvo 44) entra à
+  direita **na linha das estrelas** — nada que mude a altura do card. Miniatura do rolê no card do sheet com raio 12
+  (concêntrico); X das fotos em frost 24 com alvo 44; carregando =
+  `AppActivityIndicator`.
+- Motivos descrevem condição, nunca rotulam o lugar ("Não me senti à
+  vontade", não "Lugar perigoso").
 
 ## Player de vídeos curtos
 
@@ -303,8 +354,8 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
   bolinha) que abre o sheet "Como funcionam os pontos": três páginas
   deslizáveis com pontinhos e um secundário "Próximo"/"Entendi"; cada uma
   com uma arte num card `s1` 16:10 feita dos próprios componentes e
-  animada uma vez ao entrar (avaliar: card "Como foi?" com "Foi bom" no
-  anel e um "+20" `accent` subindo; juntar: saldo contando com ondas
+  animada uma vez ao entrar (avaliar: card "Como foi?" com as 5 estrelas
+  acendendo uma a uma e um "+20" `accent` subindo; juntar: saldo contando com ondas
   `piscina` e três "+20" em volta; trocar: três cupons em leque). Título
   `title2` e uma linha `inkMuted`, centralizados. Nada de texto de regra
   solto na página; "Trocar por" em grade 2 colunas de cards quadrados (exceção
@@ -334,7 +385,7 @@ com `CREDITS.md`; rostos em `assets/images/people/`. Crédito só no viewer.
 - **Chip:** pílula 40, padding 14/14. Dentro de card: contorno `ink` 12%
   sem fundo, selecionado contorno `accent` 1,5. Solto no fundo: `s1`,
   selecionado com anel `accent` 1,5. Chip de categoria leva o ícone SVG em `ink`.
-- **Tiles de escolha em card** (mês no "Flexível", "Foi bom/Não curti"):
+- **Tiles de escolha em card** (mês no "Flexível"):
   mesmo contorno dos chips, raio 12, ícone `ink` em cima e texto embaixo.
 - **Quando?:** abas "Datas | Flexível" (`PillSegmented`). Datas =
   calendário de intervalo (dias da semana fixos, meses rolando, passado

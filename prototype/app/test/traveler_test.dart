@@ -119,16 +119,90 @@ void main() {
       final before = c.state.points;
       final earned = c.rate(const OutingRating(
         roleId: TravelMock.swapToId,
-        role: RatingValue.naoCurti,
-        transfer: RatingValue.bom,
+        roleName: 'Parraxaxá',
+        roleStars: 1,
+        transferStars: 5,
       ));
       expect(earned, 2 * TravelerMock.pointsPerRating);
       expect(c.state.points, before + earned);
-      // Avaliar de novo a mesma saída não soma.
+      // Mandar de novo a mesma nota não soma.
       expect(
           c.rate(const OutingRating(
-              roleId: TravelMock.swapToId, role: RatingValue.bom)),
+              roleId: TravelMock.swapToId,
+              roleName: 'Parraxaxá',
+              roleStars: 4,
+              transferStars: 5)),
           0);
+    });
+
+    test('1 e 5 estrelas rendem o mesmo (D-30, Q-27)', () {
+      final a = TravelerCubit();
+      final b = TravelerCubit();
+      addTearDown(a.close);
+      addTearDown(b.close);
+      expect(
+        a.rate(const OutingRating(
+            roleId: 'casa-astral', roleName: 'Casa Astral', roleStars: 1)),
+        b.rate(const OutingRating(
+            roleId: 'casa-astral', roleName: 'Casa Astral', roleStars: 5)),
+      );
+    });
+
+    test('contar mais paga o bônus uma vez por rolê', () {
+      final c = TravelerCubit();
+      addTearDown(c.close);
+      const quick = OutingRating(
+          roleId: 'casa-astral', roleName: 'Casa Astral', roleStars: 5);
+      expect(c.rate(quick), TravelerMock.pointsPerRating);
+      // Completa depois com texto: só o bônus.
+      expect(c.rate(quick.copyWith(text: 'Equipe atenta.')),
+          TravelerMock.pointsPerDetail);
+      // Detalhar de novo não paga.
+      expect(c.rate(quick.copyWith(text: 'Equipe atenta. Bar bom.')), 0);
+      expect(c.state.ratings, hasLength(1));
+      expect(c.state.ratingFor('casa-astral')?.text, 'Equipe atenta. Bar bom.');
+    });
+
+    test('avaliar rolê só do Explorar não quebra', () {
+      final c = TravelerCubit();
+      addTearDown(c.close);
+      expect(
+        c.rate(const OutingRating(
+            roleId: 'paco-do-frevo', roleName: 'Paço do Frevo', roleStars: 4)),
+        TravelerMock.pointsPerRating,
+      );
+      expect(c.state.history.first.label, 'Avaliou o Paço do Frevo');
+    });
+
+    test('rascunho volta e some no envio', () {
+      final c = TravelerCubit();
+      addTearDown(c.close);
+      const draft = OutingRating(
+          roleId: 'dona-lindu',
+          roleName: 'Parque Dona Lindu',
+          roleStars: 2,
+          tags: ['Volta complicada']);
+      c.saveDraft(draft);
+      expect(c.state.drafts['dona-lindu'], draft);
+      c.rate(draft);
+      expect(c.state.drafts.containsKey('dona-lindu'), isFalse);
+      // Rascunho vazio não fica guardado.
+      c.saveDraft(const OutingRating(roleId: 'x', roleName: 'X'));
+      expect(c.state.drafts.containsKey('x'), isFalse);
+    });
+
+    test('avaliações do rolê: mais nova primeiro, média da lista', () {
+      final list = TravelMock.reviewsFor('mercado-boa-vista');
+      expect(list, isNotEmpty);
+      for (var i = 1; i < list.length; i++) {
+        expect(list[i - 1].date.isAfter(list[i].date) ||
+            list[i - 1].date == list[i].date, isTrue);
+      }
+      final avg = TravelMock.averageOf([for (final r in list) r.stars]);
+      expect(avg, [for (final r in list) r.stars].reduce((a, b) => a + b) /
+          list.length);
+      expect(TravelMock.reviewsFor('paco-do-frevo'), isEmpty);
+      expect(TravelMock.averageOf(const []), 0);
     });
 
     test('cupom só com saldo e uma vez', () {
@@ -137,8 +211,12 @@ void main() {
       final cupom = TravelerMock.coupons.first;
       expect(c.redeem(cupom), isFalse);
       c.rate(const OutingRating(
-          roleId: 'casa-astral', role: RatingValue.bom, transfer: RatingValue.bom));
-      c.rate(const OutingRating(roleId: 'dona-lindu', role: RatingValue.bom));
+          roleId: 'casa-astral',
+          roleName: 'Casa Astral',
+          roleStars: 5,
+          transferStars: 5));
+      c.rate(const OutingRating(
+          roleId: 'dona-lindu', roleName: 'Parque Dona Lindu', roleStars: 4));
       expect(c.state.points, greaterThanOrEqualTo(cupom.cost));
       expect(c.redeem(cupom), isTrue);
       expect(c.redeem(cupom), isFalse);

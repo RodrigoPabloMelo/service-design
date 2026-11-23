@@ -40,8 +40,8 @@ class _PointsInfoSheetState extends State<PointsInfoSheet> {
   static final _steps = [
     const _Step(
       'Avalie suas saídas',
-      '${TravelerMock.pointsPerRating} pontos por resposta, boa ou ruim. '
-          'Sua nota não muda nada.',
+      '${TravelerMock.pointsPerRating} pontos por avaliação, boa ou ruim. '
+          'Contar mais rende ${TravelerMock.pointsPerDetail}.',
     ),
     const _Step(
       'Junte pontos',
@@ -223,8 +223,8 @@ abstract class _Art extends StatefulWidget {
   final bool active;
 }
 
-/// 1 · Avaliar: o card "Como foi?" com o rolê; "Foi bom" ganha o anel e
-/// sobe um "+20" com estrela.
+/// 1 · Avaliar: o card "Como foi?" com o rolê; as 5 estrelas se acendem
+/// uma a uma e sobe um "+20".
 class _RateArt extends _Art {
   const _RateArt({required super.active});
 
@@ -241,7 +241,7 @@ class _RateArtState extends _ArtState<_RateArt> {
       animation: c,
       builder: (context, _) {
         final card = seg(0, 0.35);
-        final pick = seg(0.35, 0.5);
+        final pick = seg(0.3, 0.55);
         final rise = seg(0.5, 0.95, Curves.easeOutBack);
         return Center(
           child: Stack(
@@ -295,22 +295,20 @@ class _RateArtState extends _ArtState<_RateArt> {
                         ),
                         const SizedBox(height: TravelSpace.md),
                         Row(
+                          // Esticadas: a quinta fica sob o "+20".
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(
-                              child: _Chip(
-                                icon: TravelIcons.thumbsUp,
-                                label: 'Foi bom',
-                                selected: pick > 0.5,
+                            for (var i = 0; i < 5; i++) ...[
+                              FaIcon(
+                                pick * 5 > i
+                                    ? TravelIcons.star
+                                    : TravelIcons.starOutline,
+                                size: 24,
+                                color: pick * 5 > i
+                                    ? p.star
+                                    : p.ink.withValues(alpha: 0.24),
                               ),
-                            ),
-                            const SizedBox(width: TravelSpace.sm),
-                            const Expanded(
-                              child: _Chip(
-                                icon: TravelIcons.thumbsDown,
-                                label: 'Não curti',
-                                selected: false,
-                              ),
-                            ),
+                            ],
                           ],
                         ),
                       ],
@@ -318,7 +316,7 @@ class _RateArtState extends _ArtState<_RateArt> {
                   ),
                 ),
               ),
-              // "+20" sobe do chip escolhido.
+              // "+20" sobe da última estrela.
               Positioned(
                 top: -6 - 34 * rise,
                 right: -18,
@@ -494,48 +492,6 @@ class _PlusPill extends StatelessWidget {
                   color: Colors.white,
                   height: 1.2,
                   fontFeatures: TravelType.tabular)),
-        ],
-      ),
-    );
-  }
-}
-
-/// Chip da arte de avaliar: contorno fino; escolhido = anel `accent` 1,5.
-class _Chip extends StatelessWidget {
-  const _Chip({
-    required this.icon,
-    required this.label,
-    required this.selected,
-  });
-
-  final FaIconData icon;
-  final String label;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = TravelPalette.of(context);
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 150),
-      height: 36,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(TravelSpace.rPill),
-        border: Border.all(
-          color: selected ? p.accent : p.ink.withValues(alpha: 0.12),
-          width: selected ? 1.5 : 1,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          FaIcon(icon, size: 12, color: p.ink),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TravelType.footnote.copyWith(color: p.ink, height: 1.2)),
-          ),
         ],
       ),
     );

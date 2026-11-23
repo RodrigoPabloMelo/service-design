@@ -7,6 +7,8 @@ class TravelerState extends Equatable {
     this.trip,
     this.transfer,
     this.ratings = const [],
+    this.drafts = const {},
+    this.detailPaid = const {},
     this.points = 0,
     this.history = const [],
     this.redeemed = const {},
@@ -48,6 +50,22 @@ class TravelerState extends Equatable {
   /// Transfer pago no app (D-26).
   final TransferBooking? transfer;
   final List<OutingRating> ratings;
+
+  /// Avaliação começada e fechada sem enviar, por rolê: reabrir devolve
+  /// nota, motivos, texto e fotos (fechar nunca perde nada).
+  final Map<String, OutingRating> drafts;
+
+  /// Rolês cujo bônus de "contar mais" já foi pago (uma vez por rolê).
+  final Set<String> detailPaid;
+
+  /// A avaliação que ela enviou desse rolê, se enviou.
+  OutingRating? ratingFor(String roleId) {
+    for (final r in ratings) {
+      if (r.roleId == roleId) return r;
+    }
+    return null;
+  }
+
   final int points;
   final List<PointsEntry> history;
   final Set<String> redeemed;
@@ -61,6 +79,8 @@ class TravelerState extends Equatable {
     TripInfo? trip,
     TransferBooking? transfer,
     List<OutingRating>? ratings,
+    Map<String, OutingRating>? drafts,
+    Set<String>? detailPaid,
     int? points,
     List<PointsEntry>? history,
     Set<String>? redeemed,
@@ -72,6 +92,8 @@ class TravelerState extends Equatable {
         trip: trip ?? this.trip,
         transfer: transfer ?? this.transfer,
         ratings: ratings ?? this.ratings,
+        drafts: drafts ?? this.drafts,
+        detailPaid: detailPaid ?? this.detailPaid,
         points: points ?? this.points,
         history: history ?? this.history,
         redeemed: redeemed ?? this.redeemed,
@@ -86,6 +108,8 @@ class TravelerState extends Equatable {
         trip,
         transfer,
         ratings,
+        drafts,
+        detailPaid,
         points,
         history,
         redeemed,

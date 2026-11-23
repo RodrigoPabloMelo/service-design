@@ -103,13 +103,59 @@ abstract final class TravelerMock {
   /// nota (Q-27: evitar viés).
   static const pointsPerRating = 20;
 
-  /// Motivos opcionais (um toque).
-  static const reasons = [
-    'Lugar como no vídeo',
-    'Entorno como descrito',
-    'Volta tranquila',
-    'Diferente do descrito',
-  ];
+  /// Bônus por contar mais (texto ou foto), pago uma vez por rolê
+  /// (hipótese, Q-27 — pedido do Rodrigo em 2026-11-23).
+  static const pointsPerDetail = 10;
+
+  /// Rótulo de cada nota (de meia em meia), ao lado das estrelas.
+  static String starLabel(num stars) => stars >= 5
+      ? 'Amei'
+      : stars >= 4.5
+          ? 'Muito bom'
+          : stars >= 4
+              ? 'Bom'
+              : stars >= 3
+                  ? 'Ok'
+                  : stars >= 2
+                      ? 'Fraco'
+                      : 'Não curti';
+
+  /// "4,5" / "4" — nota com vírgula, sem ",0".
+  static String starText(num stars) => stars == stars.roundToDouble()
+      ? '${stars.round()}'
+      : stars.toStringAsFixed(1).replaceAll('.', ',');
+
+  /// Pergunta dos motivos rápidos, por faixa da nota.
+  static String questionFor(num stars) => stars >= 4
+      ? 'O que você amou?'
+      : stars >= 3
+          ? 'O que podia ser melhor?'
+          : 'O que não rolou?';
+
+  /// Motivos rápidos por faixa da nota (D-30). Descrevem uma condição,
+  /// nunca rotulam o lugar (UX §6).
+  static List<String> tagsFor(num stars) => stars >= 4
+      ? const [
+          'Lugar como no vídeo',
+          'Entorno como descrito',
+          'Ok pra ir sozinha',
+          'Volta tranquila',
+          'Fui bem recebida',
+          'Vale o preço',
+        ]
+      : stars >= 3
+          ? const [
+              'Mais cheio que no vídeo',
+              'Volta demorada',
+              'Preço mudou',
+              'Espera longa',
+            ]
+          : const [
+              'Diferente do descrito',
+              'Não me senti à vontade',
+              'Volta complicada',
+              'Fechado ou mudou',
+            ];
 
   /// Histórico de antes desta saída (mais novo primeiro). Boas-vindas e a
   /// troca da 99 existem pra a carteira mostrar os três estados de cupom.
