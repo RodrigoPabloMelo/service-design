@@ -1,11 +1,11 @@
 {
-    "name": "studio_app",
-    "short_name": "studio_app",
+    "name": "Coral",
+    "short_name": "Coral",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F2F2F5",
     "theme_color": "#F2F2F5",
-    "description": "SuperApp Studio App",
+    "description": "Coral",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

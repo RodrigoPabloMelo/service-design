@@ -1,6 +1,6 @@
 # Questões em aberto
 
-> **Atualizado:** 2026-11-18 · **Origem:** levantadas na documentação do ciclo 1 (conversa com Rodrigo, 2026-10-16); `Q-27` a `Q-32` no rascunho do blueprint (2026-11-04)
+> **Atualizado:** 2026-11-24 · **Origem:** levantadas na documentação do ciclo 1 (conversa com Rodrigo, 2026-10-16); `Q-27` a `Q-32` no rascunho do blueprint (2026-11-04)
 > **Status:** `aberta` · `em discussão` · `resolvida` (→ registrar em [decisoes.md](decisoes.md) com o `D-xx`)
 > **Prioridade:** **alta** = bloqueia ideação/blueprint · **média** = precisa antes do protótipo · **baixa** = pode esperar
 
@@ -8,7 +8,7 @@
 
 | ID | Questão | Área | Prioridade | Status |
 | --- | --- | --- | --- | --- |
-| [Q-01](#q-01) | Nome do serviço | Marca | média | aberta |
+| [Q-01](#q-01) | Nome do serviço | Marca | média | resolvida |
 | [Q-02](#q-02) | Estrutura dos planos/pacotes | Receita | alta | aberta |
 | [Q-03](#q-03) | Como funciona o transporte com motoristas mulheres | Receita/Segurança | alta | aberta |
 | [Q-04](#q-04) | Comissão: valor e rastreio no pagamento no local | Receita | alta | aberta |
@@ -57,6 +57,8 @@
 Ainda sem nome. Nos docs: "o app" / "o serviço".
 
 **2026-11-09:** o protótipo usa **Maré** como nome de trabalho ([prototipo.md](prototipo.md)) — **(hipótese)**, não é o nome decidido.
+
+**2026-11-24 — resolvida (D-32):** o serviço se chama **Coral**. **Maré** fica como nome da assistente de IA do app.
 
 <a id="q-02"></a>
 ### Q-02 · Estrutura dos planos/pacotes
@@ -185,6 +187,8 @@ App nativo (iOS/Android), PWA ou os dois? **2026-11-04 (D-15, D-16):** a entrada
 Não há identidade visual. Quando houver, registrar num `DESIGN.md` na raiz (tokens + regras de uso), referenciado pelo [UX.md](../UX.md), para a IA não inventar marca.
 
 **2026-11-09 — em discussão:** o protótipo tem um sistema visual de trabalho na skill [`mare-design`](../.claude/skills/mare-design/SKILL.md) (`tokens.md`, `patterns.md`, `writing.md`), ver D-22. Falta decidir se ele vira a identidade do serviço (e, nesse caso, se é promovido a `DESIGN.md` na raiz).
+
+**2026-11-24:** chegou o **logo da Coral** (wordmark com o "o" em forma de pino de mapa), hoje em [`pitch/img/coral.svg`](../pitch/img/coral.svg) e usado no pitch. Paleta, tipografia e uso do logo no app seguem em aberto.
 
 <a id="q-27"></a>
 ### Q-27 · Programa de pontos/moedas da viajante

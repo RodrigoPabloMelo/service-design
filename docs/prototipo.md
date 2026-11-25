@@ -1,7 +1,7 @@
 # Protótipo — o que ele cobre
 
 > **Atualizado:** 2026-11-18 · **Código:** [`prototype/app/`](../prototype/app/README.md) · **Telas:** `/explorar` (`lib/features/explore/`, abre por padrão) e `/agente` (`lib/features/travel_agent/`)
-> **Status:** protótipo navegável em Flutter web, com **dados mockados** (sem backend, sem IA real). Nome de trabalho: **Maré** — o nome do serviço segue em aberto ([Q-01](questoes-em-aberto.md#q-01)).
+> **Status:** protótipo navegável em Flutter web, com **dados mockados** (sem backend, sem IA real). Serviço: **Coral**; **Maré** é a assistente de IA do app ([D-32](decisoes.md)).
 > **Sistema visual:** skill [`mare-design`](../.claude/skills/mare-design/SKILL.md) (DESIGN.md provisório, ver [Q-26](questoes-em-aberto.md#q-26)).
 
 ## De onde vem

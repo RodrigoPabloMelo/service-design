@@ -1,6 +1,6 @@
-# Protótipo — Maré (Flutter web)
+# Protótipo — Coral (Flutter web)
 
-Protótipo navegável do serviço de rolês locais para mulheres viajantes (piloto Recife/Olinda). **Maré** é nome de trabalho ([Q-01](../../docs/questoes-em-aberto.md#q-01)).
+Protótipo navegável do serviço de rolês locais para mulheres viajantes (piloto Recife/Olinda). **Coral** é o nome do serviço e **Maré**, o da assistente de IA do app ([D-32](../../docs/decisoes.md)).
 
 - O que o serviço é e por que cada tela existe: [docs/README.md](../../docs/README.md)
 - O que este protótipo cobre (telas ↔ jornada, personas, decisões): [docs/prototipo.md](../../docs/prototipo.md)
