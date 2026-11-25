@@ -779,6 +779,91 @@
     .bp-fora { --oc: 0.3; }
     .bp-em-foco .bp-nome { color: var(--azul-texto); }
 
+    /* Transição: passar o mouse em "Camila" mostra a foto dela, que segue o mouse até sair. */
+    .foto-segue {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 2;
+      width: min(14vw, 220px);
+      aspect-ratio: 874 / 1090;
+      pointer-events: none;
+      transform-origin: 50% 100%;
+      opacity: 0;
+      scale: 0.6;
+      filter: drop-shadow(0 18px 40px rgb(0 0 0 / 0.18));
+      transition: opacity 0.35s var(--ease), scale 0.5s var(--ease-saida);
+    }
+    .foto-segue[data-visivel] { opacity: 1; scale: 1; }
+
+    /*
+      ---------- Camila (P-CAMILA, docs/personas.md): quem vamos acompanhar ----------
+      Foto oval do Rodrigo (img/camila.webp) nasce de baixo para cima e boia; o nome sobe letra por letra; o resto
+      chega do desfoque, em cascata. Texto do Rodrigo; conectores em tinta secundária, como na proposta.
+    */
+    .camila {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      align-items: center;
+      gap: 5.5vw;
+      padding: 0 8vw;
+    }
+    .camila-foto {
+      position: relative;
+      justify-self: end;
+      width: min(29vw, 62vh * 874 / 1090);
+      aspect-ratio: 874 / 1090;
+      animation: flutua 7s ease-in-out infinite alternate;
+      animation-play-state: paused;
+    }
+    .momento[data-ativo] .camila-foto { animation-play-state: running; }
+    .camila-foto::before {
+      content: "";
+      position: absolute;
+      inset: 8% -6% -4%;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, color-mix(in srgb, var(--azul) 26%, transparent), transparent);
+      filter: blur(30px);
+    }
+    .camila-foto img { position: relative; display: block; width: 100%; height: 100%; }
+    .camila-texto { max-width: min(46vw, 880px); color: var(--texto); }
+    .camila-nome { margin: 0; display: flex; align-items: baseline; gap: 0.5em; flex-wrap: wrap; }
+    .camila-nome .nome {
+      font-size: clamp(3rem, 6.4vw, 8rem);
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -0.045em;
+    }
+    .camila-nome .idade {
+      font-size: clamp(1rem, 1.6vw, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--texto-2);
+    }
+    .camila-traco {
+      margin: 0;
+      font-size: clamp(1.1rem, 1.85vw, 2.25rem);
+      font-weight: 400;
+      line-height: 1.22;
+      letter-spacing: -0.022em;
+      word-spacing: 0.05em;
+      text-wrap: pretty;
+    }
+    .camila-nome + .camila-traco { margin-top: 1.1em; }
+    .camila-traco + .camila-traco { margin-top: 0.55em; }
+    .camila-traco em {
+      font-style: italic;
+      font-weight: 500;
+      color: var(--azul-texto);
+      text-shadow: 0 0 32px color-mix(in srgb, var(--azul) 35%, transparent);
+    }
+    @media (max-aspect-ratio: 4/5) {
+      .camila { grid-template-columns: 1fr; align-content: center; gap: 4vh; padding: 0 7vw; }
+      .camila-foto { justify-self: center; width: min(46vw, 32vh * 874 / 1090); }
+    }
+
     /* ---------- Cursor próprio: anel fino que some parado ---------- */
     :root.cursor-proprio, :root.cursor-proprio * { cursor: none; }
     .cursor {
@@ -1000,13 +1085,29 @@
       </div>
     </section>
 
-    <!-- 12. Transição para o storyboard (texto do Rodrigo). -->
+    <!-- 12. Transição para o storyboard (texto do Rodrigo). Mouse em "Camila": a foto dela segue o mouse. -->
     <section class="momento" data-passos="0" data-brilho="normal" data-cena-transicao>
+      <img class="foto-segue" src="img/camila.webp" alt="" aria-hidden="true" decoding="async" />
       <p class="frase" data-coreo="montar">Vamos acompanhar <em>Camila</em> em uma viagem para Recife.</p>
     </section>
 
     <!--
-      13. Storyboard da Camila (P-CAMILA, sozinha, 3 dias em Recife): 10 quadros em tela cheia, um por passo,
+      13. Camila (P-CAMILA, docs/personas.md), antes da primeira cena. Foto e texto do Rodrigo; entra sozinho, sem passos.
+    -->
+    <section class="momento" data-passos="0" data-brilho="normal" data-luz="0.6" data-cena-camila aria-label="Camila">
+      <div class="camila">
+        <div class="camila-foto"><img src="img/camila.webp" alt="Camila, de mochila e óculos escuros no cabelo, sorri olhando por cima do ombro numa rua de pedra com murais e mesas na calçada" decoding="async" /></div>
+        <div class="camila-texto">
+          <p class="camila-nome"><span class="nome" data-coreo="subir">Camila</span> <span class="idade" data-coreo="desfoque">28 anos</span></p>
+          <p class="camila-traco" data-coreo="desfoque" data-ritmo="70"><span class="conector">Prefere</span> viajar <em>sozinha</em>.</p>
+          <p class="camila-traco" data-coreo="desfoque" data-ritmo="70"><span class="conector">Gosta de</span> conhecer a cidade de maneira mais próxima da <em>rotina local</em></p>
+          <p class="camila-traco" data-coreo="desfoque" data-ritmo="70"><span class="conector">e</span> ter <em>autonomia</em> para decidir horários e roteiro, sentindo que tem as informações necessárias e suficientes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      14. Storyboard da Camila (P-CAMILA, sozinha, 3 dias em Recife): 10 quadros em tela cheia, um por passo,
       com a legenda num bloco preto na largura toda. Imagens do Rodrigo (img/storyboard). Legendas são RASCUNHO.
     -->
     <section class="momento" data-passos="9" data-cena-storyboard aria-label="Storyboard">
@@ -1037,7 +1138,7 @@
     </section>
 
     <!--
-      14. Final: o logo sobre cor viva, como os destinos. Aparece no lugar, saindo do desfoque, e a tagline vem
+      15. Final: o logo sobre cor viva, como os destinos. Aparece no lugar, saindo do desfoque, e a tagline vem
       embaixo. Passo 1: marca e tagline sobem e encolhem e o QR do app (raiz do deploy, abre na primeira tela) aparece.
     -->
     <section class="momento" data-passos="1" data-final>
@@ -1983,8 +2084,63 @@
     cenaTransicao.addEventListener('entrar', () => entrar(fraseTransicao, 350))
     cenaTransicao.addEventListener('saiu', () => zerar(fraseTransicao))
 
+    // Mouse em "Camila": a foto aparece logo acima do mouse e vai atrás dele, com atraso e um balanço leve.
+    const fotoSegue = cenaTransicao.querySelector('.foto-segue')
+    let fotoX = 0, fotoY = 0, alvoFotoX = 0, alvoFotoY = 0, sobreCamila = false, lacoFoto = 0
+    function seguirFoto() {
+      const k = reduzido.matches ? 1 : 0.16
+      fotoX += (alvoFotoX - fotoX) * k
+      fotoY += (alvoFotoY - fotoY) * k
+      const giro = limitar((alvoFotoX - fotoX) * 0.06, -10, 10)
+      fotoSegue.style.transform = `translate(${fotoX}px, ${fotoY}px) translate(-50%, calc(-100% - 26px)) rotate(${giro}deg)`
+      const parado = Math.abs(alvoFotoX - fotoX) + Math.abs(alvoFotoY - fotoY) < 0.3
+      lacoFoto = sobreCamila || !parado ? requestAnimationFrame(seguirFoto) : 0
+    }
+    function mostrarFoto(dentro) {
+      sobreCamila = dentro
+      fotoSegue.toggleAttribute('data-visivel', dentro)
+    }
+    cenaTransicao.addEventListener('pointermove', (e) => {
+      const dentro = !!e.target.closest('.frase em')
+      if (dentro && !sobreCamila && !fotoSegue.hasAttribute('data-visivel')) {
+        // Nasce onde o mouse está, não voando do canto.
+        fotoX = alvoFotoX = e.clientX
+        fotoY = alvoFotoY = e.clientY
+      }
+      alvoFotoX = e.clientX
+      alvoFotoY = e.clientY
+      mostrarFoto(dentro)
+      if (!lacoFoto) lacoFoto = requestAnimationFrame(seguirFoto)
+    })
+    cenaTransicao.addEventListener('pointerleave', () => mostrarFoto(false))
+    cenaTransicao.addEventListener('sair', () => mostrarFoto(false))
+
     // =====================================================================
-    // 13. Storyboard: um quadro por passo; a faixa preta fica e só a legenda troca
+    // 13. Camila: foto nasce de baixo para cima, nome sobe, o resto chega em cascata
+    // =====================================================================
+    const cenaCamila = document.querySelector('[data-cena-camila]')
+    const fotoCamila = cenaCamila.querySelector('.camila-foto img')
+    const nomeCamila = cenaCamila.querySelector('.nome')
+    const idadeCamila = cenaCamila.querySelector('.idade')
+    const tracosCamila = [...cenaCamila.querySelectorAll('.camila-traco')]
+    Object.assign(cenaCamila, { _anims: [], _timers: [], _vez: 0 })
+    cenaCamila.addEventListener('entrar', () => {
+      zerar(cenaCamila)
+      tocar(cenaCamila, fotoCamila, [
+        { opacity: 0, clipPath: 'inset(100% 0 0 0)', transform: 'scale(1.08) translateY(4%)' },
+        { opacity: 1, clipPath: 'inset(0% 0 0 0)', transform: 'none' },
+      ], { duration: 1500, delay: 250, easing: EXPO })
+      entrar(nomeCamila, 650)
+      entrar(idadeCamila, 1350)
+      tracosCamila.forEach((t, k) => entrar(t, 1900 + k * 1000))
+    })
+    cenaCamila.addEventListener('saiu', () => {
+      zerar(cenaCamila)
+      ;[nomeCamila, idadeCamila, ...tracosCamila].forEach(zerar)
+    })
+
+    // =====================================================================
+    // 14. Storyboard: um quadro por passo; a faixa preta fica e só a legenda troca
     // =====================================================================
     const cenaStory = document.querySelector('[data-cena-storyboard]')
     const quadros = [...cenaStory.querySelectorAll('.quadros img')]
@@ -2413,7 +2569,7 @@
     }
 
     // =====================================================================
-    // 14. Final
+    // 15. Final
     // =====================================================================
     const cenaFinal = document.querySelector('[data-final]')
     const shaderFinal = criarShader(cenaFinal.querySelector('canvas'))

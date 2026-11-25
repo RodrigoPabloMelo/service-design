@@ -45,3 +45,9 @@ Os celulares na mão da Camila continuam os da imagem original.
 | 06 | `/agente`: saudação da Maré · conversa "Organizar meus 8 rolês" · roteiro de 3 dias com volta de UberX (R$ 42) |
 | 07 | `/agente/chuva`: notificação "Chuva às 16h em Casa Forte" · ajuste pelo clima · troca feita, ida e volta com motorista mulher |
 | 10 | Detalhe do Parraxaxá aberto pelo roteiro (`/agente/chuva` → Trocar → Sex 16h30 Parraxaxá), "Como foi pra você?": folha só do rolê (4,5 · Muito bom e motivos) · "+20 pontos" com "Pronto" |
+
+## Camila (`camila.webp`)
+
+Foto da persona Camila (P-CAMILA), recorte oval com fundo transparente, enviada pelo Rodrigo em 2026-11-25
+(origem e licença a confirmar). Convertida de PNG para WebP (qualidade 86), mesmo tamanho (874 × 1090).
+Usada no slide 13 e na foto que segue o mouse em "Camila" no slide 12.
