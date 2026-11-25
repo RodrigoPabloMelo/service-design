@@ -16,7 +16,7 @@ Na jornada atual ([jornada.md](jornada.md)), ela responde principalmente a `E-05
 cd prototype/app && fvm flutter run -d chrome -t lib/main_design.dart
 ```
 
-Publicado na Vercel em <https://service-design-three.vercel.app/agente>. A Vercel builda sozinha a cada push na `main` ([`vercel.json`](../vercel.json) chama [`tool/vercel_build.sh`](../prototype/app/tool/vercel_build.sh)). O script baixa o Flutter do `.fvmrc`, roda analyze e testes e gera o build web. Ramos que não são a `main` ganham um preview.
+Publicado na Vercel em <https://coral-services-three.vercel.app/agente> (a raiz abre na primeira tela do app; o pitch fica em `/pitch`). A Vercel builda sozinha a cada push na `main` ([`vercel.json`](../vercel.json) chama [`tool/vercel_build.sh`](../prototype/app/tool/vercel_build.sh)). O script baixa o Flutter do `.fvmrc`, roda analyze e testes e gera o build web. Ramos que não são a `main` ganham um preview.
 
 Abra `/explorar` (home, abre por padrão) ou `/agente`. Momentos da narrativa: `/agente/chuva` (cena 5, alerta de chuva já em Recife), `/avaliar` (cena 8, pedido de avaliação) e `/carteira`. Cenários da home (`ExploreScenario`): `padrao`, `carregando`, `erro`. Cenários do agente (`TravelAgentScenario`): `padrao` (8 rolês salvos), `vazio` (começo do zero), `erro`, `carregando`, `chuva` (roteiro pronto + notificação de chuva).
 

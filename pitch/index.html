@@ -521,7 +521,31 @@
       letter-spacing: -0.01em;
       word-spacing: 0.06em;
       text-shadow: 0 2px 24px rgb(0 0 0 / 0.18);
+      transform-origin: 50% 0;
     }
+    /* Passo 1 do final: a marca e a tagline sobem e encolhem; o QR do app aparece no centro. */
+    .marca, .tagline { transition: top 1.1s var(--ease-saida), width 1.1s var(--ease-saida), scale 1.1s var(--ease-saida); }
+    [data-final][data-passo="1"] .marca { top: 21vh; width: min(19vw, 310px); }
+    [data-final][data-passo="1"] .tagline { top: calc(21vh + min(19vw, 310px) * 0.129 + 2vh); scale: 0.78; }
+    .qr {
+      position: absolute;
+      left: 50%;
+      top: 56%;
+      translate: -50% -50%;
+      display: grid;
+      justify-items: center;
+      gap: 1.8vh;
+      color: #fff;
+      text-decoration: none;
+      opacity: 0;
+      filter: blur(14px);
+      scale: 0.94;
+      pointer-events: none;
+      transition: opacity 0.8s var(--ease-saida), filter 0.8s var(--ease-saida), scale 0.9s var(--ease-saida);
+    }
+    [data-final][data-passo="1"] .qr { opacity: 1; filter: blur(0); scale: 1; pointer-events: auto; transition-delay: 0.25s; }
+    .qr svg { display: block; width: min(34vh, 26vw); height: auto; background: #fff; border-radius: 6%; box-shadow: 0 10px 40px rgb(0 0 0 / 0.18); }
+    .qr span { font-size: clamp(0.95rem, 1.25vw, 1.45rem); font-weight: 500; letter-spacing: -0.005em; text-shadow: 0 2px 20px rgb(0 0 0 / 0.18); }
 
     /*
       ---------- Storyboard: o quadro ocupa a tela e a legenda fica num bloco preto na largura toda ----------
@@ -783,6 +807,8 @@
       .anel { transition: none !important; }
       #luz i, #grao, .vazado, .flutua { animation: none !important; }
       .quadros img { transition: opacity 0.3s !important; filter: none !important; transform: none !important; }
+      .marca, .tagline, .qr { transition-duration: 0.3s !important; transition-delay: 0s !important; }
+      .qr { filter: none !important; scale: 1 !important; }
       .bp-cabeca, .bp-corpo { transition: none !important; }
     }
   </style>
@@ -1010,8 +1036,11 @@
       </div>
     </section>
 
-    <!-- 14. Final: o logo sobre cor viva, como os destinos. Aparece no lugar, saindo do desfoque. -->
-    <section class="momento" data-passos="0" data-final>
+    <!--
+      14. Final: o logo sobre cor viva, como os destinos. Aparece no lugar, saindo do desfoque, e a tagline vem
+      embaixo. Passo 1: marca e tagline sobem e encolhem e o QR do app (raiz do deploy, abre na primeira tela) aparece.
+    -->
+    <section class="momento" data-passos="1" data-final>
       <canvas class="shader fundo" data-semente="0"></canvas>
       <svg class="marca" viewBox="0 0 1431 369" role="img" aria-label="Coral">
         <path d="M171.986 18.432C213.022 16.541 277.578 32.752 298.663 74.284C309.24 95.117 294.071 125.266 272.287 132.798C247.022 141.535 238.545 127.239 218.601 115.658C148.307 79.521 75.14 150.098 100.575 222.18C107.59 241.996 123.404 259.127 142.96 267.735C170.38 279.753 202.187 275.716 225.736 257.231C235.215 249.876 242.645 240.95 254.178 236.559C264.259 232.761 275.437 233.125 285.25 237.571C298.388 243.508 305.135 253.769 310.093 266.702C313.311 282.941 310.565 298.294 299.226 310.995C235.41 382.472 133.698 386.6 60.688 326.144C26.888 298.21 5.47299 258.069 1.09499 214.439C-3.22801 168.018 14.604 120.087 44.245 84.622C77.503 44.829 120.678 23.081 171.986 18.432Z" />
@@ -1021,6 +1050,10 @@
         <path d="M1247.42 6.23201C1251.72 6.08601 1255.77 5.91101 1260.02 6.71801C1277.8 10.256 1292.31 23.062 1298.02 40.261C1302.68 53.853 1301.52 74.049 1301.5 88.89L1301.3 175.725C1301.25 202.249 1295.32 254.556 1330.03 263.875C1345.28 267.966 1358.63 257.284 1372.09 251.67C1404.22 238.272 1436.34 268.221 1429.84 301.213C1425.6 323.154 1405.37 338.121 1387.96 349.719C1376.2 357.043 1363.19 362.148 1349.59 364.783C1263.2 381.494 1202.02 312.606 1203.01 231.181C1203.12 222.13 1203.01 212.876 1203.03 203.801L1203.12 134.361C1203.08 107.495 1202.05 79.633 1203.56 52.897C1204.97 28.082 1224.03 10.686 1247.42 6.23201Z" />
       </svg>
       <p class="tagline" data-coreo="desfoque">Viaje segura. Experimente o novo</p>
+      <a class="qr" href="https://coral-services-three.vercel.app/" target="_blank" rel="noopener" aria-label="QR code para abrir a Coral: coral-services-three.vercel.app">
+        <svg viewBox="-4 -4 41 41" shape-rendering="crispEdges" aria-hidden="true"><path fill="#131416" d="M0 0h7v1h-7zM13 0h1v1h-1zM16 0h2v1h-2zM21 0h2v1h-2zM24 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM11 1h1v1h-1zM15 1h1v1h-1zM18 1h2v1h-2zM24 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h1v1h-1zM11 2h3v1h-3zM16 2h1v1h-1zM19 2h3v1h-3zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h6v1h-6zM18 3h1v1h-1zM20 3h2v1h-2zM23 3h2v1h-2zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM11 4h1v1h-1zM13 4h1v1h-1zM15 4h1v1h-1zM17 4h1v1h-1zM22 4h1v1h-1zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h1v1h-1zM12 5h1v1h-1zM15 5h1v1h-1zM18 5h2v1h-2zM23 5h2v1h-2zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h1v1h-1zM11 7h4v1h-4zM22 7h2v1h-2zM1 8h1v1h-1zM3 8h4v1h-4zM8 8h3v1h-3zM15 8h1v1h-1zM17 8h2v1h-2zM23 8h4v1h-4zM28 8h2v1h-2zM31 8h1v1h-1zM0 9h1v1h-1zM2 9h2v1h-2zM5 9h1v1h-1zM7 9h1v1h-1zM9 9h1v1h-1zM15 9h1v1h-1zM17 9h3v1h-3zM23 9h1v1h-1zM28 9h4v1h-4zM3 10h1v1h-1zM5 10h2v1h-2zM8 10h1v1h-1zM11 10h1v1h-1zM13 10h2v1h-2zM16 10h1v1h-1zM21 10h1v1h-1zM23 10h1v1h-1zM25 10h2v1h-2zM28 10h5v1h-5zM4 11h1v1h-1zM7 11h2v1h-2zM10 11h2v1h-2zM13 11h1v1h-1zM15 11h1v1h-1zM18 11h2v1h-2zM22 11h4v1h-4zM27 11h1v1h-1zM30 11h1v1h-1zM0 12h1v1h-1zM2 12h1v1h-1zM4 12h6v1h-6zM13 12h1v1h-1zM16 12h2v1h-2zM19 12h1v1h-1zM23 12h2v1h-2zM26 12h2v1h-2zM31 12h1v1h-1zM0 13h3v1h-3zM4 13h2v1h-2zM8 13h1v1h-1zM10 13h5v1h-5zM18 13h3v1h-3zM22 13h3v1h-3zM27 13h1v1h-1zM30 13h1v1h-1zM0 14h1v1h-1zM5 14h3v1h-3zM11 14h1v1h-1zM15 14h2v1h-2zM19 14h2v1h-2zM22 14h1v1h-1zM24 14h1v1h-1zM26 14h2v1h-2zM5 15h1v1h-1zM8 15h5v1h-5zM16 15h1v1h-1zM20 15h1v1h-1zM25 15h1v1h-1zM27 15h4v1h-4zM32 15h1v1h-1zM5 16h2v1h-2zM8 16h1v1h-1zM10 16h2v1h-2zM13 16h3v1h-3zM17 16h1v1h-1zM20 16h1v1h-1zM22 16h1v1h-1zM24 16h6v1h-6zM1 17h5v1h-5zM9 17h2v1h-2zM12 17h1v1h-1zM14 17h1v1h-1zM16 17h1v1h-1zM19 17h2v1h-2zM22 17h1v1h-1zM26 17h1v1h-1zM28 17h1v1h-1zM30 17h1v1h-1zM32 17h1v1h-1zM3 18h4v1h-4zM9 18h1v1h-1zM14 18h3v1h-3zM18 18h2v1h-2zM21 18h7v1h-7zM29 18h2v1h-2zM32 18h1v1h-1zM2 19h1v1h-1zM8 19h3v1h-3zM12 19h1v1h-1zM16 19h1v1h-1zM19 19h2v1h-2zM23 19h3v1h-3zM28 19h5v1h-5zM0 20h1v1h-1zM4 20h1v1h-1zM6 20h2v1h-2zM11 20h1v1h-1zM14 20h1v1h-1zM16 20h3v1h-3zM22 20h1v1h-1zM24 20h1v1h-1zM29 20h1v1h-1zM0 21h4v1h-4zM5 21h1v1h-1zM7 21h1v1h-1zM10 21h2v1h-2zM14 21h2v1h-2zM18 21h1v1h-1zM22 21h2v1h-2zM27 21h4v1h-4zM0 22h1v1h-1zM4 22h3v1h-3zM9 22h2v1h-2zM13 22h2v1h-2zM18 22h6v1h-6zM26 22h3v1h-3zM30 22h3v1h-3zM0 23h1v1h-1zM3 23h1v1h-1zM8 23h2v1h-2zM12 23h3v1h-3zM16 23h5v1h-5zM23 23h1v1h-1zM25 23h3v1h-3zM30 23h1v1h-1zM0 24h2v1h-2zM4 24h5v1h-5zM10 24h3v1h-3zM16 24h2v1h-2zM20 24h1v1h-1zM23 24h7v1h-7zM31 24h1v1h-1zM8 25h1v1h-1zM10 25h1v1h-1zM12 25h6v1h-6zM21 25h4v1h-4zM28 25h1v1h-1zM30 25h1v1h-1zM0 26h7v1h-7zM10 26h4v1h-4zM15 26h1v1h-1zM19 26h1v1h-1zM23 26h2v1h-2zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h4v1h-4zM14 27h1v1h-1zM16 27h1v1h-1zM18 27h2v1h-2zM23 27h2v1h-2zM28 27h5v1h-5zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h3v1h-3zM16 28h1v1h-1zM18 28h1v1h-1zM20 28h2v1h-2zM23 28h6v1h-6zM31 28h1v1h-1zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h2v1h-2zM11 29h2v1h-2zM15 29h1v1h-1zM17 29h2v1h-2zM22 29h1v1h-1zM25 29h1v1h-1zM27 29h1v1h-1zM30 29h1v1h-1zM32 29h1v1h-1zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM10 30h2v1h-2zM13 30h2v1h-2zM17 30h4v1h-4zM22 30h1v1h-1zM25 30h1v1h-1zM27 30h2v1h-2zM30 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h3v1h-3zM12 31h2v1h-2zM17 31h1v1h-1zM19 31h2v1h-2zM25 31h4v1h-4zM30 31h3v1h-3zM0 32h7v1h-7zM10 32h1v1h-1zM13 32h1v1h-1zM16 32h1v1h-1zM19 32h2v1h-2zM23 32h2v1h-2zM26 32h3v1h-3z" /></svg>
+        <span>Acesse a plataforma</span>
+      </a>
     </section>
 
     <canvas class="aquarela" hidden aria-hidden="true"></canvas>
