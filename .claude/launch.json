@@ -6,6 +6,12 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["prototype/app/tool/run_web.mjs"],
       "port": 8080
+    },
+    {
+      "name": "pitch-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8090", "--bind", "127.0.0.1"],
+      "port": 8090
     }
   ]
 }

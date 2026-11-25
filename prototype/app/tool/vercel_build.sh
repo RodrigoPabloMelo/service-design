@@ -25,3 +25,9 @@ FLUTTER="$SDK/bin/flutter"
 "$FLUTTER" test
 # Na Vercel o app mora na raiz do domínio: base href padrão (/).
 "$FLUTTER" build web --release -t lib/main_design.dart
+
+# Pitch da Coral (HTML/CSS/JS puro, pasta pitch/ na raiz do repo): vai junto
+# no mesmo deploy, em /pitch (rewrites no vercel.json).
+rm -rf build/web/pitch
+cp -R ../../pitch build/web/pitch
+find build/web/pitch -name '*.md' -delete   # direção e créditos ficam só no repo

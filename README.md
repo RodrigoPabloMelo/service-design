@@ -9,7 +9,8 @@ Repositório central de documentação de service design do projeto: fluxos, dia
 | [`docs/`](docs/) | Documentação: visão do serviço, decisões, specs, glossário — **fonte de verdade** |
 | [`diagrams/`](diagrams/) | Blueprints, jornadas, fluxos, arquitetura (Mermaid, SVG, exports do Figma/Miro) |
 | [`research/`](research/) | Pesquisa com usuários: roteiros, notas, sínteses |
-| [`prototype/app/`](prototype/app/README.md) | Protótipo navegável em Flutter web (Maré, agente de roteiros). O que cobre: [`docs/prototipo.md`](docs/prototipo.md) |
+| [`prototype/app/`](prototype/app/README.md) | Protótipo navegável em Flutter web (app da Coral; Maré é a assistente de IA). O que cobre: [`docs/prototipo.md`](docs/prototipo.md) |
+| [`pitch/`](pitch/DIRECAO.md) | Pitch da Coral em HTML/CSS/JS, publicado em `/pitch` no mesmo deploy do protótipo |
 | [`assets/`](assets/) | Imagens, screenshots e arquivos de apoio |
 
 ## Convenções
