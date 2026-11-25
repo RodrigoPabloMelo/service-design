@@ -8,7 +8,9 @@
   <title>Coral · pitch</title>
   <meta name="description" content="Pitch da Coral." />
   <meta id="cor-tema" name="theme-color" content="#ffffff" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <!-- Só fontes do app: Plus Jakarta Sans (com a itálica), variável de 200 a 800. -->
@@ -470,8 +472,9 @@
 
     /*
       ---------- Transição em aquarela (7 → 8) ----------
-      O slide 8 entra por cima, mas só aparece dentro das manchas de tinta (máscara desenhada num canvas fora
-      da tela); o "Apresentamos", com o branco e a luz do palco, fica intacto até ser todo coberto.
+      Um canvas WebGL por cima do 7 desenha o 8 (vídeo do mar em tela cheia e marca branca) só dentro das manchas
+      de tinta; o "Apresentamos", com o branco e a luz do palco, fica intacto até ser todo coberto. O 8 de verdade
+      já está ativo, escondido e parado por baixo, e aparece no lugar quando a tinta cobre tudo.
     */
     .momento[data-aquarela] {
       opacity: 1 !important;
@@ -480,15 +483,14 @@
       transition: none !important;
     }
     .momento[data-chegada-seca] {
-      z-index: 3;
+      opacity: 0 !important;
       transition: none !important;
       filter: none !important;
       transform: none !important;
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
-      -webkit-mask-repeat: no-repeat;
-      mask-repeat: no-repeat;
     }
+    .momento[data-chegada-seca] .vazado { animation-play-state: paused; }
+    .aquarela { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; }
+    .aquarela[hidden] { display: none; }
 
     /* ---------- Final: a marca sobre cor viva ---------- */
     .shader.fundo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
@@ -503,6 +505,255 @@
       filter: drop-shadow(0 6px 40px rgb(0 0 0 / 0.14));
     }
     .marca path { transform-box: fill-box; transform-origin: center; }
+    /* Tagline: entra do desfoque, palavra por palavra, logo depois da marca (metade da altura do logo + respiro). */
+    .tagline {
+      position: absolute;
+      left: 50%;
+      top: calc(50% + min(34vw, 560px) * 0.129 + 3.2vh);
+      translate: -50% 0;
+      width: max-content;
+      max-width: 88vw;
+      margin: 0;
+      text-align: center;
+      color: #fff;
+      font-weight: 400;
+      font-size: clamp(1.1rem, 1.7vw, 2rem);
+      letter-spacing: -0.01em;
+      word-spacing: 0.06em;
+      text-shadow: 0 2px 24px rgb(0 0 0 / 0.18);
+    }
+
+    /*
+      ---------- Storyboard: o quadro ocupa a tela e a legenda fica num bloco preto na largura toda ----------
+      Um momento só, com um passo por quadro: a faixa preta fica parada, os quadros trocam e a legenda muda.
+    */
+    [data-cena-storyboard] { display: flex; flex-direction: column; background: #000; }
+    .quadros { position: relative; flex: 1; overflow: hidden; }
+    .quadros img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 45%;
+      opacity: 0;
+      filter: blur(12px);
+      transform: scale(1.05);
+      transition:
+        opacity 0.9s var(--ease-saida),
+        filter 0.9s var(--ease-saida),
+        transform 9s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+    /* Entra do desfoque e afasta devagar, como um quadro de filme. */
+    .quadros img[data-ativa] { opacity: 1; filter: blur(0); transform: none; }
+    .legenda-faixa {
+      position: relative;
+      flex: none;
+      min-height: 15vh;
+      background: #000;
+      color: #fff;
+    }
+    .legenda-faixa p {
+      position: absolute;
+      left: 5vw;
+      right: 5vw;
+      top: 50%;
+      translate: 0 -50%;
+      margin: 0;
+      max-width: 58em;
+      font-weight: 300;
+      font-size: clamp(1.1rem, 1.9vw, 2.1rem);
+      line-height: 1.3;
+      letter-spacing: -0.015em;
+      word-spacing: 0.08em;
+      text-wrap: pretty;
+    }
+
+    /*
+      ---------- Diagramas do serviço: mapa do sistema e blueprint ----------
+      Fontes: diagrams/ecossistema.html (com docs/ecossistema.md) e diagrams/blueprint.html (v2, D-23). Mudou lá,
+      mude aqui. Só a Jakarta e as cores do pitch; no mapa, o azul marca o dinheiro (lá era um rosa).
+    */
+    [data-cena-mapa], [data-cena-blueprint] {
+      --zona: #f2f2f5;
+      --cartao: #f2f2f5;
+      --fio: rgb(19 20 22 / 0.09);
+      --traco: rgb(19 20 22 / 0.68);
+    }
+    :root[data-tema="escuro"] :is([data-cena-mapa], [data-cena-blueprint]) {
+      --zona: #131416;
+      --cartao: #18191b;
+      --fio: rgb(242 242 245 / 0.12);
+      --traco: rgb(242 242 245 / 0.7);
+    }
+    .rotulo-diagrama {
+      position: absolute;
+      left: 4vw;
+      top: 4.2vh;
+      margin: 0;
+      font-size: clamp(0.85rem, 1.05vw, 1.3rem);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: var(--texto-2);
+    }
+
+    /* Mapa do sistema: o SVG do repositório, redesenhado nas cores do pitch. */
+    .mapa {
+      position: absolute;
+      left: 50%;
+      top: 53%;
+      translate: -50% -50%;
+      width: min(92vw, 136vh);
+      margin: 0;
+    }
+    .mapa-svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .mapa-svg text { font-family: var(--fonte); }
+    .zona { fill: var(--zona); }
+    .zona-nome { font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; fill: var(--texto-2); }
+    .pilar { stroke: var(--texto-3); stroke-width: 2; stroke-linecap: round; }
+    .ator { transform-box: fill-box; transform-origin: center; transition: opacity 0.35s var(--ease); }
+    .ator .disco { fill: var(--fundo); stroke: var(--texto-3); stroke-width: 1; }
+    .ator .glifo { color: var(--texto); }
+    .ator .glifo * { fill: none; stroke: currentColor; stroke-width: 1.25; stroke-linecap: round; stroke-linejoin: round; }
+    .ator .nome { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; fill: var(--texto); text-anchor: middle; }
+    .ator .sub { font-size: 13px; fill: var(--texto-2); text-anchor: middle; }
+    .ator :is(.nome, .sub) { paint-order: stroke; stroke: var(--zona); stroke-width: 6px; stroke-linejoin: round; }
+    .ator.no-fundo :is(.nome, .sub) { stroke: var(--fundo); }
+    .ator.nucleo .disco { fill: var(--texto); stroke: none; }
+    .ator.nucleo .glifo { color: var(--fundo); }
+    .ator.nucleo .marca-nucleo path { fill: var(--texto); }
+    .ator.viajante .disco { stroke: var(--texto); stroke-width: 1.25; }
+    .aresta { transition: opacity 0.35s var(--ease); }
+    .aresta .ln { fill: none; stroke-width: 1.5; }
+    .aresta[data-tipo="info"] .ln { stroke: var(--traco); stroke-dasharray: 6 5; }
+    .aresta[data-tipo="fin"] .ln { stroke: var(--azul); stroke-width: 2; }
+    .aresta[data-tipo="mat"] .ln { stroke: var(--texto-2); stroke-dasharray: 0.1 5.5; stroke-linecap: round; stroke-width: 2.75; }
+    .aresta .ponta { stroke: none; transition: opacity 0.25s var(--ease); }
+    .aresta[data-tipo="info"] .ponta { fill: var(--traco); }
+    .aresta[data-tipo="fin"] .ponta { fill: var(--azul); }
+    .aresta[data-tipo="mat"] .ponta { fill: var(--texto-2); }
+    .aresta .rot {
+      font-size: 13px;
+      fill: var(--texto-2);
+      text-anchor: middle;
+      paint-order: stroke;
+      stroke: var(--fundo);
+      stroke-width: 8px;
+      stroke-linejoin: round;
+    }
+    .aresta .rot.na-zona { stroke: var(--zona); }
+    .aresta[data-tipo="fin"] .rot { fill: var(--azul-texto); }
+    /* Passar o mouse num ator ou num item da legenda: o resto recua. */
+    .mapa[data-foco] .aresta:not(.em-foco) { opacity: 0.1; }
+    .mapa[data-foco] .ator:not(.em-foco) { opacity: 0.3; }
+    .mapa-legenda {
+      list-style: none;
+      margin: 1.4vh 0 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6em 2.4em;
+      font-size: clamp(0.8rem, 0.95vw, 1.15rem);
+      font-weight: 500;
+      color: var(--texto);
+    }
+    .mapa-legenda li { display: inline-flex; align-items: center; gap: 0.7em; transition: opacity 0.35s var(--ease); }
+    .mapa-legenda svg { width: 2.2em; height: 0.75em; overflow: visible; }
+    .mapa-legenda [data-tipo="info"] line { stroke: var(--traco); stroke-width: 2.25; stroke-dasharray: 7 6; }
+    .mapa-legenda [data-tipo="fin"] line { stroke: var(--azul); stroke-width: 2.5; }
+    .mapa-legenda [data-tipo="mat"] line { stroke: var(--texto-2); stroke-width: 3.25; stroke-linecap: round; stroke-dasharray: 0.1 7; }
+    .mapa[data-foco] .mapa-legenda li:not(.em-foco) { opacity: 0.35; }
+
+    /*
+      Blueprint: montado do DATA de diagrams/blueprint.html numa largura fixa de desenho (1880 px) e escalado
+      por uma "câmera". Passo 0: inteiro. Passos 1 a 3: uma faixa por vez em leitura, com as etapas presas no topo.
+    */
+    .bp-janela { position: absolute; left: 4vw; right: 4vw; top: 9.5vh; bottom: 3.5vh; overflow: hidden; }
+    [data-cena-blueprint][data-passo] .bp-janela {
+      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 4vh), transparent);
+      mask-image: linear-gradient(to bottom, #000 calc(100% - 4vh), transparent);
+    }
+    .bp-cabeca, .bp-corpo {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1880px;
+      transform-origin: 0 0;
+      transition: transform 1.1s var(--ease-saida);
+    }
+    .bp-cabeca { z-index: 2; background: var(--fundo); }
+    .bp-sem-transicao :is(.bp-cabeca, .bp-corpo) { transition: none; }
+    .bp-grade { position: relative; display: grid; grid-template-columns: 170px repeat(8, minmax(0, 1fr)); }
+    .bp-fronteira { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1.5px dashed var(--texto-3); pointer-events: none; }
+    .bp-fase {
+      margin-right: 14px;
+      padding: 0 0 12px 20px;
+      border-bottom: 2px solid var(--texto);
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--texto);
+    }
+    .bp-etapa { padding: 22px 16px 20px 0; }
+    .bp-num { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; color: var(--azul-texto); font-variant-numeric: tabular-nums; }
+    .bp-nome { display: block; font-size: 22px; font-weight: 600; line-height: 1.18; letter-spacing: -0.015em; text-wrap: balance; transition: color 0.3s var(--ease); }
+    .bp-rotulo {
+      padding: 21px 18px 0 0;
+      border-top: 1px solid var(--fio);
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1.4;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--texto-2);
+    }
+    .bp-cabeca .bp-rotulo { border-top: 0; padding-top: 24px; }
+    .bp-celula { padding: 20px 16px 22px 0; border-top: 1px solid var(--fio); }
+    .bp-sem-fio { border-top: 0; }
+    .bp-linha { grid-column: 1 / -1; position: relative; height: 44px; }
+    .bp-linha::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1.5px dashed var(--texto-3); }
+    .bp-linha span {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      translate: 0 -50%;
+      padding-right: 14px;
+      background: var(--fundo);
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--texto-2);
+    }
+    .bp-itens { list-style: none; margin: 0; padding: 0; }
+    .bp-itens li { position: relative; margin-bottom: 8px; padding-left: 14px; font-size: 17px; line-height: 1.32; }
+    .bp-itens li::before {
+      content: "";
+      position: absolute;
+      left: 1px;
+      top: 0.6em;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--texto-2);
+    }
+    .bp-chips { display: flex; flex-wrap: wrap; gap: 7px 6px; }
+    .bp-chip { padding: 6px 12px; border-radius: 999px; background: var(--cartao); font-size: 15px; white-space: nowrap; }
+    .bp-texto { margin: 0; font-size: 17px; line-height: 1.32; }
+    .bp-cartao { margin-bottom: 7px; padding: 9px 12px; border-radius: 12px; background: var(--cartao); font-size: 16px; line-height: 1.3; }
+    /* O que ainda é pergunta (termina em "?") fica tracejado: questão em aberto, não decisão. */
+    .bp-aberto { background: transparent; box-shadow: inset 0 0 0 1.5px var(--texto-3); color: var(--texto-2); }
+    .bp-texto.bp-aberto { box-shadow: none; }
+    /* Faixa fora de leitura e coluna fora do mouse recuam (as duas coisas se somam). */
+    .bp-corpo [data-faixa], .bp-cabeca [data-col] {
+      opacity: calc(var(--of, 1) * var(--oc, 1));
+      transition: opacity 0.5s var(--ease);
+    }
+    [data-cena-blueprint][data-passo="1"] .bp-corpo [data-faixa]:not([data-faixa~="1"]),
+    [data-cena-blueprint][data-passo="2"] .bp-corpo [data-faixa]:not([data-faixa~="2"]),
+    [data-cena-blueprint][data-passo="3"] .bp-corpo [data-faixa]:not([data-faixa~="3"]) { --of: 0.14; }
+    .bp-fora { --oc: 0.3; }
+    .bp-em-foco .bp-nome { color: var(--azul-texto); }
 
     /* ---------- Cursor próprio: anel fino que some parado ---------- */
     :root.cursor-proprio, :root.cursor-proprio * { cursor: none; }
@@ -531,6 +782,8 @@
       .legenda { filter: none !important; transform: none !important; transition: opacity 0.3s !important; }
       .anel { transition: none !important; }
       #luz i, #grao, .vazado, .flutua { animation: none !important; }
+      .quadros img { transition: opacity 0.3s !important; filter: none !important; transform: none !important; }
+      .bp-cabeca, .bp-corpo { transition: none !important; }
     }
   </style>
 </head>
@@ -626,7 +879,138 @@
       </div>
     </section>
 
-    <!-- 10. Final: o logo sobre cor viva, como os destinos. Aparece no lugar, saindo do desfoque. -->
+    <!--
+      10. Mapa do sistema (fonte: diagrams/ecossistema.html e docs/ecossistema.md, atores A-1 a A-7). Ao entrar,
+      os atores aparecem e os fluxos se desenham; passar o mouse num ator ou num item da legenda destaca os fluxos
+      dele. Adaptação: o Grupo (A-2, a equipe que faz a curadoria) aparece com a marca da Coral.
+    -->
+    <section class="momento" data-passos="0" data-cena-mapa aria-label="Mapa do sistema">
+      <p class="rotulo-diagrama">Mapa do sistema</p>
+      <figure class="mapa">
+        <svg class="mapa-svg" viewBox="0 50 1200 690" role="img" aria-label="Mapa do sistema: locais e prestadores enviam informação à Coral, que faz a curadoria e alimenta o app; a viajante usa o app antes, durante e depois da viagem, paga planos e pacotes à Coral e o rolê ao prestador, que paga comissão à Coral; a Coral dá crédito e desconto a quem recomenda.">
+          <rect class="zona" x="20" y="64" width="300" height="610" rx="28" />
+          <text class="zona-nome" x="44" y="96">Parceiros externos</text>
+          <rect class="zona" x="615" y="64" width="570" height="610" rx="28" />
+          <text class="zona-nome" x="639" y="96">Usuária</text>
+          <line class="pilar" x1="470" y1="124" x2="470" y2="620" />
+          <text class="zona-nome" x="470" y="96" text-anchor="middle">Fronteira</text>
+
+          <!-- Fluxos: tipo, de → para (IDs de docs/ecossistema.md). As pontas de seta saem do script. -->
+          <g class="aresta" data-tipo="info" data-de="A-1" data-para="A-2"><path class="ln" d="M207,505 Q340,495 437,393" /><text class="rot" x="331" y="477">recomendação</text></g>
+          <g class="aresta" data-tipo="fin" data-de="A-2" data-para="A-1"><path class="ln" d="M426,372 Q240,370 170,476" /><text class="rot na-zona" x="252" y="397">crédito e desconto</text></g>
+          <g class="aresta" data-tipo="info" data-de="A-6" data-para="A-2"><path class="ln" d="M207,197 Q330,250 437,327" /><text class="rot" x="384" y="270">oferta do rolê</text></g>
+          <g class="aresta" data-tipo="fin" data-de="A-6" data-para="A-2"><path class="ln" d="M214,170 Q450,165 462,312" /><text class="rot" x="372" y="187">comissão</text></g>
+          <g class="aresta" data-tipo="mat" data-de="A-2" data-para="A-3"><path class="ln" d="M505,330 Q620,225 737,332" /><text class="rot na-zona" x="676" y="290">bugs e updates</text></g>
+          <g class="aresta" data-tipo="info" data-de="A-2" data-para="A-3"><path class="ln" d="M518,360 L726,360" /><text class="rot" x="621" y="365">curadoria</text></g>
+          <g class="aresta" data-tipo="fin" data-de="A-4" data-para="A-2"><path class="ln" d="M1006,160 Q620,90 493,318" /><text class="rot na-zona" x="700" y="166">planos e pacotes</text></g>
+          <g class="aresta" data-tipo="info" data-de="A-3" data-para="A-4"><path class="ln" d="M800,330 Q880,230 1019,191" /><text class="rot na-zona" x="895" y="250">recomendações</text></g>
+          <g class="aresta" data-tipo="info" data-de="A-3" data-para="A-5" data-dupla><path class="ln" d="M803,388 Q880,490 1019,529" /><text class="rot na-zona" x="896" y="479">roteiro e ajustes</text></g>
+          <g class="aresta" data-tipo="info" data-de="A-7" data-para="A-3"><path class="ln" d="M1036,360 L814,360" /><text class="rot na-zona" x="925" y="365">avaliação</text></g>
+          <g class="aresta" data-tipo="fin" data-de="A-5" data-para="A-6"><path class="ln" d="M1094,560 H1150 Q1170,560 1170,580 V685 Q1170,705 1150,705 H60 Q40,705 40,685 V195 Q40,175 60,175 H126" /><text class="rot" x="600" y="710">paga o rolê, no app ou no local</text></g>
+
+          <!-- Atores: disco, pictograma (Hugeicons, MIT, preenchido pelo script) e nome. -->
+          <g class="ator" data-ator="A-6">
+            <circle class="disco" cx="170" cy="175" r="36" />
+            <g class="glifo" data-glifo="loja" transform="translate(153 158) scale(1.4167)"></g>
+            <text class="nome" x="170" y="242">Prestador(a)</text>
+            <text class="sub" x="170" y="260">restaurante, transporte</text>
+          </g>
+          <g class="ator" data-ator="A-1">
+            <circle class="disco" cx="170" cy="520" r="36" />
+            <g class="glifo" data-glifo="local" transform="translate(153 503) scale(1.4167)"></g>
+            <text class="nome" x="170" y="587">Local</text>
+            <text class="sub" x="170" y="605">moradora ou criadora</text>
+          </g>
+          <g class="ator nucleo no-fundo" data-ator="A-2">
+            <circle class="disco" cx="470" cy="360" r="43" />
+            <g class="glifo" data-glifo="grupo" transform="translate(451 341) scale(1.5833)"></g>
+            <g class="marca-nucleo" transform="translate(434 417) scale(0.0503)" role="img" aria-label="Coral"></g>
+            <text class="sub" x="470" y="452">faz a curadoria</text>
+          </g>
+          <g class="ator" data-ator="A-3">
+            <circle class="disco" cx="770" cy="360" r="36" />
+            <g class="glifo" data-glifo="celular" transform="translate(753 343) scale(1.4167)"></g>
+            <text class="nome" x="770" y="427">App</text>
+            <text class="sub" x="770" y="445">reúne o curado</text>
+          </g>
+          <g class="ator viajante" data-ator="A-4">
+            <circle class="disco" cx="1050" cy="160" r="36" />
+            <g class="glifo" data-glifo="mulher" transform="translate(1033 143) scale(1.4167)"></g>
+            <text class="nome" x="1050" y="232">Antes</text>
+            <text class="sub" x="1050" y="250">planeja o roteiro</text>
+          </g>
+          <g class="ator viajante" data-ator="A-7">
+            <circle class="disco" cx="1080" cy="360" r="36" />
+            <g class="glifo" data-glifo="mulher" transform="translate(1063 343) scale(1.4167)"></g>
+            <text class="nome" x="1080" y="432">Depois</text>
+            <text class="sub" x="1080" y="450">avalia e indica</text>
+          </g>
+          <g class="ator viajante" data-ator="A-5">
+            <circle class="disco" cx="1050" cy="560" r="36" />
+            <g class="glifo" data-glifo="mulher" transform="translate(1033 543) scale(1.4167)"></g>
+            <text class="nome" x="1050" y="632">Durante</text>
+            <text class="sub" x="1050" y="650">visita e paga</text>
+          </g>
+        </svg>
+        <ul class="mapa-legenda" aria-label="Legenda">
+          <li data-tipo="info"><svg viewBox="0 0 30 10" aria-hidden="true"><line x1="1" y1="5" x2="29" y2="5" /></svg>Informação</li>
+          <li data-tipo="fin"><svg viewBox="0 0 30 10" aria-hidden="true"><line x1="1" y1="5" x2="29" y2="5" /></svg>Financeiro</li>
+          <li data-tipo="mat"><svg viewBox="0 0 30 10" aria-hidden="true"><line x1="3" y1="5" x2="28" y2="5" /></svg>Material</li>
+        </ul>
+      </figure>
+    </section>
+
+    <!--
+      11. Blueprint (fonte: diagrams/blueprint.html, v2, D-23), montado pelo script. Passo 0: inteiro na tela.
+      Passos 1 a 3, uma faixa por vez em leitura, com as etapas presas no topo: a jornada da viajante; a linha de
+      frente e os bastidores; o suporte e os parceiros. Passar o mouse numa coluna destaca a etapa.
+      Adaptação: "agente" vira Maré (D-32). O que termina em "?" segue como questão em aberto (tracejado).
+    -->
+    <section class="momento" data-passos="3" data-cena-blueprint aria-label="Blueprint">
+      <p class="rotulo-diagrama">Blueprint</p>
+      <div class="bp-janela">
+        <div class="bp-corpo"></div>
+        <div class="bp-cabeca"></div>
+      </div>
+    </section>
+
+    <!-- 12. Transição para o storyboard (texto do Rodrigo). -->
+    <section class="momento" data-passos="0" data-brilho="normal" data-cena-transicao>
+      <p class="frase" data-coreo="montar">Vamos acompanhar <em>Camila</em> em uma viagem para Recife.</p>
+    </section>
+
+    <!--
+      13. Storyboard da Camila (P-CAMILA, sozinha, 3 dias em Recife): 10 quadros em tela cheia, um por passo,
+      com a legenda num bloco preto na largura toda. Imagens do Rodrigo (img/storyboard). Legendas são RASCUNHO.
+    -->
+    <section class="momento" data-passos="9" data-cena-storyboard aria-label="Storyboard">
+      <div class="quadros">
+        <img src="img/storyboard/01.jpg" alt="Mulher no sofá olhando no celular um resultado de busca da Coral" decoding="async" />
+        <img src="img/storyboard/02.jpg" alt="Mulher no sofá com o celular; ao lado, a tela inicial da Coral com categorias e rolês da tarde" decoding="async" />
+        <img src="img/storyboard/03.jpg" alt="Mulher no sofá com o celular; ao lado, o rolê Box Vitória Régia indicado por Joana Lima" decoding="async" />
+        <img src="img/storyboard/04.jpg" alt="Mulher no sofá com o celular; ao lado, horário, preço, vídeo curto e selo do rolê" decoding="async" />
+        <img src="img/storyboard/05.jpg" alt="Mulher no sofá com o celular; ao lado, as telas de criar conta e de rolê salvo" decoding="async" />
+        <img src="img/storyboard/06.jpg" alt="Mulher no sofá com o celular; ao lado, a conversa com a Maré montando o roteiro de três dias" decoding="async" />
+        <img src="img/storyboard/07.jpg" alt="Mulher preocupada olhando o celular perto da janela com chuva; ao lado, o aviso de chuva e a troca de rolê" decoding="async" />
+        <img src="img/storyboard/08.jpg" alt="Mulher descendo de um carro com guarda-chuva na chuva, na porta de um restaurante; a motorista sorri" decoding="async" />
+        <img src="img/storyboard/09.jpg" alt="Mulher jantando sorridente num restaurante, com chuva na janela" decoding="async" />
+        <img src="img/storyboard/10.jpg" alt="Mulher na cama com o celular; ao lado, as telas de avaliação do rolê" decoding="async" />
+      </div>
+      <div class="legenda-faixa">
+        <p data-coreo="desfoque" data-ritmo="45">Camila vai passar três dias em Recife. Procura um planejador de viagens e encontra a Coral na busca.</p>
+        <p data-coreo="desfoque" data-ritmo="45">Sem criar conta, ela explora rolês indicados por quem mora na cidade.</p>
+        <p data-coreo="desfoque" data-ritmo="45">Cada rolê diz quem indicou e por quê. O Box Vitória Régia é indicação da Joana, que mora em Casa Forte há 9 anos.</p>
+        <p data-coreo="desfoque" data-ritmo="45">Antes de decidir, ela confere o melhor horário, quanto custa, os vídeos curtos e o selo de rolê seguro.</p>
+        <p data-coreo="desfoque" data-ritmo="45">Para salvar, cria a conta. Os rolês vão para a pasta da viagem.</p>
+        <p data-coreo="desfoque" data-ritmo="45">A Maré organiza os 8 rolês salvos em 3 dias, por bairro, e sugere a volta com motorista mulher.</p>
+        <p data-coreo="desfoque" data-ritmo="45">Na sexta, chove. A Maré avisa e troca o rolê ao ar livre por um coberto, no mesmo bairro, com ida e volta de motorista mulher.</p>
+        <p data-coreo="desfoque" data-ritmo="45">Ela chega ao Parraxaxá com uma motorista parceira.</p>
+        <p data-coreo="desfoque" data-ritmo="45">O plano mudou, a noite continua: comida pernambucana enquanto a chuva passa.</p>
+        <p data-coreo="desfoque" data-ritmo="45">De volta ao apartamento, avalia o rolê em dois toques. A avaliação dela ajuda outras mulheres a decidir.</p>
+      </div>
+    </section>
+
+    <!-- 14. Final: o logo sobre cor viva, como os destinos. Aparece no lugar, saindo do desfoque. -->
     <section class="momento" data-passos="0" data-final>
       <canvas class="shader fundo" data-semente="0"></canvas>
       <svg class="marca" viewBox="0 0 1431 369" role="img" aria-label="Coral">
@@ -636,8 +1020,10 @@
         <path d="M1007.76 20.428C1092.9 15.416 1167.71 73.756 1181.59 157.962C1186.23 190.115 1184.41 224.423 1184.42 257.021C1184.42 280.664 1188.72 322.64 1175.61 341.424C1168.44 351.813 1157.41 358.903 1144.98 361.112C1120.69 365.396 1098.8 349.7 1094.59 325.392C1077.87 341.065 1066.13 349.241 1044.74 358.148C991.27 376.473 939.33 363.436 896.6 327.94C863.59 300.325 842.97 260.678 839.31 217.796C837 192.603 840.47 169.489 848.66 145.671C873.72 72.775 931.53 27.309 1007.76 20.428ZM1017.92 277.002C1065.24 268.912 1097.7 220.213 1089.72 173.518C1086.18 151.88 1074.2 132.53 1056.41 119.71C1040.62 108.54 1022.28 104.603 1003.18 106.227C926.79 118.891 901.1 217.341 963.35 264.129C977.4 274.685 1000.59 280.088 1017.92 277.002Z" />
         <path d="M1247.42 6.23201C1251.72 6.08601 1255.77 5.91101 1260.02 6.71801C1277.8 10.256 1292.31 23.062 1298.02 40.261C1302.68 53.853 1301.52 74.049 1301.5 88.89L1301.3 175.725C1301.25 202.249 1295.32 254.556 1330.03 263.875C1345.28 267.966 1358.63 257.284 1372.09 251.67C1404.22 238.272 1436.34 268.221 1429.84 301.213C1425.6 323.154 1405.37 338.121 1387.96 349.719C1376.2 357.043 1363.19 362.148 1349.59 364.783C1263.2 381.494 1202.02 312.606 1203.01 231.181C1203.12 222.13 1203.01 212.876 1203.03 203.801L1203.12 134.361C1203.08 107.495 1202.05 79.633 1203.56 52.897C1204.97 28.082 1224.03 10.686 1247.42 6.23201Z" />
       </svg>
+      <p class="tagline" data-coreo="desfoque">Viaje segura. Experimente o novo</p>
     </section>
 
+    <canvas class="aquarela" hidden aria-hidden="true"></canvas>
     <div id="grao" aria-hidden="true"></div>
   </main>
   <div class="cursor" aria-hidden="true"></div>
@@ -804,11 +1190,12 @@
     const entradas = {
       // Palavra por palavra, saindo do desfoque (as perguntas sobre a foto em P&B).
       desfoque(el, base) {
+        const ritmo = Number(el.dataset.ritmo) || 140 // legendas longas andam mais rápido
         el._palavras.forEach((p, i) => {
           tocar(el, p.miolo, [
             { opacity: 0, transform: 'translateY(14px)', filter: 'blur(18px)' },
             { opacity: 1, transform: 'none', filter: 'blur(0px)' },
-          ], { duration: 900, delay: base + i * 140, easing: SAIDA })
+          ], { duration: 900, delay: base + i * ritmo, easing: SAIDA })
         })
       },
       // A frase se monta palavra por palavra, linha por linha, sempre centrada (referência Bleap).
@@ -940,6 +1327,8 @@
     }
 
     function avancar() {
+      // Durante a aquarela, avançar só apressa a tinta: o 8 aparece inteiro e a apresentação não pula ele.
+      if (aquarelaAtual) { aquarelaAtual.acelerar(); return }
       const m = momentos[atual]
       if (passo < passosDe(m)) { definirPasso(m, ++passo); return }
       if (atual < momentos.length - 1) mostrar(++atual)
@@ -1199,6 +1588,398 @@
     cenaProposta.addEventListener('saiu', limparProposta)
 
     // =====================================================================
+    // 10. Mapa do sistema: atores aparecem, fluxos se desenham; mouse destaca
+    // =====================================================================
+    const cenaMapa = document.querySelector('[data-cena-mapa]')
+    const mapa = cenaMapa.querySelector('.mapa')
+    const arestas = [...mapa.querySelectorAll('.aresta')]
+    const atores = [...mapa.querySelectorAll('.ator')]
+    const itensLegenda = [...mapa.querySelectorAll('.mapa-legenda li')]
+    const SVG = 'http://www.w3.org/2000/svg'
+
+    // Pictogramas (Hugeicons, MIT, pacote @hugeicons/core-free-icons 4.3.5), iguais aos de diagrams/ecossistema.html.
+    // Entram como caminhos soltos: <use href="#…"> quebraria com o <base href> desta página.
+    const GLIFOS = {
+      loja: ['M3.50002 10V15C3.50002 17.8284 3.50002 19.2426 4.37869 20.1213C5.25737 21 6.67159 21 9.50002 21H14.5C17.3284 21 18.7427 21 19.6213 20.1213C20.5 19.2426 20.5 17.8284 20.5 15V10', 'M17 7.50184C17 8.88255 15.8807 9.99997 14.5 9.99997C13.1193 9.99997 12 8.88068 12 7.49997C12 8.88068 10.8807 9.99997 9.50002 9.99997C8.1193 9.99997 7.00002 8.88068 7.00002 7.49997C7.00002 8.88068 5.82655 9.99997 4.37901 9.99997C3.59984 9.99997 2.90008 9.67567 2.42 9.16087C1.59462 8.2758 2.12561 6.97403 2.81448 5.98842L3.20202 5.45851C4.08386 4.2527 4.52478 3.6498 5.16493 3.32494C5.80508 3.00008 6.55201 3.00018 8.04587 3.00038L15.9551 3.00143C17.4485 3.00163 18.1952 3.00173 18.8351 3.32658C19.475 3.65143 19.9158 4.25414 20.7974 5.45957L21.1855 5.99029C21.8744 6.97589 22.4054 8.27766 21.58 9.16273C21.0999 9.67754 20.4002 10.0018 19.621 10.0018C18.1734 10.0018 17 8.88255 17 7.50184Z', 'M14.9971 17C14.3133 17.6072 13.2247 18 11.9985 18C10.7723 18 9.68376 17.6072 9 17'],
+      local: ['M11.995 13.5663L11 13.5C10.6446 13.5097 10.3134 13.5226 10.0008 13.5379C6.3 13.7193 3.28417 16.8058 3 20.5002', 'M15 6.5A4 4 0 1 1 7 6.5A4 4 0 1 1 15 6.5Z', 'M16.9437 21.3121C15.9563 20.5675 14 18.8652 14 17.3333C14 16.3208 14.7368 15.5 15.75 15.5C16.275 15.5 16.8 15.6765 17.5 16.3823C18.2 15.6765 18.725 15.5 19.25 15.5C20.2632 15.5 21 16.3208 21 17.3333C21 18.8652 19.0437 20.5675 18.0563 21.3121C17.724 21.5626 17.276 21.5626 16.9437 21.3121Z'],
+      grupo: ['M18.4995 20.5C18.2663 17.5685 15.8417 15.2477 12.808 15.0521L11.9995 15C11.7107 15.0076 11.4416 15.0178 11.1877 15.0298C8.18075 15.1723 5.7304 17.5974 5.49951 20.5', 'M15.2495 9.25C15.2495 11.0449 13.7944 12.5 11.9995 12.5C10.2046 12.5 8.74952 11.0449 8.74952 9.25C8.74952 7.45507 10.2046 6 11.9995 6C13.7944 6 15.2495 7.45507 15.2495 9.25Z', 'M5.50249 8.5C5.17908 7.99485 4.99158 7.39432 4.99158 6.75C4.99158 4.95507 6.44665 3.5 8.24157 3.5C8.68752 3.5 9.1125 3.58982 9.49939 3.75235', 'M18.4963 8.5C18.8197 7.99485 19.0072 7.39432 19.0072 6.75C19.0072 4.95507 17.5521 3.5 15.7572 3.5C15.3113 3.5 14.8863 3.58982 14.4994 3.75235', 'M22.0007 17.9996C21.8208 15.7374 19.9995 13.5 17.9995 13', 'M1.99927 17.9996C2.17923 15.7374 4.00049 13.5 6.00049 13'],
+      celular: ['M13.5 2H10.5C8.14298 2 6.96447 2 6.23223 2.73223C5.5 3.46447 5.5 4.64298 5.5 7V17C5.5 19.357 5.5 20.5355 6.23223 21.2678C6.96447 22 8.14298 22 10.5 22H13.5C15.857 22 17.0355 22 17.7678 21.2678C18.5 20.5355 18.5 19.357 18.5 17V7C18.5 4.64298 18.5 3.46447 17.7678 2.73223C17.0355 2 15.857 2 13.5 2Z', 'M12.125 19H12M12.25 19C12.25 19.1381 12.1381 19.25 12 19.25C11.8619 19.25 11.75 19.1381 11.75 19C11.75 18.8619 11.8619 18.75 12 18.75C12.1381 18.75 12.25 18.8619 12.25 19Z'],
+      mulher: ['M14 4C14 5.10457 13.1046 6 12 6C10.8954 6 10 5.10457 10 4C10 2.89543 10.8954 2 12 2C13.1046 2 14 2.89543 14 4Z', 'M10.0002 16V20C10.0002 20.9428 10.0002 21.4142 10.2931 21.7071C10.586 22 11.0574 22 12.0002 22C12.943 22 13.4144 22 13.7073 21.7071C14.0002 21.4142 14.0002 20.9428 14.0002 20V16L14.2603 16.0007C15.8127 16.0005 16.5889 16.0004 16.8927 15.5149C17.1965 15.0295 16.8312 14.3728 16.1007 13.0595L14.3008 9.82358C13.8476 9.00874 12.9628 8.49982 11.9996 8.5C11.0368 8.50018 10.1525 9.00901 9.69941 9.82351L7.89935 13.0595C7.1688 14.3728 6.80353 15.0294 7.10731 15.5149C7.41109 16.0004 8.1873 16.0005 9.73972 16.0007L10.0002 16Z'],
+    }
+    mapa.querySelectorAll('[data-glifo]').forEach((g) => {
+      for (const d of GLIFOS[g.dataset.glifo]) {
+        const p = document.createElementNS(SVG, 'path')
+        p.setAttribute('d', d)
+        g.append(p)
+      }
+    })
+    // O Grupo (A-2) leva a marca da Coral: os mesmos caminhos do logo do final.
+    const marcaNucleo = mapa.querySelector('.marca-nucleo')
+    document.querySelectorAll('[data-final] .marca path').forEach((p) => {
+      const c = document.createElementNS(SVG, 'path')
+      c.setAttribute('d', p.getAttribute('d'))
+      marcaNucleo.append(c)
+    })
+
+    // Ponta de seta desenhada (sem <marker>, pelo mesmo motivo do <base href>): 9 de comprimento, na direção da linha.
+    const PADRAO_TRACO = { info: [6, 5], mat: [0.1, 5.5], fin: null }
+    const desenhos = arestas.map((a) => {
+      const ln = a.querySelector('.ln')
+      const L = ln.getTotalLength()
+      const ponta = (s, sentido) => {
+        const p = ln.getPointAtLength(s)
+        const q = ln.getPointAtLength(limitar(s - sentido, 0, L))
+        const ang = Math.atan2(p.y - q.y, p.x - q.x)
+        const pt = (dx, dy) => `${p.x + dx * Math.cos(ang) - dy * Math.sin(ang)},${p.y + dx * Math.sin(ang) + dy * Math.cos(ang)}`
+        const el = document.createElementNS(SVG, 'path')
+        el.setAttribute('class', 'ponta')
+        el.setAttribute('d', `M${pt(0, 0)} L${pt(-9, -4.05)} L${pt(-9, 4.05)} Z`)
+        a.insertBefore(el, a.querySelector('.rot'))
+        return el
+      }
+      const pontas = [ponta(L, 1)]
+      if (a.hasAttribute('data-dupla')) pontas.push(ponta(0, -1))
+      return { a, ln, L, pontas, rot: a.querySelector('.rot'), padrao: PADRAO_TRACO[a.dataset.tipo] }
+    })
+
+    // Traço parcial que respeita o tracejado: o padrão até o comprimento v, depois um vão do tamanho da linha.
+    function tracoParcial(padrao, L, v) {
+      if (!padrao) return `${Math.max(v, 0.001)} ${L}`
+      const partes = []
+      let feito = 0
+      for (let k = 0; feito < v; k++) {
+        const seg = Math.min(padrao[k % 2], v - feito)
+        partes.push(seg)
+        feito += seg
+      }
+      if (partes.length % 2) partes.push(L)
+      else partes[partes.length - 1] += L
+      return partes.length ? partes.join(' ') : `0 ${L}`
+    }
+
+    // Ordem da história: quem indica e quem oferta, a curadoria, a viajante, e o dinheiro por último.
+    const ORDEM_ATORES = ['A-1', 'A-6', 'A-2', 'A-3', 'A-4', 'A-5', 'A-7']
+    const ORDEM_FLUXOS = [0, 2, 5, 4, 7, 8, 9, 6, 3, 1, 10]
+    let lacoMapa = 0
+    function mapaPronto() {
+      cancelAnimationFrame(lacoMapa)
+      atores.forEach((g) => g.getAnimations().forEach((an) => an.cancel()))
+      for (const d of desenhos) {
+        d.ln.style.strokeDasharray = ''
+        d.ln.style.opacity = ''
+        d.pontas.forEach((p) => (p.style.opacity = ''))
+        d.rot.style.opacity = ''
+      }
+    }
+    function desenharMapa() {
+      mapaPronto()
+      if (reduzido.matches) return
+      ORDEM_ATORES.forEach((k, i) => {
+        mapa.querySelector(`.ator[data-ator="${k}"]`).animate(
+          [{ opacity: 0, transform: 'scale(0.82)' }, { opacity: 1, transform: 'none' }],
+          { duration: 700, delay: 250 + i * 90, easing: EXPO, fill: 'backwards' },
+        )
+      })
+      const plano = ORDEM_FLUXOS.map((k, i) => ({ ...desenhos[k], ini: 950 + i * 150, dur: limitar(420 + desenhos[k].L * 0.7, 520, 1700) }))
+      for (const p of plano) {
+        p.ln.style.strokeDasharray = `0 ${p.L}`
+        p.ln.style.opacity = 0
+        p.pontas.forEach((el) => (el.style.opacity = 0))
+        p.rot.style.opacity = 0
+      }
+      const t0 = performance.now()
+      const quadro = (agora) => {
+        let vivo = false
+        for (const p of plano) {
+          const t = limitar((agora - t0 - p.ini) / p.dur, 0, 1)
+          const e = 1 - Math.pow(1 - t, 3)
+          if (t >= 1) {
+            if (p.ln.style.strokeDasharray) {
+              p.ln.style.strokeDasharray = ''
+              p.ln.style.opacity = ''
+              p.pontas.forEach((el) => (el.style.opacity = ''))
+            }
+          } else {
+            vivo = true
+            p.ln.style.opacity = t > 0 ? '' : 0
+            p.ln.style.strokeDasharray = tracoParcial(p.padrao, p.L, e * p.L)
+            if (p.pontas[1]) p.pontas[1].style.opacity = t > 0 ? '' : 0
+          }
+          p.rot.style.opacity = limitar((e - 0.45) / 0.45, 0, 1)
+        }
+        lacoMapa = vivo ? requestAnimationFrame(quadro) : 0
+      }
+      lacoMapa = requestAnimationFrame(quadro)
+    }
+    cenaMapa.addEventListener('entrar', desenharMapa)
+    cenaMapa.addEventListener('saiu', () => { mapaPronto(); focarMapa() })
+
+    // Mouse num ator: os fluxos dele e quem está na outra ponta. Mouse na legenda: só aquele tipo de fluxo.
+    function focarMapa(tipo = null, ator = null) {
+      if (!tipo && !ator) {
+        mapa.removeAttribute('data-foco')
+        mapa.querySelectorAll('.em-foco').forEach((el) => el.classList.remove('em-foco'))
+        return
+      }
+      mapa.setAttribute('data-foco', '')
+      const ligados = new Set([ator])
+      arestas.forEach((a) => {
+        const ok = tipo ? a.dataset.tipo === tipo : a.dataset.de === ator || a.dataset.para === ator
+        a.classList.toggle('em-foco', ok)
+        if (ok) { ligados.add(a.dataset.de); ligados.add(a.dataset.para) }
+      })
+      atores.forEach((g) => g.classList.toggle('em-foco', !!tipo || ligados.has(g.dataset.ator)))
+      itensLegenda.forEach((li) => li.classList.toggle('em-foco', !tipo || li.dataset.tipo === tipo))
+    }
+    atores.forEach((g) => {
+      g.addEventListener('pointerenter', () => focarMapa(null, g.dataset.ator))
+      g.addEventListener('pointerleave', () => focarMapa())
+    })
+    itensLegenda.forEach((li) => {
+      li.addEventListener('pointerenter', () => focarMapa(li.dataset.tipo))
+      li.addEventListener('pointerleave', () => focarMapa())
+    })
+
+    // =====================================================================
+    // 11. Blueprint: inteiro, depois uma faixa por vez com as etapas no topo
+    // =====================================================================
+    // Conteúdo de diagrams/blueprint.html (DATA). Mudou lá, mude aqui. Só "agente" virou Maré (D-32).
+    const BLUEPRINT = {
+      fases: [['Bastidores · contínuo', 1], ['Antes da viagem', 4], ['Durante a estadia', 2], ['Depois', 1]],
+      etapas: ['Base curada', 'Descobre o app', 'Pesquisa rolês em Recife', 'Seleciona e salva rolês',
+        'Organiza locais com a Maré', 'Acompanha e reajusta', 'Vive o rolê', 'Fechamento e recompensas'],
+      // faixa: em que passo a linha fica em leitura (1 jornada, 2 linha de frente e bastidores, 3 suporte e parceiros)
+      linhas: [
+        { tipo: 'itens', rotulo: 'Ações da viajante', faixa: '1', celulas: [
+          null,
+          ['Pesquisa rolês no buscador', 'Abre o site pelo link', 'Vê rolês indicados por locais'],
+          ['Busca rolês em Recife', 'Filtra por companhia e dia'],
+          ['Assiste aos vídeos curtos', 'Confere quem recomendou', 'Vê entorno e selo', 'Toca em salvar e cria conta'],
+          ['Informa datas e hospedagem', 'Pede à Maré para organizar', 'Ajusta e salva o roteiro', 'Contrata extras, se quiser'],
+          ['Recebe sugestão de ajuste', 'Aceita ou pede outra opção'],
+          ['Chega e paga no local', 'Vai de transfer ou em grupo', 'Volta para a hospedagem'],
+          ['Avalia em 1–2 toques', 'Troca pontos por cupons'],
+        ] },
+        { tipo: 'chips', rotulo: 'Pontos de contato', faixa: '1', celulas: [
+          null,
+          ['Buscador', 'Site do app', 'Indicação'],
+          ['Lista curada', 'Filtro de companhia'],
+          ['Card do rolê', 'Vídeo curto', 'Selo de segurança', 'Cadastro', 'Lista de salvos'],
+          ['Roteiro no mapa', 'Evento no calendário', 'Chat da Maré'],
+          ['Notificação', 'Calendário atualizado'],
+          ['Entorno na tela', 'Transfer', 'Check-in no local?'],
+          ['Pedido de avaliação', 'Resumo da viagem', 'Cupom 99/Uber'],
+        ] },
+        { tipo: 'texto', rotulo: 'Gratuito × pago', faixa: '1', celulas: [
+          null, 'Grátis, sem login', 'Grátis, sem login', 'Grátis · conta pedida ao salvar',
+          'Maré grátis com limite de mensagens · extras pagos', 'Maré grátis com limite?',
+          'Extras pagos: transfer e rolê em grupo', 'Grátis · pontos viram desconto',
+        ] },
+        { tipo: 'linha', rotulo: 'Linha de interação', faixa: '1 2' },
+        { tipo: 'cartoes', rotulo: 'Frontstage · app e Maré (IA)', faixa: '2', celulas: [
+          ['Página do rolê publicada'],
+          ['Página do rolê aberta, sem login', 'Rolês indicados por locais'],
+          ['Lista curta e curada', 'Motivo de cada indicação'],
+          ['Cards com fotos e avaliações', 'Vídeos curtos no showcase', 'Entorno, selo e data', 'Cadastro curto ao salvar'],
+          ['Perfil da viagem', 'Maré agrupa por dia e distância', 'Mapa e calendário integrados', 'Oferta de extras pagos'],
+          ['Maré monitora clima e horário', '1 troca principal, perto'],
+          ['Entorno e volta visíveis', 'Atalho para o transfer'],
+          ['Mensagens da Maré', 'Catálogo personalizado', 'Carteira de pontos'],
+        ] },
+        { tipo: 'linha', rotulo: 'Linha de visibilidade', faixa: '2' },
+        { tipo: 'cartoes', rotulo: 'Backstage · nós (curadoria)', faixa: '2', celulas: [
+          ['Analisa indicações pelos critérios', 'Cura os vídeos', 'Publica a página do rolê', 'Mantém horários e endereços', 'Revisa o que a comunidade sinaliza', 'Gere parcerias de desconto'],
+          null,
+          null,
+          ['Recebe aviso de info errada?', 'Verificação de conta?'],
+          ['Monta grupos e transfers'],
+          ['Corrige o que fechou ou mudou'],
+          ['Acompanha grupos e transfers', 'Registra comissão?', 'Atende incidentes?'],
+          ['Avaliações voltam à curadoria'],
+        ] },
+        { tipo: 'linha', rotulo: 'Linha de interação interna', faixa: '2 3' },
+        { tipo: 'cartoes', rotulo: 'Suporte · sistemas', faixa: '3', celulas: [
+          ['Formulário de indicação', 'Painel da curadoria'],
+          ['Site indexável (SEO)', 'Link rastreável'],
+          ['Base curada', 'Busca e filtros'],
+          ['Hospedagem de vídeos', 'Dados de entorno e selo', 'Conta e perfil', 'Consentimento LGPD'],
+          ['IA só com base curada', 'Limite de mensagens', 'Pagamento dos extras'],
+          ['Localização', 'Notificações com limite'],
+          ['Validação do check-in?'],
+          ['Pontos e antifraude', 'Integração com parceiros'],
+        ] },
+        { tipo: 'linha', rotulo: 'Parceiros externos', faixa: '3' },
+        { tipo: 'cartoes', rotulo: 'Locais · recomendam', faixa: '3', celulas: [
+          ['Indicam rolês para a curadoria', 'Gravam os vídeos?'],
+          ['Indicam o app no boca a boca'],
+          null,
+          ['Nome aparece no card'],
+          null,
+          null,
+          null,
+          ['Ganham pontos quando o rolê é usado'],
+        ] },
+        { tipo: 'cartoes', rotulo: 'Prestadores e parceiros', faixa: '3', celulas: [
+          ['Ofertam o rolê', 'Atualizam horários e preços?', 'Pedem para entrar? (Q-36)'],
+          null,
+          null,
+          null,
+          ['Confirmam vagas no grupo'],
+          ['Avisam mudanças?'],
+          ['Atendem e recebem no local', 'Motoristas mulheres no transfer', 'Guia do rolê em grupo', 'Pagam comissão'],
+          ['99/Uber e restaurantes dão desconto'],
+        ] },
+      ],
+    }
+
+    const cenaBlueprint = document.querySelector('[data-cena-blueprint]')
+    const bpJanela = cenaBlueprint.querySelector('.bp-janela')
+    const bpCabeca = cenaBlueprint.querySelector('.bp-cabeca')
+    const bpCorpo = cenaBlueprint.querySelector('.bp-corpo')
+    const BP_LARGURA = 1880
+
+    function montarBlueprint() {
+      const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      const aberto = (t) => /\?(\s*\(Q-\d+\))?$/.test(t)
+      const n = BLUEPRINT.etapas.length
+      let cab = '<div class="bp-grade"><div></div>'
+      cab += BLUEPRINT.fases.map(([nome, span]) => `<div class="bp-fase" style="grid-column: span ${span}">${esc(nome)}</div>`).join('')
+      cab += '<div class="bp-rotulo">Etapas</div>'
+      cab += BLUEPRINT.etapas.map((e, i) => `<div class="bp-etapa" data-col="${i}"><span class="bp-num">${String(i).padStart(2, '0')}</span><span class="bp-nome">${esc(e)}</span></div>`).join('')
+      bpCabeca.innerHTML = cab + '</div>'
+
+      let corpo = '<div class="bp-grade">'
+      let semFio = true
+      for (const l of BLUEPRINT.linhas) {
+        if (l.tipo === 'linha') {
+          corpo += `<div class="bp-linha" data-faixa="${l.faixa}"><span>${esc(l.rotulo)}</span></div>`
+          semFio = true
+          continue
+        }
+        const fio = semFio ? ' bp-sem-fio' : ''
+        corpo += `<div class="bp-rotulo${fio}" data-faixa="${l.faixa}">${esc(l.rotulo)}</div>`
+        for (let i = 0; i < n; i++) {
+          const v = l.celulas[i]
+          let c = ''
+          if (v != null) {
+            const lista = [].concat(v)
+            if (l.tipo === 'itens') c = `<ul class="bp-itens">${lista.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`
+            else if (l.tipo === 'chips') c = `<div class="bp-chips">${lista.map((t) => `<span class="bp-chip${aberto(t) ? ' bp-aberto' : ''}">${esc(t)}</span>`).join('')}</div>`
+            else if (l.tipo === 'cartoes') c = lista.map((t) => `<div class="bp-cartao${aberto(t) ? ' bp-aberto' : ''}">${esc(t)}</div>`).join('')
+            else c = `<p class="bp-texto${aberto(lista[0]) ? ' bp-aberto' : ''}">${esc(lista[0])}</p>`
+          }
+          corpo += `<div class="bp-celula${fio}" data-col="${i}" data-faixa="${l.faixa}">${c}</div>`
+        }
+        semFio = false
+      }
+      bpCorpo.innerHTML = corpo + '</div>'
+
+      // Linhas tracejadas verticais nas fronteiras das fases, nas duas camadas.
+      const etapasCab = [...bpCabeca.querySelectorAll('.bp-etapa')]
+      let acc = 0
+      for (const [, span] of BLUEPRINT.fases.slice(0, -1)) {
+        acc += span
+        const x = etapasCab[acc].offsetLeft - 7
+        for (const camada of [bpCabeca, bpCorpo]) {
+          const f = document.createElement('i')
+          f.className = 'bp-fronteira'
+          f.style.left = `${x}px`
+          camada.querySelector('.bp-grade').append(f)
+        }
+      }
+    }
+    montarBlueprint()
+
+    // Câmera: medidas de layout (offset*), que não sofrem com a escala de entrada do momento.
+    function cameraBlueprint(n, animar) {
+      const W = bpJanela.clientWidth
+      const H = bpJanela.clientHeight
+      if (!W || !H) return
+      const cab = bpCabeca.offsetHeight
+      const corpo = bpCorpo.offsetHeight
+      let s, yCab = 0, yCorpo
+      if (!n) {
+        s = Math.min(W / BP_LARGURA, H / (cab + corpo))
+        yCab = Math.max(0, (H - (cab + corpo) * s) / 2)
+        yCorpo = yCab + cab * s
+      } else {
+        const faixa = [...bpCorpo.querySelectorAll(`.bp-grade > [data-faixa~="${n}"]`)]
+        const topo = Math.min(...faixa.map((el) => el.offsetTop))
+        const base = Math.max(...faixa.map((el) => el.offsetTop + el.offsetHeight))
+        s = Math.min(W / BP_LARGURA, H / (cab + base - topo))
+        yCorpo = (cab - topo) * s
+      }
+      const x = (W - BP_LARGURA * s) / 2
+      cenaBlueprint.classList.toggle('bp-sem-transicao', !animar)
+      bpCabeca.style.transform = `translate(${x}px, ${yCab}px) scale(${s})`
+      bpCorpo.style.transform = `translate(${x}px, ${yCorpo}px) scale(${s})`
+      if (!animar) {
+        bpCorpo.getBoundingClientRect()
+        cenaBlueprint.classList.remove('bp-sem-transicao')
+      }
+    }
+    const passoBlueprint = () => Number(cenaBlueprint.dataset.passo || 0)
+    // Pode chegar no último passo (voltando do slide seguinte): espera um quadro e lê o passo.
+    cenaBlueprint.addEventListener('entrar', () => requestAnimationFrame(() => cameraBlueprint(passoBlueprint(), false)))
+    cenaBlueprint.addEventListener('passo', (e) => {
+      if (!cenaBlueprint.hasAttribute('data-ativo')) return
+      cameraBlueprint(e.detail, cenaBlueprint.hasAttribute('data-pronto') && !reduzido.matches)
+    })
+    cenaBlueprint.addEventListener('saiu', () => { focarColuna(null); cameraBlueprint(0, false) })
+    addEventListener('resize', () => cameraBlueprint(passoBlueprint(), false))
+    document.fonts.ready.then(() => cameraBlueprint(passoBlueprint(), false))
+
+    // Mouse numa coluna: a etapa acende e as outras recuam.
+    let colunaEmFoco = null
+    function focarColuna(k) {
+      if (k === colunaEmFoco) return
+      colunaEmFoco = k
+      cenaBlueprint.querySelectorAll('[data-col]').forEach((el) => {
+        el.classList.toggle('bp-fora', k != null && el.dataset.col !== k)
+        el.classList.toggle('bp-em-foco', k != null && el.dataset.col === k)
+      })
+    }
+    bpJanela.addEventListener('pointermove', (e) => focarColuna(e.target.closest('[data-col]')?.dataset.col ?? null))
+    bpJanela.addEventListener('pointerleave', () => focarColuna(null))
+
+    // =====================================================================
+    // 12. Transição para o storyboard
+    // =====================================================================
+    const cenaTransicao = document.querySelector('[data-cena-transicao]')
+    const fraseTransicao = cenaTransicao.querySelector('.frase')
+    cenaTransicao.addEventListener('entrar', () => entrar(fraseTransicao, 350))
+    cenaTransicao.addEventListener('saiu', () => zerar(fraseTransicao))
+
+    // =====================================================================
+    // 13. Storyboard: um quadro por passo; a faixa preta fica e só a legenda troca
+    // =====================================================================
+    const cenaStory = document.querySelector('[data-cena-storyboard]')
+    const quadros = [...cenaStory.querySelectorAll('.quadros img')]
+    const legendasQuadro = [...cenaStory.querySelectorAll('.legenda-faixa p')]
+    let quadroAtual = -1
+    function mostrarQuadro(k) {
+      if (k === quadroAtual) return
+      quadros.forEach((q, j) => q.toggleAttribute('data-ativa', j === k))
+      // A legenda anterior sobe e se desfaz; a nova nasce do desfoque, palavra por palavra.
+      if (quadroAtual >= 0) sair(legendasQuadro[quadroAtual])
+      entrar(legendasQuadro[k], quadroAtual >= 0 ? 280 : 550)
+      quadroAtual = k
+    }
+    // Espera um quadro: voltando do final, o passo já chega como o último.
+    cenaStory.addEventListener('entrar', () => {
+      quadroAtual = -1
+      requestAnimationFrame(() => mostrarQuadro(Number(cenaStory.dataset.passo || 0)))
+    })
+    cenaStory.addEventListener('passo', (e) => {
+      if (cenaStory.hasAttribute('data-ativo') && quadroAtual >= 0) mostrarQuadro(e.detail)
+    })
+    cenaStory.addEventListener('saiu', () => {
+      legendasQuadro.forEach(zerar)
+      quadros.forEach((q) => q.removeAttribute('data-ativa'))
+      quadroAtual = -1
+    })
+
+    // =====================================================================
     // Shader de cor viva: só roda com o momento na tela
     // =====================================================================
     const FRAG = `#version 300 es
@@ -1338,13 +2119,17 @@
     // =====================================================================
     // A mancha de tinta (pitch/img/aquarela/mancha.png, tratada a partir da imagem do Rodrigo) é a janela do slide 8:
     // manchas caem aos poucos, uma de cada vez, do centro para fora, e cada uma se espalha do miolo para as franjas,
-    // mostrando o 8 por dentro; no fim, o que sobrou do "Apresentamos" se desfaz num ruído. Um shader desenha a
-    // máscara num canvas fora da tela, lida como imagem a cada quadro. Nada é pintado por cima.
+    // mostrando o 8 por dentro; no fim, o que sobrou do "Apresentamos" se desfaz num ruído.
+    // Duas passadas num canvas WebGL por cima do 7: a tinta (640 px, num framebuffer) e o 8 desenhado só onde ela
+    // chegou (o vídeo ativo como textura, a marca branca rasterizada no tamanho dela). Antes a tinta virava
+    // mask-image por data URL a cada quadro: no Chrome a imagem nova não decodificava a tempo, o 8 não aparecia e o
+    // segundo clique cancelava a transição e pulava o slide.
     const DURACAO_AQUARELA = 4600
     const TINTA = new Image()
     TINTA.src = 'img/aquarela/mancha.png'
+    const telaAquarela = document.querySelector('.aquarela')
     let aquarelaAtual = null
-    let aqua = null // canvas e WebGL reaproveitados entre uma transição e outra
+    let aqua = null // programas, texturas e framebuffer reaproveitados entre uma transição e outra
 
     const FRAG_AQUARELA = `#version 300 es
     precision highp float;
@@ -1401,49 +2186,100 @@
       cor = vec4(buraco, buraco, buraco, buraco);
     }`
 
+    // O 8 como ele é na chegada: vídeo em tela cheia (object-fit: cover) com a marca branca no meio.
+    const FRAG_COMPOR = `#version 300 es
+    precision highp float;
+    uniform sampler2D uMascara; // tinta (canal r), mesma orientação do canvas
+    uniform sampler2D uVideo;
+    uniform sampler2D uLogo;
+    uniform vec2 uRes;
+    uniform vec2 uVideoTam;
+    uniform vec4 uLogoCaixa; // x, y, largura, altura em px (y para baixo)
+    out vec4 cor;
+    void main() {
+      vec2 px = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
+      float m = texture(uMascara, gl_FragCoord.xy / uRes).r;
+      float esc = max(uRes.x / uVideoTam.x, uRes.y / uVideoTam.y);
+      vec2 tam = uVideoTam * esc;
+      vec3 c = texture(uVideo, (px - (uRes - tam) * .5) / tam).rgb;
+      vec2 l = (px - uLogoCaixa.xy) / uLogoCaixa.zw;
+      if (l.x >= 0. && l.x <= 1. && l.y >= 0. && l.y <= 1.) c = mix(c, vec3(1.), texture(uLogo, l).a);
+      cor = vec4(c * m, m);
+    }`
+
     function prepararAqua() {
       if (aqua) return aqua
-      const tela = document.createElement('canvas') // nunca entra na página: só gera a máscara
-      const gl = tela.getContext('webgl2', { premultipliedAlpha: true, alpha: true, antialias: false })
+      const gl = telaAquarela.getContext('webgl2', { premultipliedAlpha: true, alpha: true, antialias: false })
       if (!gl) return null
       const vert = `#version 300 es
       void main() { vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2)); gl_Position = vec4(p * 2. - 1., 0., 1.); }`
-      const prog = gl.createProgram()
-      for (const [tipo, src] of [[gl.VERTEX_SHADER, vert], [gl.FRAGMENT_SHADER, FRAG_AQUARELA]]) {
-        const s = gl.createShader(tipo)
-        gl.shaderSource(s, src)
-        gl.compileShader(s)
-        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); return null }
-        gl.attachShader(prog, s)
+      const programa = (frag) => {
+        const prog = gl.createProgram()
+        for (const [tipo, src] of [[gl.VERTEX_SHADER, vert], [gl.FRAGMENT_SHADER, frag]]) {
+          const sh = gl.createShader(tipo)
+          gl.shaderSource(sh, src)
+          gl.compileShader(sh)
+          if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(sh)); return null }
+          gl.attachShader(prog, sh)
+        }
+        gl.linkProgram(prog)
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(prog)); return null }
+        return prog
       }
-      gl.linkProgram(prog)
-      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(prog)); return null }
-      gl.useProgram(prog)
-      gl.activeTexture(gl.TEXTURE0)
-      gl.bindTexture(gl.TEXTURE_2D, gl.createTexture())
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      const pTinta = programa(FRAG_AQUARELA)
+      const pCompor = programa(FRAG_COMPOR)
+      if (!pTinta || !pCompor) return null
+      const textura = () => {
+        const t = gl.createTexture()
+        gl.bindTexture(gl.TEXTURE_2D, t)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        return t
+      }
+      const tMancha = textura()
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, TINTA)
-      gl.uniform1i(gl.getUniformLocation(prog, 'uTinta'), 0)
-      const loc = (n) => gl.getUniformLocation(prog, n)
+      const tMascara = textura()
+      const tVideo = textura()
+      const tLogo = textura()
+      const fbo = gl.createFramebuffer()
+      const locs = (prog, nomes) => Object.fromEntries(nomes.map((n) => [n, gl.getUniformLocation(prog, n)]))
+      gl.useProgram(pTinta)
+      gl.uniform1i(gl.getUniformLocation(pTinta, 'uTinta'), 0)
+      gl.useProgram(pCompor)
+      gl.uniform1i(gl.getUniformLocation(pCompor, 'uMascara'), 0)
+      gl.uniform1i(gl.getUniformLocation(pCompor, 'uVideo'), 1)
+      gl.uniform1i(gl.getUniformLocation(pCompor, 'uLogo'), 2)
       aqua = {
-        tela,
-        gl,
-        u: { res: loc('uRes'), t: loc('uT'), n: loc('uN'), carimbo: loc('uCarimbo'), tempo: loc('uTempo'), alaga: loc('uAlaga') },
+        gl, pTinta, pCompor, tMancha, tMascara, tVideo, tLogo, fbo,
+        uTinta: locs(pTinta, ['uRes', 'uT', 'uN', 'uCarimbo', 'uTempo', 'uAlaga']),
+        uCompor: locs(pCompor, ['uRes', 'uVideoTam', 'uLogoCaixa']),
       }
       return aqua
     }
-    const aquarelaPossivel = () => TINTA.complete && TINTA.naturalWidth > 0 && !!prepararAqua()
+    // O vídeo que o 8 mostra na chegada (tique 7, ver acima) precisa ter quadro; sem ele, transição normal.
+    const videoDaChegada = () => camadas[(7 + Math.floor(7 / camadas.length)) % camadas.length]
+    const aquarelaPossivel = () =>
+      TINTA.complete && TINTA.naturalWidth > 0 && vazado.hasAttribute('data-mascara') &&
+      videoDaChegada().readyState >= 2 && !!prepararAqua()
 
     function transicaoAquarela(sai, chega) {
-      const { tela, gl, u } = aqua
-      const W = 640 // resolução da máscara: abaixo disso a beira das manchas serrilha
+      const { gl, pTinta, pCompor, tMancha, tMascara, tVideo, tLogo, fbo, uTinta, uCompor } = aqua
+      const dpr = Math.min(devicePixelRatio || 1, 2)
+      const LW = Math.max(1, Math.round(innerWidth * dpr))
+      const LH = Math.max(1, Math.round(innerHeight * dpr))
+      telaAquarela.width = LW
+      telaAquarela.height = LH
+
+      // Tinta em 640 px (abaixo disso a beira das manchas serrilha), num framebuffer.
+      const W = 640
       const H = Math.max(1, Math.round((W * innerHeight) / innerWidth))
-      tela.width = W
-      tela.height = H
-      gl.viewport(0, 0, W, H)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, tMascara)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, W, H, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fbo)
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tMascara, 0)
 
       // 12 manchas numa grade 4×3 com sorteio; caem aos poucos, uma de cada vez, do centro para fora.
       const manchas = []
@@ -1461,58 +2297,96 @@
         carimbo.set([m.x, m.y, 0.66 + Math.random() * 0.2, Math.random() * Math.PI * 2], k * 4)
         tempo.set([0.1 + k * 0.22 + Math.random() * 0.08, 1.5 + Math.random() * 0.4, 0.85 + Math.random() * 0.3, Math.random() * 10], k * 4)
       })
-      gl.uniform2f(u.res, W, H)
-      gl.uniform1i(u.n, manchas.length)
-      gl.uniform4fv(u.carimbo, carimbo)
-      gl.uniform4fv(u.tempo, tempo)
-      gl.uniform2f(u.alaga, 3.4, 4.5)
+      gl.useProgram(pTinta)
+      gl.uniform2f(uTinta.uRes, W, H)
+      gl.uniform1i(uTinta.uN, manchas.length)
+      gl.uniform4fv(uTinta.uCarimbo, carimbo)
+      gl.uniform4fv(uTinta.uTempo, tempo)
+      gl.uniform2f(uTinta.uAlaga, 3.4, 4.5)
 
+      // A marca branca do 8 no tamanho exato dela (--larg: min(56vw, 980px)), rasterizada na densidade da tela.
+      const largMarca = Math.min(innerWidth * 0.56, 980)
+      const marca = document.createElement('canvas')
+      marca.width = Math.max(1, Math.round(largMarca * dpr))
+      marca.height = Math.max(1, Math.round((largMarca * dpr * 369) / 1431))
+      marca.getContext('2d').drawImage(logoPronto, 0, 0, marca.width, marca.height)
+      gl.activeTexture(gl.TEXTURE2)
+      gl.bindTexture(gl.TEXTURE_2D, tLogo)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, marca)
+      gl.useProgram(pCompor)
+      gl.uniform2f(uCompor.uRes, LW, LH)
+      gl.uniform4f(uCompor.uLogoCaixa, (LW - marca.width) / 2, (LH - marca.height) / 2, marca.width, marca.height)
+
+      const video = videoDaChegada()
       const desenhar = (t) => {
-        gl.uniform1f(u.t, t)
-        gl.clearColor(0, 0, 0, 0)
-        gl.clear(gl.COLOR_BUFFER_BIT)
+        // 1. A tinta, no framebuffer.
+        gl.bindFramebuffer(gl.FRAMEBUFFER, fbo)
+        gl.viewport(0, 0, W, H)
+        gl.useProgram(pTinta)
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, tMancha)
+        gl.uniform1f(uTinta.uT, t)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+        // 2. O 8 só onde a tinta chegou.
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        gl.viewport(0, 0, LW, LH)
+        gl.useProgram(pCompor)
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, tMascara)
+        gl.activeTexture(gl.TEXTURE1)
+        gl.bindTexture(gl.TEXTURE_2D, tVideo)
+        if (video.readyState >= 2) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video)
+        gl.uniform2f(uCompor.uVideoTam, video.videoWidth || 16, video.videoHeight || 9)
+        gl.activeTexture(gl.TEXTURE2)
+        gl.bindTexture(gl.TEXTURE_2D, tLogo)
         gl.drawArrays(gl.TRIANGLES, 0, 3)
       }
-      const inicio = performance.now()
+
+      let t = 0
+      let vel = 1
+      let antes = performance.now()
       let id = 0
-      // A máscara vai no 8: só aparece onde a tinta já chegou (no último quadro, tudo).
-      const mascarar = (t) => {
-        desenhar(t)
-        const url = `url("${tela.toDataURL()}")`
-        chega.style.webkitMaskImage = url
-        chega.style.maskImage = url
-      }
       const quadro = (agora) => {
-        const fim = agora - inicio >= DURACAO_AQUARELA
-        mascarar(fim ? 99 : (agora - inicio) / 1000)
+        t += ((agora - antes) / 1000) * vel
+        antes = agora
+        const fim = t * 1000 >= DURACAO_AQUARELA
+        desenhar(fim ? 99 : t)
         if (fim) terminar()
         else id = requestAnimationFrame(quadro)
       }
       function terminar() {
         cancelAnimationFrame(id)
-        // O 7 sai sem transição (já está coberto) e só então o 8 perde a máscara.
+        // O 8 aparece no lugar e o 7, já coberto, sai: os dois sem transição.
         sai.style.transition = 'none'
+        chega.style.transition = 'none'
         sai.removeAttribute('data-aquarela')
-        sai.getBoundingClientRect()
-        sai.style.transition = ''
-        chega.style.webkitMaskImage = ''
-        chega.style.maskImage = ''
         chega.removeAttribute('data-chegada-seca')
+        chega.getBoundingClientRect()
+        sai.style.transition = ''
+        chega.style.transition = ''
+        // O canvas sai num cross-fade curto sobre o 8 de verdade: a cor do vídeo como textura pode diferir um
+        // pouco da do vídeo na página, e um corte seco mostraria esse pulo.
+        telaAquarela.animate([{ opacity: 1 }, { opacity: 0 }], { duration: reduzido.matches ? 1 : 380, easing: 'ease-out' })
+          .finished.catch(() => {})
+          .finally(() => { if (!aquarelaAtual) telaAquarela.hidden = true })
         aquarelaAtual = null
       }
-      // Primeiro quadro na hora (sem tinta nenhuma): o 8 não chega a aparecer inteiro nem por um instante.
-      mascarar(0)
-      aquarelaAtual = { cancelar: terminar }
+      // Primeiro quadro na hora, ainda sem tinta: o canvas entra transparente.
+      desenhar(0)
+      telaAquarela.hidden = false
+      // Clicar no meio apressa a tinta (cobre tudo em menos de um segundo) em vez de pular o 8.
+      aquarelaAtual = { cancelar: terminar, acelerar: () => { vel = Math.max(vel, (DURACAO_AQUARELA / 1000 - t) / 0.7) } }
       id = requestAnimationFrame(quadro)
     }
 
     // =====================================================================
-    // 10. Final
+    // 14. Final
     // =====================================================================
     const cenaFinal = document.querySelector('[data-final]')
     const shaderFinal = criarShader(cenaFinal.querySelector('canvas'))
     const marcaFinal = cenaFinal.querySelector('.marca')
     const letrasDoLogo = [...marcaFinal.querySelectorAll('path')]
+    const tagline = cenaFinal.querySelector('.tagline')
     Object.assign(cenaFinal, { _anims: [], _timers: [], _vez: 0 })
     cenaFinal.addEventListener('entrar', () => {
       shaderFinal.iniciar()
@@ -1530,8 +2404,10 @@
           easing: EXPO,
         })
       })
+      // A tagline espera a marca terminar de aparecer.
+      entrar(tagline, reduzido.matches ? 0 : 2100)
     })
-    cenaFinal.addEventListener('saiu', () => { shaderFinal.parar(); zerar(cenaFinal) })
+    cenaFinal.addEventListener('saiu', () => { shaderFinal.parar(); zerar(cenaFinal); zerar(tagline) })
 
     // =====================================================================
     // Entrada
