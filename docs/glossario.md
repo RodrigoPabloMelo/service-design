@@ -1,9 +1,11 @@
 # Glossário
 
-> **Atualizado:** 2026-10-16
+> **Atualizado:** 2026-11-24
 
 | Termo | Significado no projeto |
 | --- | --- |
+| **Coral** | Nome do serviço (D-32) |
+| **Maré** | A assistente de IA do app, que monta e ajusta o roteiro com rolês da curadoria (D-32, D-07) |
 | **Rolê** | Qualquer passeio, lugar ou experiência recomendada (café, bar, evento, restaurante, passeio). Unidade básica do app |
 | **Não-turístico / local** | Lugar ou experiência frequentada por moradores, fora do circuito turístico tradicional. Não exclui pontos famosos — elas querem os dois |
 | **Local** (`A-1`) | Pessoa que recomenda rolês: moradora/or comum ou criadora de conteúdo de Recife/Olinda |

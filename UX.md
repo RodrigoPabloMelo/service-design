@@ -2,7 +2,7 @@
 
 > **O que é:** o contexto que qualquer IA deve ler **antes de gerar** telas, fluxos, textos (UX writing), protótipos, slides ou código de UI deste serviço. Formato inspirado em [UX-Context Design (NN/g, 2026)](https://www.nngroup.com/articles/ux-context-design/).
 > **Não é** um documento de convencimento: o sucesso dele se mede pela melhora da saída da IA.
-> **Atualizado:** 2026-11-09 · **Fonte de verdade:** [`docs/`](docs/README.md). Se algo aqui contradisser `docs/decisoes.md`, vale o docs — corrija este arquivo.
+> **Atualizado:** 2026-11-24 · **Fonte de verdade:** [`docs/`](docs/README.md). Se algo aqui contradisser `docs/decisoes.md`, vale o docs — corrija este arquivo.
 > **Identidade visual:** provisória, na skill [`mare-design`](.claude/skills/mare-design/SKILL.md) (D-22, [Q-26](docs/questoes-em-aberto.md#q-26) em discussão). Para o protótipo, siga-a; fora dele, não invente marca além dela e sinalize.
 
 Convenção: `[F-xx]` achado de pesquisa · `[D-xx]` decisão · `[Q-xx]` questão aberta · **(hipótese)** = inferência ainda não validada.
@@ -12,6 +12,8 @@ Convenção: `[F-xx]` achado de pesquisa · `[D-xx]` decisão · `[Q-xx]` quest�
 ## 1. O produto
 
 App para **mulheres viajantes, sozinhas ou com mais 1 pessoa**, descobrirem **rolês não-turísticos com confiança**. As recomendações vêm de **moradoras/es e criadoras de conteúdo locais**, passam por **curadoria do grupo + comunidade** e trazem **informação de segurança**. Piloto: **Recife/Olinda**.
+
+Nome: **Coral** `[D-32]`. A assistente de IA do app se chama **Maré**.
 
 O que ele substitui: o vaivém entre TikTok → Instagram → Google Maps → TripAdvisor → ChatGPT para decidir **um** rolê.
 
@@ -123,7 +125,6 @@ Condições que atravessam tudo:
 
 | Tema | Questão |
 | --- | --- |
-| Nome do serviço | [Q-01](docs/questoes-em-aberto.md#q-01) — use "o app" |
 | Planos, preços, comissão | [Q-02](docs/questoes-em-aberto.md#q-02), [Q-04](docs/questoes-em-aberto.md#q-04) |
 | Critérios do selo de segurança | [Q-10](docs/questoes-em-aberto.md#q-10) |
 | Segurança durante/depois | [Q-12](docs/questoes-em-aberto.md#q-12) |

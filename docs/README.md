@@ -1,7 +1,7 @@
 # Docs do serviço — índice
 
 > **Status:** ciclo 1 concluído (pesquisa + personas + jornada + ecossistema). Blueprint v2 em [`diagrams/blueprint.html`](../diagrams/blueprint.html) (D-23) e protótipo da etapa 04 em [`prototype/app/`](../prototype/app/README.md) — ver [prototipo.md](prototipo.md).
-> **Atualizado:** 2026-11-18 · **Nome do serviço:** ainda sem nome (ver [Q-01](questoes-em-aberto.md#q-01)) — nos docs usamos "o app" / "o serviço"; o protótipo usa **Maré** como nome de trabalho.
+> **Atualizado:** 2026-11-24 · **Nome do serviço:** **Coral** ([D-32](decisoes.md)). **Maré** é a assistente de IA do app (o agente de roteiros).
 
 ## Resumo em 30 segundos
 

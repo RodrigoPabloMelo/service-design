@@ -1,0 +1,1596 @@
+<!doctype html>
+<html lang="pt-BR" data-tema="claro">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!-- Mora em /pitch/ no mesmo deploy do protótipo (vercel.json). Caminhos relativos partem daqui. -->
+  <base href="/pitch/" />
+  <title>Coral · pitch</title>
+  <meta name="description" content="Pitch da Coral." />
+  <meta id="cor-tema" name="theme-color" content="#ffffff" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Só fontes do app: Plus Jakarta Sans (com a itálica), variável de 200 a 800. -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="img/rua.jpg" />
+  <link rel="preload" as="image" href="img/calcada.jpg" />
+  <style>
+    /* Direção: pitch/DIRECAO.md. Sem som neste pitch. */
+    :root {
+      --fonte: "Plus Jakarta Sans", system-ui, sans-serif;
+      --ease: cubic-bezier(0.2, 0, 0, 1);
+      --ease-saida: cubic-bezier(0.22, 1, 0.36, 1);
+
+      /* Claro (padrão): slides brancos, tinta do app. */
+      --fundo: #fff;
+      --texto: #131416;
+      --texto-2: rgb(19 20 22 / 0.58);
+      --texto-3: rgb(19 20 22 / 0.14);
+      --sobre-foto: #fff;
+
+      /* Azul do app (accent / accentText da skill mare-design); coral só como luz secundária. */
+      --azul: #006fd6;
+      --azul-texto: #0a62c2;
+      --coral: #ff6f5e;
+
+      /* Luz que respira embaixo dos slides de texto. */
+      --luz-1: rgb(0 111 214 / 0.3);
+      --luz-2: rgb(255 111 94 / 0.26);
+      --luz-3: rgb(64 160 255 / 0.26);
+      --luz-4: rgb(0 111 214 / 0.42);
+      --grao: 0.045;
+    }
+    :root[data-tema="escuro"] {
+      --fundo: #000;
+      --texto: #f2f2f5;
+      --texto-2: rgb(242 242 245 / 0.62);
+      --texto-3: rgb(242 242 245 / 0.2);
+      --azul-texto: #6ab0ff;
+      --luz-1: rgb(0 111 214 / 0.78);
+      --luz-2: rgb(255 111 94 / 0.5);
+      --luz-3: rgb(90 70 230 / 0.5);
+      --luz-4: rgb(40 140 255 / 0.9);
+      --grao: 0.07;
+    }
+
+    html, body { margin: 0; height: 100%; background: var(--fundo); }
+    body { -webkit-font-smoothing: antialiased; }
+
+    #palco {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: var(--fundo);
+      color: var(--texto);
+      font-family: var(--fonte);
+      user-select: none;
+      -webkit-user-select: none;
+      transition: background-color 1.4s var(--ease), color 1.4s var(--ease);
+    }
+
+    /* ---------- Momentos: entram e saem pelo desfoque ---------- */
+    .momento {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: 0;
+      filter: blur(18px);
+      transform: scale(1.02);
+      pointer-events: none;
+      transition:
+        opacity 1.1s var(--ease-saida),
+        filter 1.1s var(--ease-saida),
+        transform 1.1s var(--ease-saida);
+    }
+    .momento[data-ativo] { opacity: 1; filter: blur(0); transform: none; pointer-events: auto; }
+    /* Depois de entrar, tira o filtro do ancestral (filtro parado cria camada). */
+    .momento[data-ativo][data-pronto] { filter: none; }
+    .momento[data-saindo] { opacity: 0; filter: blur(18px); transform: scale(0.98); }
+
+    /* ---------- Texto coreografado (Web Animations no script) ---------- */
+    .palavra, .miolo, .letra { display: inline-block; }
+    .linha { display: block; }
+    [data-coreo] .miolo { opacity: 0; }
+    /* Subir: as letras nascem de dentro de uma fresta. */
+    [data-coreo="subir"] .palavra {
+      overflow: hidden;
+      vertical-align: top;
+      padding: 0 0.06em 0.14em;
+      margin: 0 -0.06em -0.14em;
+    }
+    /* A palavra que carrega a ideia: itálica da própria Jakarta. */
+    .enfase em { font-style: italic; font-weight: 500; }
+
+    /* ---------- Fotos ---------- */
+    /* Foto sangrada, com um empurrão lento de câmera: chegar na cidade. */
+    .foto { position: absolute; inset: 0; overflow: hidden; }
+    .foto img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1);
+      transform-origin: var(--foco, 50% 45%);
+      transition:
+        transform 16s cubic-bezier(0.25, 0.1, 0.25, 1),
+        filter 1.6s var(--ease-saida);
+    }
+    .momento[data-ativo] .foto img { transform: scale(1.05); }
+
+    /* Dúvidas: a foto perde a cor e escurece para as perguntas ocuparem a tela. */
+    .momento[data-passo="1"] .foto img { filter: grayscale(1) contrast(1.06) brightness(0.9); }
+    .veu {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(120% 90% at 54% 34%, rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.55)),
+        linear-gradient(rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.22));
+      opacity: 0;
+      transition: opacity 1.6s var(--ease-saida);
+    }
+    .momento[data-passo="1"] .veu { opacity: 1; }
+
+    .pergunta {
+      position: absolute;
+      margin: 0;
+      color: var(--sobre-foto);
+      font-weight: 200;
+      font-size: clamp(2rem, 4vw, 5rem);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+      /* O espaço também encolhe com o letter-spacing; devolve um pouco. */
+      word-spacing: 0.1em;
+      text-wrap: balance;
+      text-shadow: 0 2px 28px rgb(0 0 0 / 0.3);
+      transition: opacity 1.4s var(--ease-saida);
+    }
+    /* Fora do rosto e do corpo dela (centro da foto). */
+    .pergunta:nth-of-type(1) { left: 6vw; top: 11vh; max-width: 34vw; }
+    .pergunta:nth-of-type(2) { right: 5vw; top: 39vh; max-width: 26vw; text-align: right; }
+    .pergunta:nth-of-type(3) { left: 6vw; bottom: 10vh; max-width: 32vw; }
+    /* As anteriores ficam, um passo atrás: a carga acumula. */
+    .pergunta[data-recuo] { opacity: 0.58; }
+
+    /* Tela em pé (celular): uma acima da cabeça, duas embaixo, longe do rosto. */
+    @media (max-aspect-ratio: 1/1) {
+      .pergunta { font-size: clamp(1.6rem, 7vw, 3rem); }
+      .pergunta:nth-of-type(n) { left: 6vw; right: 6vw; top: auto; bottom: auto; max-width: none; text-align: left; }
+      .pergunta:nth-of-type(1) { top: 4vh; }
+      .pergunta:nth-of-type(2) { bottom: 23vh; }
+      .pergunta:nth-of-type(3) { bottom: 6vh; }
+    }
+
+    /* ---------- Luz que respira embaixo e grão de filme (slides de texto) ---------- */
+    #luz, #grao { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+    #luz {
+      z-index: 0;
+      transition: opacity 1.8s var(--ease-saida), transform 2.2s var(--ease-saida);
+    }
+    #palco[data-brilho] #luz { opacity: var(--luz, 1); }
+    /* No tambor a luz sobe, cresce e ganha um núcleo que circula. */
+    #palco[data-brilho="forte"] #luz { transform: translateY(-9vh) scale(1.18); }
+    #luz i {
+      position: absolute;
+      border-radius: 50%;
+      will-change: transform;
+      animation: deriva 13s ease-in-out infinite alternate;
+      animation-play-state: paused;
+    }
+    #palco[data-brilho] #luz i { animation-play-state: running; }
+    #luz i:nth-child(1) {
+      width: 90vw; height: 55vw; left: 5vw; bottom: -34vw;
+      background: radial-gradient(closest-side, var(--luz-1), transparent);
+    }
+    #luz i:nth-child(2) {
+      width: 55vw; height: 38vw; left: 48vw; bottom: -22vw;
+      background: radial-gradient(closest-side, var(--luz-2), transparent);
+      animation-duration: 17s;
+      animation-direction: alternate-reverse;
+    }
+    #luz i:nth-child(3) {
+      width: 50vw; height: 34vw; left: -6vw; bottom: -20vw;
+      background: radial-gradient(closest-side, var(--luz-3), transparent);
+      animation-duration: 21s;
+    }
+    #luz i:nth-child(4) {
+      width: 46vw; height: 30vw; left: 27vw; bottom: -12vw;
+      background: radial-gradient(closest-side, var(--luz-4), transparent);
+      opacity: 0;
+      transition: opacity 1.8s var(--ease-saida);
+      animation: orbita 9s linear infinite;
+      animation-play-state: paused;
+    }
+    #palco[data-brilho="forte"] #luz i:nth-child(4) { opacity: 1; animation-play-state: running; }
+    @keyframes deriva {
+      from { transform: translate3d(-8vw, 3vw, 0) scale(0.95); }
+      to { transform: translate3d(9vw, -5vw, 0) scale(1.2); }
+    }
+    @keyframes orbita {
+      0% { transform: translate3d(-16vw, 0, 0) scale(0.9); }
+      25% { transform: translate3d(0, -6vw, 0) scale(1.15); }
+      50% { transform: translate3d(16vw, 0, 0) scale(0.95); }
+      75% { transform: translate3d(0, 3vw, 0) scale(1.05); }
+      100% { transform: translate3d(-16vw, 0, 0) scale(0.9); }
+    }
+
+    #grao {
+      z-index: 2;
+      inset: -50%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+      transition: opacity 1.8s var(--ease-saida);
+      animation: grao 1s steps(6) infinite;
+      animation-play-state: paused;
+    }
+    #palco[data-brilho] #grao { opacity: var(--grao); animation-play-state: running; }
+    @keyframes grao {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-6%, 4%); }
+      40% { transform: translate(5%, -7%); }
+      60% { transform: translate(-3%, -4%); }
+      80% { transform: translate(7%, 6%); }
+      100% { transform: translate(0, 0); }
+    }
+
+    /* ---------- Frases no centro ---------- */
+    .frase {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      translate: -50% -50%;
+      width: min(88vw, 19em);
+      margin: 0;
+      text-align: center;
+      color: var(--texto);
+      font-weight: 300;
+      font-size: clamp(1.75rem, 3.4vw, 4.2rem);
+      line-height: 1.14;
+      letter-spacing: -0.03em;
+      word-spacing: 0.08em;
+      text-wrap: balance;
+    }
+    /* Nos "E se…?" a palavra-chave vira luz azul: é a virada. */
+    .e-se em {
+      color: var(--azul-texto);
+      text-shadow: 0 0 32px color-mix(in srgb, var(--azul) 40%, transparent);
+    }
+
+    /*
+      ---------- Universo visual: os desenhos das categorias do app, em volta do "Apresentamos" ----------
+      Três camadas: .ilustra orbita (script: nasce no meio, abre em espiral, segue o mouse em camadas);
+      .flutua boia devagar (CSS); .desenho é o traço (SVG como máscara, na cor da categoria).
+    */
+    .ilustra {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: var(--tam);
+      aspect-ratio: 1;
+      opacity: 0;
+      will-change: transform, opacity;
+      pointer-events: none;
+    }
+    .flutua {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, color-mix(in srgb, var(--cor) 14%, transparent), transparent 78%);
+      animation: flutua var(--dur, 7s) ease-in-out infinite alternate;
+      animation-play-state: paused;
+    }
+    .momento[data-ativo] .flutua { animation-play-state: running; }
+    @keyframes flutua {
+      from { transform: translate(-0.35vw, 0.5vw) rotate(-3deg); }
+      to { transform: translate(0.35vw, -0.6vw) rotate(3deg); }
+    }
+    .desenho {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--cor);
+      -webkit-mask: var(--img) center / contain no-repeat;
+      mask: var(--img) center / contain no-repeat;
+    }
+    /* No escuro, as cores das categorias clareiam um pouco para não sumirem no preto. */
+    :root[data-tema="escuro"] .desenho { background: color-mix(in srgb, var(--cor) 62%, #fff); }
+
+    /*
+      ---------- Proposta de valor: a frase completa, parágrafo por parágrafo ----------
+      Conectores (o quê, para quem, para quê, como) em tinta secundária; o conteúdo em tinta cheia.
+      Cada parágrafo entra inteiro, um depois do outro (script).
+    */
+    .proposta {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      translate: -50% -50%;
+      width: min(86vw, 23em);
+      margin: 0;
+      color: var(--texto);
+      font-size: clamp(1.5rem, 2.7vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1.18;
+      letter-spacing: -0.028em;
+      word-spacing: 0.06em;
+    }
+    .clausula { margin: 0; text-wrap: pretty; opacity: 0; }
+    /* Respiro entre as partes da proposta: bem maior que o espaço entre linhas de uma mesma parte. */
+    .clausula + .clausula { margin-top: 0.75em; }
+    .conector { color: var(--texto-2); font-weight: 300; }
+    /* O logo no lugar do nome, na altura das maiúsculas do texto. */
+    .logo-texto {
+      display: inline-block;
+      height: 0.86em;
+      aspect-ratio: 1431 / 369;
+      vertical-align: -0.04em;
+      background: var(--texto);
+      -webkit-mask: url(img/coral.svg) center / contain no-repeat;
+      mask: url(img/coral.svg) center / contain no-repeat;
+    }
+    .proposta em {
+      font-style: italic;
+      font-weight: 500;
+      color: var(--azul-texto);
+      text-shadow: 0 0 32px color-mix(in srgb, var(--azul) 40%, transparent);
+    }
+
+    /* ---------- Tambor: Segurança, Confiança, Descoberta ---------- */
+    [data-tambor] {
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      row-gap: clamp(0.5rem, 2vh, 1.75rem);
+      --tam: clamp(3rem, 8.4vw, 9.5rem);
+      --linha: calc(var(--tam) * 1.08);
+      --raio: calc(var(--linha) * 1.95);
+    }
+    .tambor {
+      position: relative;
+      width: 100vw;
+      height: calc(var(--linha) * 3.6);
+      perspective: 1400px;
+      -webkit-mask-image: linear-gradient(transparent 6%, #000 40%, #000 60%, transparent 94%);
+      mask-image: linear-gradient(transparent 6%, #000 40%, #000 60%, transparent 94%);
+    }
+    .anel {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      transform: translateZ(calc(var(--raio) * -1)) rotateX(calc(var(--giro, 0) * 30deg));
+      transition: transform 1.1s var(--ease-saida);
+    }
+    .face {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: var(--linha);
+      margin-top: calc(var(--linha) / -2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--texto-3);
+      font-size: var(--tam);
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -0.045em;
+      backface-visibility: hidden;
+      transform: rotateX(calc(var(--k) * -30deg)) translateZ(var(--raio));
+      transition: color 0.9s var(--ease-saida);
+    }
+    .face[data-ativa] { color: var(--texto); }
+
+    .legendas {
+      position: relative;
+      width: min(88vw, 26em);
+      height: 3em;
+      font-size: clamp(1.05rem, 1.7vw, 1.7rem);
+    }
+    .legenda {
+      position: absolute;
+      inset: 0 0 auto 0;
+      margin: 0;
+      text-align: center;
+      color: var(--texto-2);
+      font-weight: 300;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+      opacity: 0;
+      filter: blur(12px);
+      transform: translateY(10px);
+      transition:
+        opacity 0.7s var(--ease-saida),
+        filter 0.7s var(--ease-saida),
+        transform 0.7s var(--ease-saida);
+    }
+    .momento[data-ativo] .legenda[data-ativa] {
+      opacity: 1;
+      filter: blur(0);
+      transform: none;
+      transition-delay: 0.35s;
+    }
+
+    /*
+      ---------- Introduzimos: Coral ----------
+      A cada 1,5 s troca a textura e alterna: marca vazada (vídeo por dentro das letras)
+      e marca branca sobre o vídeo em tela cheia.
+    */
+    [data-vazado] { --larg: min(56vw, 980px); }
+    .vazado {
+      position: absolute;
+      inset: 0;
+      animation: respira 10s ease-in-out infinite alternate;
+      animation-play-state: paused;
+    }
+    /* Laço só com o momento na tela. */
+    .momento[data-ativo] .vazado { animation-play-state: running; }
+    /* Sem a máscara pronta (fonte carregando) não mostra nada. */
+    .vazado:not([data-mascara]) { visibility: hidden; }
+    @keyframes respira { from { scale: 1; } to { scale: 1.035; } }
+    .texturas {
+      position: absolute;
+      inset: 0;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-size: var(--larg) auto;
+      mask-size: var(--larg) auto;
+    }
+    [data-modo="mascara"] .texturas {
+      -webkit-mask-image: var(--mascara);
+      mask-image: var(--mascara);
+    }
+    .texturas > * {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.45s var(--ease);
+    }
+    .texturas > [data-ativa] { opacity: 1; }
+    .marca-branca {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      translate: -50% -50%;
+      width: var(--larg);
+      aspect-ratio: var(--proporcao, 2.6);
+      background: #fff;
+      -webkit-mask: var(--mascara) center / 100% 100% no-repeat;
+      mask: var(--mascara) center / 100% 100% no-repeat;
+      opacity: 0;
+    }
+    [data-modo="cheio"] .marca-branca { opacity: 1; }
+
+    /*
+      ---------- Transição em aquarela (7 → 8) ----------
+      O slide 8 entra por cima, mas só aparece dentro das manchas de tinta (máscara desenhada num canvas fora
+      da tela); o "Apresentamos", com o branco e a luz do palco, fica intacto até ser todo coberto.
+    */
+    .momento[data-aquarela] {
+      opacity: 1 !important;
+      filter: none !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .momento[data-chegada-seca] {
+      z-index: 3;
+      transition: none !important;
+      filter: none !important;
+      transform: none !important;
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+
+    /* ---------- Final: a marca sobre cor viva ---------- */
+    .shader.fundo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .marca {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      translate: -50% -50%;
+      width: min(34vw, 560px);
+      height: auto;
+      fill: #fff;
+      filter: drop-shadow(0 6px 40px rgb(0 0 0 / 0.14));
+    }
+    .marca path { transform-box: fill-box; transform-origin: center; }
+
+    /* ---------- Cursor próprio: anel fino que some parado ---------- */
+    :root.cursor-proprio, :root.cursor-proprio * { cursor: none; }
+    .cursor {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 10;
+      width: 30px;
+      height: 30px;
+      margin: -15px 0 0 -15px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px #fff;
+      mix-blend-mode: difference;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.6s var(--ease), scale 0.2s var(--ease);
+    }
+    .cursor[data-visivel] { opacity: 1; }
+    .cursor[data-press] { scale: 0.7; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .momento { transition: opacity 0.3s; filter: none !important; transform: none !important; }
+      .foto img { transform: none !important; transition: filter 0.3s; }
+      .veu { transition: opacity 0.3s; }
+      .legenda { filter: none !important; transform: none !important; transition: opacity 0.3s !important; }
+      .anel { transition: none !important; }
+      #luz i, #grao, .vazado, .flutua { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main id="palco">
+    <div id="luz" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+    <!-- 1. Branco. -->
+    <section class="momento" data-passos="0" aria-label="Abertura"></section>
+
+    <!-- 2. Chegar numa cidade pela primeira vez. -->
+    <section class="momento" data-passos="0">
+      <div class="foto" style="--foco: 50% 42%">
+        <img src="img/rua.jpg" alt="Mulher de vestido amarelo caminha de braços erguidos por uma rua de pedra entre casarões coloridos" decoding="async" />
+      </div>
+    </section>
+
+    <!-- 3. A decisão que parecia simples. Passo 1: perde a cor e as dúvidas chegam sozinhas, do desfoque. -->
+    <section class="momento" data-passos="1" data-cena-duvidas>
+      <div class="foto" style="--foco: 54% 30%">
+        <img src="img/calcada.jpg" alt="Mulher sentada no meio-fio de uma rua de pedra, com o celular na mão" decoding="async" />
+      </div>
+      <div class="veu"></div>
+      <p class="pergunta" data-coreo="desfoque">Será que é tranquilo ir sozinha?</p>
+      <p class="pergunta" data-coreo="desfoque">E se meus planos mudarem?</p>
+      <p class="pergunta" data-coreo="desfoque">E se eu tiver perdendo algum rolê?</p>
+    </section>
+
+    <!-- 4. O problema, numa frase: ela se monta palavra por palavra e "livre" sobe letra por letra. -->
+    <section class="momento" data-passos="0" data-brilho="normal" data-luz="0.85" data-cena-frase>
+      <p class="frase" data-coreo="montar">Nem toda mulher que viaja sozinha se sente <em>livre</em> para experimentar o novo.</p>
+    </section>
+
+    <!-- 5. As três faltas: o tambor gira sozinho a cada 3 s; ↓ e ↑ giram na mão. -->
+    <section class="momento" data-passos="0" data-brilho="forte" data-tambor>
+      <div class="tambor" aria-hidden="true"><div class="anel"></div></div>
+      <div class="legendas">
+        <p class="legenda" data-palavra="Segurança">A incerteza de estar em um ambiente desconhecido.</p>
+        <p class="legenda" data-palavra="Confiança">A ausência de recomendações sensíveis à experiência feminina.</p>
+        <p class="legenda" data-palavra="Descoberta">A dificuldade de acessar a cidade para além do circuito turístico.</p>
+      </div>
+    </section>
+
+    <!-- 6. A virada. Passo 1: a primeira pergunta sobe e se desfaz, a segunda se monta no lugar. -->
+    <section class="momento" data-passos="1" data-brilho="normal" data-cena-e-se>
+      <p class="frase e-se" data-coreo="montar">E se sentir-se mais segura não significasse abrir mão da <em>espontaneidade</em>?</p>
+      <p class="frase e-se" data-coreo="montar">E se a liberdade de explorar fosse construída <em>coletivamente</em>?</p>
+    </section>
+
+    <!--
+      7. "Apresentamos": a palavra sobe letra por letra de uma fresta e, em volta, chega voando o universo
+      visual da Coral: os desenhos das categorias do app (prototype/app/assets/icons/categories), cada um
+      na cor da sua categoria (ExploreCategoryTones, skill mare-design). Depois boiam e seguem o mouse em camadas.
+    -->
+    <section class="momento" data-passos="0" data-brilho="normal" data-cena-apresentamos>
+      <span class="ilustra" style="--tam: 13vw; --rot: -10deg; --cor: #5636b8; --prof: 0.9; --dur: 6.5s; --img: url(img/ilustracoes/cultura.svg)"><span class="flutua"><span class="desenho"></span></span></span>
+      <span class="ilustra" style="--tam: 12vw; --rot: 8deg; --cor: #6e4326; --prof: 0.6; --dur: 7.5s; --img: url(img/ilustracoes/cafe.svg)"><span class="flutua"><span class="desenho"></span></span></span>
+      <span class="ilustra" style="--tam: 12vw; --rot: 6deg; --cor: #8e5f00; --prof: 0.4; --dur: 8s; --img: url(img/ilustracoes/arte.svg)"><span class="flutua"><span class="desenho"></span></span></span>
+      <span class="ilustra" style="--tam: 15vw; --rot: -4deg; --cor: #0d646b; --prof: 0.7; --dur: 7s; --img: url(img/ilustracoes/historia.svg)"><span class="flutua"><span class="desenho"></span></span></span>
+      <span class="ilustra" style="--tam: 13vw; --rot: 7deg; --cor: #9e1f4c; --prof: 0.5; --dur: 6s; --img: url(img/ilustracoes/museu.svg)"><span class="flutua"><span class="desenho"></span></span></span>
+      <span class="ilustra" style="--tam: 11vw; --rot: -14deg; --cor: #b4410e; --prof: 0.8; --dur: 8.5s; --img: url(img/ilustracoes/restaurantes.svg)"><span class="flutua"><span class="desenho"></span></span></span>
+      <p class="frase" data-coreo="subir">Apresentamos</p>
+    </section>
+
+    <!--
+      8. Apresentamos: Coral. Logo oficial (img/coral.svg). A cada 1,5 s troca a textura
+      dos destinos e alterna entre a marca vazada e a marca branca sobre o vídeo
+      (vídeos gerados no Magnific, ver video/CREDITS.md).
+    -->
+    <section class="momento" data-passos="0" data-brilho="normal" data-luz="0.4" data-vazado data-modo="mascara" aria-label="Coral">
+      <div class="vazado">
+        <div class="texturas">
+          <video src="video/mar.mp4" muted loop playsinline preload="auto"></video>
+          <video src="video/folhagem.mp4" muted loop playsinline preload="auto"></video>
+          <video src="video/areia.mp4" muted loop playsinline preload="auto"></video>
+          <video src="video/entardecer.mp4" muted loop playsinline preload="auto"></video>
+        </div>
+        <div class="marca-branca"></div>
+      </div>
+    </section>
+
+    <!--
+      9. A proposta de valor, completa. Cada parágrafo (o quê, para quem, para quê, como) entra sozinho,
+      um depois do outro (clicar adianta). RASCUNHO a partir de docs/visao-do-servico.md e
+      conceito-do-servico.md (D-03, D-05, D-06), esperando o OK do Rodrigo.
+    -->
+    <section class="momento" data-passos="3" data-brilho="normal" data-cena-proposta>
+      <div class="proposta">
+        <p class="clausula"><span class="conector"><span class="logo-texto" role="img" aria-label="Coral"></span> é um serviço de</span> <span class="vaga">descoberta de rolês locais,</span></p>
+        <p class="clausula"><span class="conector">para ajudar</span> <span class="vaga">mulheres que viajam sozinhas ou com mais uma pessoa</span></p>
+        <p class="clausula"><span class="conector">a</span> <span class="vaga">explorar a cidade além do circuito turístico <em>com confiança</em>,</span></p>
+        <p class="clausula"><span class="conector">através de</span> <span class="vaga">recomendações de quem mora lá, com curadoria e informação de segurança.</span></p>
+      </div>
+    </section>
+
+    <!-- 10. Final: o logo sobre cor viva, como os destinos. Aparece no lugar, saindo do desfoque. -->
+    <section class="momento" data-passos="0" data-final>
+      <canvas class="shader fundo" data-semente="0"></canvas>
+      <svg class="marca" viewBox="0 0 1431 369" role="img" aria-label="Coral">
+        <path d="M171.986 18.432C213.022 16.541 277.578 32.752 298.663 74.284C309.24 95.117 294.071 125.266 272.287 132.798C247.022 141.535 238.545 127.239 218.601 115.658C148.307 79.521 75.14 150.098 100.575 222.18C107.59 241.996 123.404 259.127 142.96 267.735C170.38 279.753 202.187 275.716 225.736 257.231C235.215 249.876 242.645 240.95 254.178 236.559C264.259 232.761 275.437 233.125 285.25 237.571C298.388 243.508 305.135 253.769 310.093 266.702C313.311 282.941 310.565 298.294 299.226 310.995C235.41 382.472 133.698 386.6 60.688 326.144C26.888 298.21 5.47299 258.069 1.09499 214.439C-3.22801 168.018 14.604 120.087 44.245 84.622C77.503 44.829 120.678 23.081 171.986 18.432Z" />
+        <path d="M458.779 0.392993C498.467 -2.18401 540.07 10.582 570.137 36.935C598.096 61.604 615.265 96.255 617.958 133.444C621.861 194.388 583.799 233.98 548.249 277.663C524.905 306.493 500.864 334.751 476.147 362.412C473.344 365.961 467.281 367.028 463.738 363.81C453.845 354.822 445.025 344.214 436.183 334.152C420.201 315.726 404.453 297.098 388.941 278.273C371.623 257.47 353.184 235.702 339.526 212.392C310.16 162.27 317.333 100.338 352.963 55.421C380.214 21.065 416.113 5.37199 458.779 0.392993ZM474.444 214.37C511.622 210.851 538.979 177.967 535.674 140.77C532.369 103.572 499.643 76.027 462.427 79.117C424.907 82.233 397.087 115.285 400.419 152.787C403.751 190.289 436.962 217.918 474.444 214.37Z" />
+        <path d="M772.84 19.31C775.86 19.083 778.89 18.913 781.92 18.802C800.5 18.18 836.06 24.971 849.47 37.674C858.04 45.722 863.04 56.858 863.37 68.609C863.58 79.337 858.82 93.758 851.17 101.085C831.6 119.833 812.63 110.451 790.91 110.275C763.21 110.35 743.03 133.418 738.09 159.274C735.23 174.275 736.32 193.368 736.36 209.01L736.56 284.921C736.62 308.888 739.33 329.476 721.38 348.19C713.23 355.208 706.36 359.404 695.44 361.226C682.87 363.224 670.02 360.1 659.76 352.551C631.53 331.972 640.61 279.755 640.17 248.272C639.31 186.981 633.57 128.601 673.11 76.933C698.47 43.786 731.65 25.379 772.84 19.31Z" />
+        <path d="M1007.76 20.428C1092.9 15.416 1167.71 73.756 1181.59 157.962C1186.23 190.115 1184.41 224.423 1184.42 257.021C1184.42 280.664 1188.72 322.64 1175.61 341.424C1168.44 351.813 1157.41 358.903 1144.98 361.112C1120.69 365.396 1098.8 349.7 1094.59 325.392C1077.87 341.065 1066.13 349.241 1044.74 358.148C991.27 376.473 939.33 363.436 896.6 327.94C863.59 300.325 842.97 260.678 839.31 217.796C837 192.603 840.47 169.489 848.66 145.671C873.72 72.775 931.53 27.309 1007.76 20.428ZM1017.92 277.002C1065.24 268.912 1097.7 220.213 1089.72 173.518C1086.18 151.88 1074.2 132.53 1056.41 119.71C1040.62 108.54 1022.28 104.603 1003.18 106.227C926.79 118.891 901.1 217.341 963.35 264.129C977.4 274.685 1000.59 280.088 1017.92 277.002Z" />
+        <path d="M1247.42 6.23201C1251.72 6.08601 1255.77 5.91101 1260.02 6.71801C1277.8 10.256 1292.31 23.062 1298.02 40.261C1302.68 53.853 1301.52 74.049 1301.5 88.89L1301.3 175.725C1301.25 202.249 1295.32 254.556 1330.03 263.875C1345.28 267.966 1358.63 257.284 1372.09 251.67C1404.22 238.272 1436.34 268.221 1429.84 301.213C1425.6 323.154 1405.37 338.121 1387.96 349.719C1376.2 357.043 1363.19 362.148 1349.59 364.783C1263.2 381.494 1202.02 312.606 1203.01 231.181C1203.12 222.13 1203.01 212.876 1203.03 203.801L1203.12 134.361C1203.08 107.495 1202.05 79.633 1203.56 52.897C1204.97 28.082 1224.03 10.686 1247.42 6.23201Z" />
+      </svg>
+    </section>
+
+    <div id="grao" aria-hidden="true"></div>
+  </main>
+  <div class="cursor" aria-hidden="true"></div>
+
+  <script>
+    const raiz = document.documentElement
+    const palco = document.getElementById('palco')
+    const momentos = [...document.querySelectorAll('.momento')]
+    const reduzido = matchMedia('(prefers-reduced-motion: reduce)')
+    const params = new URLSearchParams(location.search)
+    const limitar = (n, min, max) => Math.min(max, Math.max(min, n))
+    const EXPO = 'cubic-bezier(0.16, 1, 0.3, 1)'
+    const SAIDA = 'cubic-bezier(0.22, 1, 0.36, 1)'
+
+    let atual = limitar((Number(params.get('momento')) || 1) - 1, 0, momentos.length - 1)
+    let passo = 0
+    const saidas = new Map()
+    const prontos = new Map()
+
+    // =====================================================================
+    // Texto coreografado: palavras (.palavra > .miolo) e, na ênfase, letras.
+    // =====================================================================
+    function dividir(el) {
+      const grupos = []
+      let espaco = false
+      const juntar = (no) => {
+        if (!espaco && grupos.length) grupos.at(-1).push(no)
+        else grupos.push([no])
+        espaco = false
+      }
+      for (const no of [...el.childNodes]) {
+        if (no.nodeType === Node.TEXT_NODE) {
+          for (const m of no.textContent.matchAll(/(\s+)|(\S+)/g)) {
+            if (m[1]) espaco = true
+            else juntar(document.createTextNode(m[2]))
+          }
+        } else juntar(no.cloneNode(true))
+      }
+      el.textContent = ''
+      el._palavras = grupos.map((nos, i) => {
+        const palavra = document.createElement('span')
+        palavra.className = 'palavra'
+        const miolo = document.createElement('span')
+        miolo.className = 'miolo'
+        miolo.append(...nos)
+        palavra.append(miolo)
+        el.append(palavra)
+        if (i < grupos.length - 1) el.append(' ')
+        // A ênfase (ou a palavra inteira, no modo "subir") se quebra em letras.
+        const alvo = el.dataset.coreo === 'subir' ? miolo : miolo.querySelector('em')
+        let letras = []
+        if (alvo) {
+          palavra.classList.add('enfase')
+          const texto = alvo.textContent
+          alvo.textContent = ''
+          for (const c of texto) {
+            // Espaço fica como texto: num inline-block sozinho ele sumiria.
+            if (c === ' ') { alvo.append(' '); continue }
+            const l = document.createElement('span')
+            l.className = 'letra'
+            l.textContent = c
+            alvo.append(l)
+            letras.push(l)
+          }
+        }
+        return { palavra, miolo, letras, em: miolo.querySelector('em') }
+      })
+      el._anims = []
+      el._timers = []
+      el._vez = 0
+    }
+    document.querySelectorAll('[data-coreo]').forEach(dividir)
+
+    function tocar(el, alvo, quadros, opcoes) {
+      if (reduzido.matches) {
+        quadros = quadros.map(({ opacity, offset }) => ({ opacity: opacity ?? 1, ...(offset != null && { offset }) }))
+        opcoes = { ...opcoes, duration: 250, delay: 0 }
+      }
+      const a = alvo.animate(quadros, { fill: 'both', ...opcoes })
+      el._anims.push(a)
+      return a
+    }
+    function zerar(el) {
+      el._vez++
+      el._timers.forEach(clearTimeout)
+      el._timers = []
+      el._anims.forEach((a) => a.cancel())
+      el._anims = []
+    }
+
+    // Agrupa as palavras por linha, como o navegador quebrou o texto.
+    function linhas(el) {
+      const grupos = []
+      let topo = null
+      el._palavras.forEach((p) => {
+        const t = Math.round(p.palavra.offsetTop)
+        if (t !== topo) { grupos.push([]); topo = t }
+        grupos.at(-1).push(p)
+      })
+      return grupos
+    }
+
+    const visivel = (p) => p.palavra.style.display !== 'none'
+
+    // Mostra uma palavra; as que já estão abrem espaço deslizando (FLIP), com a mesma curva.
+    function revelar(el, p) {
+      const antes = el._palavras.filter((q) => q !== p && visivel(q))
+      const de = antes.map((q) => q.palavra.getBoundingClientRect())
+      antes.forEach((q) => q.flip?.cancel())
+      p.palavra.style.display = ''
+      if (!reduzido.matches) {
+        let dxLinha = 0
+        antes.forEach((q, i) => {
+          const r = q.palavra.getBoundingClientRect()
+          const dx = de[i].left - r.left
+          const dy = de[i].top - r.top
+          if (q.palavra.parentElement === p.palavra.parentElement) dxLinha = dx
+          if (Math.abs(dx) + Math.abs(dy) < 0.5) return
+          q.flip = q.palavra.animate(
+            [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }],
+            { duration: 900, easing: EXPO },
+          )
+          el._anims.push(q.flip)
+        })
+        // A palavra nova anda junto com a linha que abre espaço: as duas nunca se encostam.
+        if (dxLinha) {
+          p.flip = p.palavra.animate(
+            [{ transform: `translateX(${dxLinha}px)` }, { transform: 'none' }],
+            { duration: 900, easing: EXPO },
+          )
+          el._anims.push(p.flip)
+        }
+      }
+      if (!p.letras.length) {
+        // Pousa: chega de baixo e da direita num arco curto, saindo do desfoque.
+        tocar(el, p.miolo, [
+          { opacity: 0, transform: 'translate(0.32em, 0.5em) rotate(5deg)', filter: 'blur(8px)' },
+          { opacity: 1, transform: 'none', filter: 'blur(0px)' },
+        ], { duration: 900, easing: EXPO })
+        return
+      }
+      // A palavra-chave: as letras sobem uma a uma e depois ela ganha peso (e luz, nos "E se").
+      tocar(el, p.miolo, [{ opacity: 0 }, { opacity: 1 }], { duration: 1 })
+      p.letras.forEach((l, j) => {
+        tocar(el, l, [
+          { opacity: 0, transform: 'translateY(0.6em) rotate(8deg)', filter: 'blur(6px)' },
+          { opacity: 1, transform: 'none', filter: 'blur(0px)' },
+        ], { duration: 950, delay: j * 40, easing: EXPO })
+      })
+      // fill "backwards": ao terminar, vale o CSS (peso e azul acompanham o tema, tecla L).
+      const depois = p.letras.length * 40 + 450
+      tocar(el, p.em, [{ fontWeight: 300 }, { fontWeight: 500 }], { duration: 900, delay: depois, easing: SAIDA, fill: 'backwards' })
+      if (el.classList.contains('e-se')) {
+        const tinta = getComputedStyle(el).color
+        const luz = getComputedStyle(p.em)
+        tocar(el, p.em, [
+          { color: tinta, textShadow: '0 0 0 transparent' },
+          { color: luz.color, textShadow: luz.textShadow },
+        ], { duration: 1100, delay: depois, easing: SAIDA, fill: 'backwards' })
+      }
+    }
+
+    const PASSO_MS = 150
+    const entradas = {
+      // Palavra por palavra, saindo do desfoque (as perguntas sobre a foto em P&B).
+      desfoque(el, base) {
+        el._palavras.forEach((p, i) => {
+          tocar(el, p.miolo, [
+            { opacity: 0, transform: 'translateY(14px)', filter: 'blur(18px)' },
+            { opacity: 1, transform: 'none', filter: 'blur(0px)' },
+          ], { duration: 900, delay: base + i * 140, easing: SAIDA })
+        })
+      },
+      // A frase se monta palavra por palavra, linha por linha, sempre centrada (referência Bleap).
+      montar(el, base) {
+        const ps = el._palavras
+        // 1. Quebra final das linhas, com tudo no fluxo.
+        el.textContent = ''
+        ps.forEach((p, i) => {
+          p.palavra.style.display = ''
+          el.append(p.palavra)
+          if (i < ps.length - 1) el.append(' ')
+        })
+        const grupos = linhas(el)
+        // 2. Cada linha vira um bloco: o que entra numa linha não mexe na quebra da outra.
+        el.textContent = ''
+        grupos.forEach((g) => {
+          const linha = document.createElement('span')
+          linha.className = 'linha'
+          g.forEach((p, i) => {
+            linha.append(p.palavra)
+            if (i < g.length - 1) linha.append(' ')
+          })
+          el.append(linha)
+        })
+        // 3. Esconde todas e revela no ritmo, com um respiro antes e depois da palavra-chave.
+        ps.forEach((p) => { p.palavra.style.display = 'none' })
+        let t = base
+        ps.forEach((p) => {
+          const chave = p.letras.length > 0
+          if (chave) t += 220
+          el._timers.push(setTimeout(() => revelar(el, p), reduzido.matches ? 0 : t))
+          t += chave ? 420 : PASSO_MS
+        })
+      },
+      // As letras sobem de uma fresta, uma a uma.
+      subir(el, base) {
+        el._palavras.forEach((p) => {
+          tocar(el, p.miolo, [{ opacity: 0 }, { opacity: 1 }], { duration: 1, delay: base })
+          p.letras.forEach((l, j) => {
+            tocar(el, l, [{ transform: 'translateY(110%)' }, { transform: 'none' }], {
+              duration: 1300,
+              delay: base + j * 75,
+              easing: EXPO,
+            })
+          })
+        })
+      },
+    }
+
+    function entrar(el, base = 0) {
+      zerar(el)
+      const vez = el._vez
+      // Espera a fonte: a quebra das linhas depende dela.
+      document.fonts.ready.then(() => { if (el._vez === vez) entradas[el.dataset.coreo](el, base) })
+    }
+    // Sai subindo e se desfazendo, numa onda.
+    function sair(el) {
+      el._timers.forEach(clearTimeout)
+      el._timers = []
+      el._palavras.filter(visivel).forEach((p, i) => {
+        tocar(el, p.miolo, [
+          { opacity: 1, transform: 'none', filter: 'blur(0px)' },
+          { opacity: 0, transform: 'translateY(-0.45em)', filter: 'blur(10px)' },
+        ], { duration: 520, delay: i * 24, easing: 'cubic-bezier(0.5, 0, 0.9, 0.4)' })
+      })
+    }
+
+    // =====================================================================
+    // Tema (L)
+    // =====================================================================
+    function definirTema(tema) {
+      raiz.dataset.tema = tema
+      document.getElementById('cor-tema').content = tema === 'escuro' ? '#000000' : '#ffffff'
+    }
+    if (params.get('tema') === 'escuro') definirTema('escuro')
+
+    // =====================================================================
+    // Momentos e passos
+    // =====================================================================
+    const passosDe = (m) => Number(m.dataset.passos || 0)
+
+    function definirPasso(m, n) {
+      if (n > 0) m.dataset.passo = n
+      else m.removeAttribute('data-passo')
+      m.dispatchEvent(new CustomEvent('passo', { detail: n }))
+    }
+
+    function mostrar(i) {
+      // Uma transição em aquarela ainda em curso termina na hora antes de qualquer troca.
+      aquarelaAtual?.cancelar()
+      const anterior = momentos.find((m) => m.hasAttribute('data-ativo'))
+      const aquarela = anterior === cenaApresentamos && momentos[i] === cenaVazado && !reduzido.matches && aquarelaPossivel()
+      if (aquarela) {
+        anterior.setAttribute('data-aquarela', '')
+        momentos[i].setAttribute('data-chegada-seca', '')
+      }
+      momentos.forEach((m, j) => {
+        clearTimeout(prontos.get(m))
+        if (j === i) {
+          clearTimeout(saidas.get(m))
+          m.removeAttribute('data-saindo')
+          definirPasso(m, 0)
+          m.setAttribute('data-ativo', '')
+          m.inert = false
+          prontos.set(m, setTimeout(() => m.setAttribute('data-pronto', ''), 1150))
+          m.dispatchEvent(new CustomEvent('entrar'))
+        } else {
+          m.inert = true
+          if (!m.hasAttribute('data-ativo')) return
+          m.removeAttribute('data-ativo')
+          m.removeAttribute('data-pronto')
+          m.setAttribute('data-saindo', '')
+          m.dispatchEvent(new CustomEvent('sair'))
+          // Sai como estava e só depois volta ao começo (na aquarela, só depois do último pingo).
+          const tempoSaida = m.hasAttribute('data-aquarela') ? DURACAO_AQUARELA + 200 : 1200
+          saidas.set(m, setTimeout(() => {
+            m.removeAttribute('data-saindo')
+            definirPasso(m, 0)
+            m.dispatchEvent(new CustomEvent('saiu'))
+          }, tempoSaida))
+        }
+      })
+      if (aquarela) transicaoAquarela(anterior, momentos[i])
+      const m = momentos[i]
+      if (m.dataset.brilho) palco.dataset.brilho = m.dataset.brilho
+      else palco.removeAttribute('data-brilho')
+      palco.style.setProperty('--luz', m.dataset.luz || 1)
+      passo = 0
+    }
+
+    function avancar() {
+      const m = momentos[atual]
+      if (passo < passosDe(m)) { definirPasso(m, ++passo); return }
+      if (atual < momentos.length - 1) mostrar(++atual)
+    }
+
+    function voltar() {
+      const m = momentos[atual]
+      if (passo > 0) { definirPasso(m, --passo); return }
+      if (atual > 0) {
+        mostrar(--atual)
+        // Volta para o fim do momento anterior.
+        const anterior = momentos[atual]
+        passo = passosDe(anterior)
+        if (passo) definirPasso(anterior, passo)
+      }
+    }
+
+    // =====================================================================
+    // 3. Dúvidas: um clique, a foto perde a cor e as perguntas chegam sozinhas
+    // =====================================================================
+    const duvidas = document.querySelector('[data-cena-duvidas]')
+    const perguntas = [...duvidas.querySelectorAll('.pergunta')]
+    let cascata = []
+
+    duvidas.addEventListener('passo', (e) => {
+      cascata.forEach(clearTimeout)
+      cascata = []
+      if (e.detail < 1) {
+        perguntas.forEach((p) => { zerar(p); p.removeAttribute('data-recuo') })
+        return
+      }
+      const atrasos = reduzido.matches ? [0, 0, 0] : [900, 2400, 3900]
+      perguntas.forEach((p, k) => {
+        cascata.push(setTimeout(() => {
+          if (!reduzido.matches) perguntas.forEach((q, j) => q.toggleAttribute('data-recuo', j < k))
+          entrar(p)
+        }, atrasos[k]))
+      })
+    })
+
+    // =====================================================================
+    // 4. Frase única
+    // =====================================================================
+    const cenaFrase = document.querySelector('[data-cena-frase]')
+    const frase = cenaFrase.querySelector('.frase')
+    cenaFrase.addEventListener('entrar', () => entrar(frase, 350))
+    cenaFrase.addEventListener('saiu', () => zerar(frase))
+
+    // =====================================================================
+    // 5. Tambor: gira sozinho; ↓ e ↑ giram na mão
+    // =====================================================================
+    const cenaTambor = document.querySelector('[data-tambor]')
+    const anel = cenaTambor.querySelector('.anel')
+    const legendas = [...cenaTambor.querySelectorAll('.legenda')]
+    const palavrasTambor = legendas.map((l) => l.dataset.palavra)
+    const FACES = 12 // 12 faces de 30°: as três palavras se repetem e o giro nunca acaba
+    for (let k = 0; k < FACES; k++) {
+      const f = document.createElement('span')
+      f.className = 'face'
+      f.style.setProperty('--k', k)
+      f.textContent = palavrasTambor[k % palavrasTambor.length]
+      anel.append(f)
+    }
+    const faces = [...anel.children]
+    const resto = (a, n) => ((a % n) + n) % n
+    const GIRO_MS = 3000
+    let giro = 0
+    let relogioTambor = 0
+
+    function girar(n, seco) {
+      giro = n
+      if (seco) anel.style.transition = 'none'
+      anel.style.setProperty('--giro', giro)
+      faces.forEach((f, j) => f.toggleAttribute('data-ativa', j === resto(giro, FACES)))
+      legendas.forEach((l, j) => l.toggleAttribute('data-ativa', j === resto(giro, palavrasTambor.length)))
+      if (seco) { anel.getBoundingClientRect(); anel.style.transition = '' }
+    }
+    function ligarRelogioTambor() {
+      clearInterval(relogioTambor)
+      relogioTambor = setInterval(() => girar(giro + 1), GIRO_MS)
+    }
+    function girarNaMao(sentido) {
+      girar(giro + sentido)
+      ligarRelogioTambor()
+    }
+    girar(0, true)
+    cenaTambor.addEventListener('entrar', () => { girar(0, true); ligarRelogioTambor() })
+    cenaTambor.addEventListener('sair', () => clearInterval(relogioTambor))
+
+    // =====================================================================
+    // 6. E se…? (passo 1 troca a pergunta)
+    // =====================================================================
+    const cenaESe = document.querySelector('[data-cena-e-se]')
+    const [eSe1, eSe2] = cenaESe.querySelectorAll('.frase')
+    let eSeNaTela = null
+    function sincronizarESe() {
+      const alvo = cenaESe.dataset.passo === '1' ? eSe2 : eSe1
+      if (alvo === eSeNaTela) return
+      if (eSeNaTela) sair(eSeNaTela)
+      entrar(alvo, eSeNaTela ? 420 : 350)
+      eSeNaTela = alvo
+    }
+    // Espera um quadro: ao voltar do momento seguinte, o passo já chega como 1.
+    cenaESe.addEventListener('entrar', () => { eSeNaTela = null; requestAnimationFrame(sincronizarESe) })
+    cenaESe.addEventListener('passo', () => { if (eSeNaTela && cenaESe.hasAttribute('data-ativo')) sincronizarESe() })
+    cenaESe.addEventListener('saiu', () => { zerar(eSe1); zerar(eSe2); eSeNaTela = null })
+
+    // =====================================================================
+    // 7. Apresentamos
+    // =====================================================================
+    const cenaApresentamos = document.querySelector('[data-cena-apresentamos]')
+    const apresentamos = cenaApresentamos.querySelector('[data-coreo]')
+    const ilustras = [...cenaApresentamos.querySelectorAll('.ilustra')]
+    Object.assign(cenaApresentamos, { _anims: [], _timers: [], _vez: 0 })
+
+    // Os desenhos nascem juntos no meio e se abrem girando, em espiral; depois o "Apresentamos" se revela
+    // e eles ficam orbitando em volta, cada um na sua distância, seguindo o mouse em camadas.
+    const ABRIR_S = 1.7 // tempo da espiral
+    const ORBITA_RAD_S = 0.09 // velocidade da órbita (uma volta em ~70 s)
+    const orbitas = ilustras.map((il, i) => ({
+      il,
+      a0: (i / ilustras.length) * Math.PI * 2 - Math.PI / 2 + (i % 2 ? 0.16 : -0.1),
+      raio: [1, 0.93, 1.05, 0.97, 1.03, 0.9][i] ?? 1,
+      prof: Number(il.style.getPropertyValue('--prof')) || 0.5,
+      rot: parseFloat(il.style.getPropertyValue('--rot')) || 0,
+    }))
+    let relogioOrbita = 0
+    let inicioOrbita = 0
+    const mouse = { x: 0, y: 0, alvoX: 0, alvoY: 0 }
+    addEventListener('pointermove', (e) => {
+      mouse.alvoX = e.clientX / innerWidth - 0.5
+      mouse.alvoY = e.clientY / innerHeight - 0.5
+    })
+    function quadroOrbita(agora) {
+      const t = (agora - inicioOrbita) / 1000
+      const parado = reduzido.matches
+      const e = parado ? 1 : 1 - Math.pow(1 - limitar(t / ABRIR_S, 0, 1), 3)
+      mouse.x += (mouse.alvoX - mouse.x) * 0.05
+      mouse.y += (mouse.alvoY - mouse.y) * 0.05
+      const cx = innerWidth / 2
+      const cy = innerHeight / 2
+      const rx = innerWidth * 0.37
+      const ry = innerHeight * 0.34
+      const k = 0.05 + 0.95 * e
+      for (const o of orbitas) {
+        const th = o.a0 + (parado ? 0 : ORBITA_RAD_S * t) - 2.4 * (1 - e)
+        const x = cx + Math.cos(th) * rx * o.raio * k - mouse.x * 70 * o.prof
+        const y = cy + Math.sin(th) * ry * o.raio * k - mouse.y * 50 * o.prof
+        const giro = (o.rot - 140 * (1 - e)).toFixed(1)
+        const escala = (0.45 + 0.55 * e).toFixed(3)
+        o.il.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%) rotate(${giro}deg) scale(${escala})`
+        o.il.style.opacity = parado ? 1 : limitar(t / 0.4, 0, 1)
+      }
+      relogioOrbita = parado ? 0 : requestAnimationFrame(quadroOrbita)
+    }
+
+    cenaApresentamos.addEventListener('entrar', () => {
+      zerar(cenaApresentamos)
+      cancelAnimationFrame(relogioOrbita)
+      inicioOrbita = performance.now()
+      relogioOrbita = requestAnimationFrame(quadroOrbita)
+      // A palavra se revela quando a espiral já abriu.
+      entrar(apresentamos, reduzido.matches ? 0 : 1250)
+    })
+    cenaApresentamos.addEventListener('saiu', () => {
+      cancelAnimationFrame(relogioOrbita)
+      relogioOrbita = 0
+      zerar(apresentamos)
+      zerar(cenaApresentamos)
+      ilustras.forEach((il) => { il.style.opacity = 0 })
+    })
+
+    // =====================================================================
+    // 9. Proposta de valor: os parágrafos entram sozinhos, um depois do outro
+    // =====================================================================
+    const cenaProposta = document.querySelector('[data-cena-proposta]')
+    const proposta = cenaProposta.querySelector('.proposta')
+    const paragrafos = [...proposta.querySelectorAll('.clausula')]
+    const destaque = proposta.querySelector('em')
+    Object.assign(proposta, { _anims: [], _timers: [], _vez: 0 })
+    const vistos = new Set() // parágrafos já na tela
+    const INTERVALO_MS = 1500
+    let relogioProposta = 0
+    let propostaPronta = false
+
+    // O parágrafo sobe do desfoque inteiro; o conteúdo acende logo depois do conector.
+    function mostrarParagrafo(k, animar) {
+      if (vistos.has(k)) return
+      vistos.add(k)
+      const p = paragrafos[k]
+      if (!animar) {
+        tocar(proposta, p, [{ opacity: 1 }, { opacity: 1 }], { duration: 1 })
+        return
+      }
+      const vaga = p.querySelector('.vaga')
+      tocar(proposta, p, [
+        { opacity: 0, transform: 'translateY(0.6em)', filter: 'blur(12px)' },
+        { opacity: 1, transform: 'none', filter: 'blur(0px)' },
+      ], { duration: 1100, easing: EXPO })
+      tocar(proposta, vaga, [{ opacity: 0 }, { opacity: 1 }], { duration: 900, delay: 200, easing: SAIDA })
+      if (vaga.contains(destaque)) {
+        // fill "backwards": ao terminar vale o CSS (o azul acompanha o tema).
+        const tinta = getComputedStyle(vaga).color
+        const luz = getComputedStyle(destaque)
+        tocar(proposta, destaque, [
+          { fontWeight: 400, color: tinta, textShadow: '0 0 0 transparent' },
+          { fontWeight: 500, color: luz.color, textShadow: luz.textShadow },
+        ], { duration: 1000, delay: 850, easing: SAIDA, fill: 'backwards' })
+      }
+    }
+    function esconderParagrafo(k) {
+      vistos.delete(k)
+      paragrafos[k].getAnimations({ subtree: true }).forEach((a) => a.cancel())
+    }
+    function agendarProximoParagrafo(espera) {
+      clearTimeout(relogioProposta)
+      relogioProposta = setTimeout(() => {
+        if (momentos[atual] !== cenaProposta || passo >= passosDe(cenaProposta)) return
+        definirPasso(cenaProposta, ++passo)
+      }, espera)
+    }
+    // Passo n = parágrafos 0..n na tela. Sozinho a cada 1,5 s; clicar adianta;
+    // voltar (←) tira o último e devolve o ritmo para a mão de quem apresenta.
+    function sincronizarProposta() {
+      const alvo = Number(cenaProposta.dataset.passo || 0)
+      const voltou = alvo + 1 < vistos.size
+      paragrafos.forEach((_, k) => {
+        if (k <= alvo) mostrarParagrafo(k, true)
+        else if (vistos.has(k)) esconderParagrafo(k)
+      })
+      clearTimeout(relogioProposta)
+      if (!voltou && alvo < paragrafos.length - 1) agendarProximoParagrafo(INTERVALO_MS)
+    }
+    function limparProposta() {
+      clearTimeout(relogioProposta)
+      zerar(proposta)
+      vistos.clear()
+      propostaPronta = false
+    }
+
+    cenaProposta.addEventListener('entrar', () => {
+      limparProposta()
+      document.fonts.ready.then(() => requestAnimationFrame(() => {
+        if (!cenaProposta.hasAttribute('data-ativo')) return
+        // Voltando do momento seguinte, chega no último passo: tudo já na tela.
+        const n = Number(cenaProposta.dataset.passo || 0)
+        if (n > 0) for (let k = 0; k <= n; k++) mostrarParagrafo(k, false)
+        else proposta._timers.push(setTimeout(() => mostrarParagrafo(0, true), reduzido.matches ? 0 : 300))
+        if (n < paragrafos.length - 1) agendarProximoParagrafo(INTERVALO_MS + (n > 0 ? 0 : 300))
+        propostaPronta = true
+      }))
+    })
+    cenaProposta.addEventListener('passo', () => {
+      if (propostaPronta && cenaProposta.hasAttribute('data-ativo')) sincronizarProposta()
+    })
+    cenaProposta.addEventListener('sair', () => clearTimeout(relogioProposta))
+    cenaProposta.addEventListener('saiu', limparProposta)
+
+    // =====================================================================
+    // Shader de cor viva: só roda com o momento na tela
+    // =====================================================================
+    const FRAG = `#version 300 es
+    precision highp float;
+    uniform vec2 uRes;
+    uniform float uT;
+    uniform float uSemente;
+    out vec4 cor;
+
+    float h(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float ruido(vec2 p) {
+      vec2 i = floor(p), f = fract(p);
+      vec2 u = f * f * (3. - 2. * f);
+      return mix(mix(h(i), h(i + vec2(1, 0)), u.x), mix(h(i + vec2(0, 1)), h(i + vec2(1, 1)), u.x), u.y);
+    }
+    float fbm(vec2 p) {
+      float v = 0., a = .5;
+      mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
+      // Poucas oitavas: formas grandes e macias, não fumaça.
+      for (int i = 0; i < 3; i++) { v += a * ruido(p); p = m * p; a *= .45; }
+      return v / .8;
+    }
+    // Destinos: mar, mata, sol e areia, coral.
+    const vec3 PAL[12] = vec3[12](
+      vec3(.00, .30, .80), vec3(.10, .70, .96), vec3(.86, .95, 1.),
+      vec3(.03, .42, .26), vec3(.42, .84, .16), vec3(.94, .96, .58),
+      vec3(.94, .48, .07), vec3(.99, .78, .22), vec3(1., .94, .80),
+      vec3(.78, .06, .22), vec3(1., .43, .37), vec3(1., .80, .82)
+    );
+    vec3 paleta(int k, float x) {
+      vec3 a = PAL[k * 3], b = PAL[k * 3 + 1], c = PAL[k * 3 + 2];
+      return x < .5 ? mix(a, b, smoothstep(0., .5, x)) : mix(b, c, smoothstep(.5, 1., x));
+    }
+    void main() {
+      vec2 p = (gl_FragCoord.xy - .5 * uRes) / uRes.y;
+      float t = uT * .05 + uSemente * 10.;
+      vec2 q = vec2(fbm(p * .7 + vec2(0., t)), fbm(p * .7 + vec2(5.2, -t)));
+      vec2 r = vec2(fbm(p * .8 + 1.6 * q + vec2(1.7, 9.2) + .5 * t), fbm(p * .8 + 1.6 * q + vec2(8.3, 2.8) - .4 * t));
+      float f = fbm(p * .6 + 1.8 * r);
+      // Regiões de cor com borda macia, como manchas de tinta grandes.
+      float x = smoothstep(.3, .72, f);
+      float ciclo = uT / 9. + uSemente * 4.;
+      int k0 = int(mod(floor(ciclo), 4.));
+      int k1 = int(mod(floor(ciclo) + 1., 4.));
+      vec3 col = mix(paleta(k0, x), paleta(k1, x), smoothstep(.5, 1., fract(ciclo)));
+      col += (h(gl_FragCoord.xy + fract(uT) * 97.) - .5) * .03;
+      cor = vec4(col, 1.);
+    }`
+
+    function criarShader(canvas) {
+      const gl = canvas.getContext('webgl2', { alpha: false, antialias: false })
+      if (!gl) {
+        canvas.style.background = 'linear-gradient(135deg, #0050cc, #1ab3f5 35%, #ff6f5e 70%, #ffd36b)'
+        return { iniciar() {}, parar() {} }
+      }
+      const vert = `#version 300 es
+      void main() { vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2)); gl_Position = vec4(p * 2. - 1., 0., 1.); }`
+      const prog = gl.createProgram()
+      for (const [tipo, src] of [[gl.VERTEX_SHADER, vert], [gl.FRAGMENT_SHADER, FRAG]]) {
+        const s = gl.createShader(tipo)
+        gl.shaderSource(s, src)
+        gl.compileShader(s)
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s))
+        gl.attachShader(prog, s)
+      }
+      gl.linkProgram(prog)
+      gl.useProgram(prog)
+      const uRes = gl.getUniformLocation(prog, 'uRes')
+      const uT = gl.getUniformLocation(prog, 'uT')
+      gl.uniform1f(gl.getUniformLocation(prog, 'uSemente'), Number(canvas.dataset.semente || 0))
+      let id = 0, inicio = 0
+      const quadro = (agora) => {
+        // Formas macias: meia resolução basta e poupa a GPU.
+        const w = Math.max(1, Math.round(canvas.clientWidth * 0.5))
+        const hh = Math.max(1, Math.round(canvas.clientHeight * 0.5))
+        if (canvas.width !== w || canvas.height !== hh) { canvas.width = w; canvas.height = hh }
+        gl.viewport(0, 0, w, hh)
+        gl.uniform2f(uRes, w, hh)
+        gl.uniform1f(uT, (agora - inicio) / 1000)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+        id = reduzido.matches ? 0 : requestAnimationFrame(quadro)
+      }
+      return {
+        iniciar() { cancelAnimationFrame(id); inicio = performance.now(); id = requestAnimationFrame(quadro) },
+        parar() { cancelAnimationFrame(id); id = 0 },
+      }
+    }
+
+    // =====================================================================
+    // 8. Apresentamos: Coral (marca vazada, texturas a cada 1,5 s)
+    // =====================================================================
+    const cenaVazado = document.querySelector('[data-vazado]')
+    const vazado = cenaVazado.querySelector('.vazado')
+    const camadas = [...vazado.querySelectorAll('.texturas > *')]
+    const TROCA_MS = 1500
+    let tique = 0, relogioCamadas = 0
+
+    // A cada tique: troca a textura e alterna entre a marca vazada e a marca branca sobre o vídeo.
+    // A ordem das texturas anda uma casa a cada volta, para nenhuma ficar presa a um modo só.
+    function aplicarTique() {
+      const n = camadas.length
+      const i = (tique + Math.floor(tique / n)) % n
+      camadas.forEach((c, j) => c.toggleAttribute('data-ativa', j === i))
+      cenaVazado.dataset.modo = tique % 2 ? 'cheio' : 'mascara'
+    }
+    aplicarTique()
+    cenaVazado.addEventListener('entrar', () => {
+      // Todas rodando juntas: a troca mostra movimento na hora, sem esperar o vídeo começar.
+      camadas.forEach((c) => c.tagName === 'VIDEO' && c.play().catch(() => {}))
+      // Chegando pela aquarela, começa no vídeo em tela cheia (o mar): os pingos revelam cor, não branco.
+      const pelaAquarela = cenaVazado.hasAttribute('data-chegada-seca')
+      tique = pelaAquarela ? 7 : 0
+      aplicarTique()
+      clearInterval(relogioCamadas)
+      clearTimeout(relogioCamadas)
+      const comecar = () => { relogioCamadas = setInterval(() => { tique++; aplicarTique() }, TROCA_MS) }
+      // Pela aquarela, a primeira troca espera os pingos terminarem.
+      if (pelaAquarela) relogioCamadas = setTimeout(() => { tique++; aplicarTique(); comecar() }, DURACAO_AQUARELA + 900)
+      else comecar()
+    })
+    cenaVazado.addEventListener('sair', () => { clearInterval(relogioCamadas); clearTimeout(relogioCamadas) })
+    cenaVazado.addEventListener('saiu', () => camadas.forEach((c) => c.tagName === 'VIDEO' && c.pause()))
+
+    // O logo oficial (img/coral.svg) é a máscara das texturas e a marca branca sobre o vídeo.
+    // Só aparece depois de carregado: sem isso, um instante de retângulo de vídeo sem máscara.
+    const LOGO = 'img/coral.svg'
+    const logoPronto = new Image()
+    logoPronto.src = LOGO
+    logoPronto.decode().catch(() => {}).finally(() => {
+      vazado.style.setProperty('--mascara', `url("${LOGO}")`)
+      vazado.style.setProperty('--proporcao', 1431 / 369)
+      vazado.setAttribute('data-mascara', '')
+    })
+
+    // =====================================================================
+    // Transição em aquarela: 7 → 8
+    // =====================================================================
+    // A mancha de tinta (pitch/img/aquarela/mancha.png, tratada a partir da imagem do Rodrigo) é a janela do slide 8:
+    // manchas caem aos poucos, uma de cada vez, do centro para fora, e cada uma se espalha do miolo para as franjas,
+    // mostrando o 8 por dentro; no fim, o que sobrou do "Apresentamos" se desfaz num ruído. Um shader desenha a
+    // máscara num canvas fora da tela, lida como imagem a cada quadro. Nada é pintado por cima.
+    const DURACAO_AQUARELA = 4600
+    const TINTA = new Image()
+    TINTA.src = 'img/aquarela/mancha.png'
+    let aquarelaAtual = null
+    let aqua = null // canvas e WebGL reaproveitados entre uma transição e outra
+
+    const FRAG_AQUARELA = `#version 300 es
+    precision highp float;
+    uniform vec2 uRes;
+    uniform float uT;
+    uniform int uN;
+    uniform sampler2D uTinta;
+    uniform vec4 uCarimbo[14]; // x, y (0..1, y para baixo), tamanho (fração da altura), rotação
+    uniform vec4 uTempo[14]; // início (s), duração (s), proporção da mancha, semente
+    uniform vec2 uAlaga; // início e fim do alagamento final (s)
+    out vec4 cor;
+
+    float h(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float ruido(vec2 p) {
+      vec2 i = floor(p), f = fract(p);
+      vec2 u = f * f * (3. - 2. * f);
+      return mix(mix(h(i), h(i + vec2(1, 0)), u.x), mix(h(i + vec2(0, 1)), h(i + vec2(1, 1)), u.x), u.y);
+    }
+    float fbm(vec2 p) {
+      float v = 0., a = .5;
+      for (int i = 0; i < 4; i++) { v += a * ruido(p); p *= 2.03; a *= .5; }
+      return v;
+    }
+    void main() {
+      vec2 uv = vec2(gl_FragCoord.x / uRes.x, 1. - gl_FragCoord.y / uRes.y);
+      float aspecto = uRes.x / uRes.y;
+      float buraco = 0.;
+      for (int k = 0; k < 14; k++) {
+        if (k >= uN) break;
+        vec4 c = uCarimbo[k];
+        vec4 tm = uTempo[k];
+        float p = clamp((uT - tm.x) / tm.y, 0., 1.);
+        if (p <= 0.) continue;
+        float e = p * p * (3. - 2. * p); // começa pequena e cresce devagar
+        vec2 d = uv - c.xy;
+        d.x *= aspecto;
+        float ca = cos(c.w), sa = sin(c.w);
+        d = mat2(ca, -sa, sa, ca) * d;
+        float tam = c.z * (.75 + .25 * e);
+        vec2 st = d / vec2(tam * tm.z, tam) + .5;
+        if (st.x < 0. || st.x > 1. || st.y < 0. || st.y > 1.) continue;
+        // Dissolve do mais denso e do centro para as franjas, com granulação de papel.
+        float r = clamp(length(st - .5) * 1.7, 0., 1.);
+        float ef = texture(uTinta, st).r * (1. - .55 * r) * (.82 + .36 * fbm(st * 8. + tm.w * 17.));
+        // O limite nunca vai a zero: papel sem tinta só some no alagamento final (sem caixas).
+        float lim = max(1. - e * 1.1, .06);
+        buraco = max(buraco, smoothstep(lim, lim + .09, ef));
+      }
+      float pa = clamp((uT - uAlaga.x) / (uAlaga.y - uAlaga.x), 0., 1.);
+      if (pa > 0.) {
+        float lim = 1. - pa * 1.2;
+        buraco = max(buraco, smoothstep(lim, lim + .07, fbm(uv * vec2(aspecto, 1.) * 3.2 + 4.1)));
+      }
+      cor = vec4(buraco, buraco, buraco, buraco);
+    }`
+
+    function prepararAqua() {
+      if (aqua) return aqua
+      const tela = document.createElement('canvas') // nunca entra na página: só gera a máscara
+      const gl = tela.getContext('webgl2', { premultipliedAlpha: true, alpha: true, antialias: false })
+      if (!gl) return null
+      const vert = `#version 300 es
+      void main() { vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2)); gl_Position = vec4(p * 2. - 1., 0., 1.); }`
+      const prog = gl.createProgram()
+      for (const [tipo, src] of [[gl.VERTEX_SHADER, vert], [gl.FRAGMENT_SHADER, FRAG_AQUARELA]]) {
+        const s = gl.createShader(tipo)
+        gl.shaderSource(s, src)
+        gl.compileShader(s)
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.error(gl.getShaderInfoLog(s)); return null }
+        gl.attachShader(prog, s)
+      }
+      gl.linkProgram(prog)
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.error(gl.getProgramInfoLog(prog)); return null }
+      gl.useProgram(prog)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, gl.createTexture())
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, TINTA)
+      gl.uniform1i(gl.getUniformLocation(prog, 'uTinta'), 0)
+      const loc = (n) => gl.getUniformLocation(prog, n)
+      aqua = {
+        tela,
+        gl,
+        u: { res: loc('uRes'), t: loc('uT'), n: loc('uN'), carimbo: loc('uCarimbo'), tempo: loc('uTempo'), alaga: loc('uAlaga') },
+      }
+      return aqua
+    }
+    const aquarelaPossivel = () => TINTA.complete && TINTA.naturalWidth > 0 && !!prepararAqua()
+
+    function transicaoAquarela(sai, chega) {
+      const { tela, gl, u } = aqua
+      const W = 640 // resolução da máscara: abaixo disso a beira das manchas serrilha
+      const H = Math.max(1, Math.round((W * innerHeight) / innerWidth))
+      tela.width = W
+      tela.height = H
+      gl.viewport(0, 0, W, H)
+
+      // 12 manchas numa grade 4×3 com sorteio; caem aos poucos, uma de cada vez, do centro para fora.
+      const manchas = []
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 4; c++) {
+          const x = (c + 0.5 + (Math.random() - 0.5) * 0.6) / 4
+          const y = (r + 0.5 + (Math.random() - 0.5) * 0.6) / 3
+          manchas.push({ x, y, ordem: Math.hypot(x - 0.5, y - 0.5) + Math.random() * 0.12 })
+        }
+      }
+      manchas.sort((a, b) => a.ordem - b.ordem)
+      const carimbo = new Float32Array(56)
+      const tempo = new Float32Array(56)
+      manchas.forEach((m, k) => {
+        carimbo.set([m.x, m.y, 0.66 + Math.random() * 0.2, Math.random() * Math.PI * 2], k * 4)
+        tempo.set([0.1 + k * 0.22 + Math.random() * 0.08, 1.5 + Math.random() * 0.4, 0.85 + Math.random() * 0.3, Math.random() * 10], k * 4)
+      })
+      gl.uniform2f(u.res, W, H)
+      gl.uniform1i(u.n, manchas.length)
+      gl.uniform4fv(u.carimbo, carimbo)
+      gl.uniform4fv(u.tempo, tempo)
+      gl.uniform2f(u.alaga, 3.4, 4.5)
+
+      const desenhar = (t) => {
+        gl.uniform1f(u.t, t)
+        gl.clearColor(0, 0, 0, 0)
+        gl.clear(gl.COLOR_BUFFER_BIT)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+      }
+      const inicio = performance.now()
+      let id = 0
+      // A máscara vai no 8: só aparece onde a tinta já chegou (no último quadro, tudo).
+      const mascarar = (t) => {
+        desenhar(t)
+        const url = `url("${tela.toDataURL()}")`
+        chega.style.webkitMaskImage = url
+        chega.style.maskImage = url
+      }
+      const quadro = (agora) => {
+        const fim = agora - inicio >= DURACAO_AQUARELA
+        mascarar(fim ? 99 : (agora - inicio) / 1000)
+        if (fim) terminar()
+        else id = requestAnimationFrame(quadro)
+      }
+      function terminar() {
+        cancelAnimationFrame(id)
+        // O 7 sai sem transição (já está coberto) e só então o 8 perde a máscara.
+        sai.style.transition = 'none'
+        sai.removeAttribute('data-aquarela')
+        sai.getBoundingClientRect()
+        sai.style.transition = ''
+        chega.style.webkitMaskImage = ''
+        chega.style.maskImage = ''
+        chega.removeAttribute('data-chegada-seca')
+        aquarelaAtual = null
+      }
+      // Primeiro quadro na hora (sem tinta nenhuma): o 8 não chega a aparecer inteiro nem por um instante.
+      mascarar(0)
+      aquarelaAtual = { cancelar: terminar }
+      id = requestAnimationFrame(quadro)
+    }
+
+    // =====================================================================
+    // 10. Final
+    // =====================================================================
+    const cenaFinal = document.querySelector('[data-final]')
+    const shaderFinal = criarShader(cenaFinal.querySelector('canvas'))
+    const marcaFinal = cenaFinal.querySelector('.marca')
+    const letrasDoLogo = [...marcaFinal.querySelectorAll('path')]
+    Object.assign(cenaFinal, { _anims: [], _timers: [], _vez: 0 })
+    cenaFinal.addEventListener('entrar', () => {
+      shaderFinal.iniciar()
+      zerar(cenaFinal)
+      // Aparece no lugar: o logo sai do desfoque e cada letra cresce de leve, uma depois da outra.
+      const sombra = 'drop-shadow(0 6px 40px rgb(0 0 0 / 0.14))'
+      tocar(cenaFinal, marcaFinal, [
+        { opacity: 0, filter: `blur(16px) ${sombra}` },
+        { opacity: 1, filter: `blur(0px) ${sombra}` },
+      ], { duration: 1400, delay: 600, easing: SAIDA })
+      letrasDoLogo.forEach((letra, j) => {
+        tocar(cenaFinal, letra, [{ opacity: 0, transform: 'scale(0.82)' }, { opacity: 1, transform: 'none' }], {
+          duration: 1200,
+          delay: 600 + j * 90,
+          easing: EXPO,
+        })
+      })
+    })
+    cenaFinal.addEventListener('saiu', () => { shaderFinal.parar(); zerar(cenaFinal) })
+
+    // =====================================================================
+    // Entrada
+    // =====================================================================
+    mostrar(atual)
+    const passoInicial = limitar(Number(params.get('passo')) || 0, 0, passosDe(momentos[atual]))
+    if (passoInicial) { passo = passoInicial; definirPasso(momentos[atual], passo) }
+
+    // =====================================================================
+    // Teclado, clique, passador
+    // =====================================================================
+    addEventListener('keydown', (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+      if (e.target.closest('input, textarea, [contenteditable="true"]')) return
+      const tecla = e.key.length === 1 ? e.key.toLowerCase() : e.key
+      // No tambor, ↓ e ↑ giram as palavras em vez de trocar de momento.
+      if (momentos[atual] === cenaTambor && (tecla === 'ArrowDown' || tecla === 'ArrowUp')) {
+        e.preventDefault()
+        girarNaMao(tecla === 'ArrowDown' ? 1 : -1)
+        return
+      }
+      if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(tecla)) { e.preventDefault(); avancar() }
+      else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(tecla)) { e.preventDefault(); voltar() }
+      else if (tecla === 'f') {
+        if (document.fullscreenElement) document.exitFullscreen()
+        else raiz.requestFullscreen?.()
+      }
+      else if (tecla === 'l') definirTema(raiz.dataset.tema === 'escuro' ? 'claro' : 'escuro')
+    })
+    palco.addEventListener('click', (e) => { if (e.button === 0) avancar() })
+
+    // =====================================================================
+    // Cursor
+    // =====================================================================
+    if (matchMedia('(pointer: fine)').matches) {
+      raiz.classList.add('cursor-proprio')
+      const anelCursor = document.querySelector('.cursor')
+      let x = innerWidth / 2, y = innerHeight / 2, ax = x, ay = y
+      let laco = 0, ocioso = 0
+      const quadro = () => {
+        const k = reduzido.matches ? 1 : 0.24
+        ax += (x - ax) * k
+        ay += (y - ay) * k
+        anelCursor.style.transform = `translate(${ax}px, ${ay}px)`
+        // Para o laço quando o anel alcança o mouse.
+        laco = Math.abs(x - ax) + Math.abs(y - ay) > 0.2 ? requestAnimationFrame(quadro) : 0
+      }
+      addEventListener('pointermove', (e) => {
+        x = e.clientX
+        y = e.clientY
+        anelCursor.setAttribute('data-visivel', '')
+        clearTimeout(ocioso)
+        ocioso = setTimeout(() => anelCursor.removeAttribute('data-visivel'), 3000)
+        if (!laco) laco = requestAnimationFrame(quadro)
+      })
+      addEventListener('pointerdown', () => anelCursor.setAttribute('data-press', ''))
+      addEventListener('pointerup', () => anelCursor.removeAttribute('data-press'))
+      document.addEventListener('mouseleave', () => anelCursor.removeAttribute('data-visivel'))
+    }
+  </script>
+</body>
+</html>

@@ -327,7 +327,7 @@ class _DesignApp extends StatelessWidget {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: designThemeMode,
       builder: (context, mode, _) => MaterialApp.router(
-        title: 'Studio Design',
+        title: 'Coral',
         // Cor do app pro sistema (seletor de abas). No web o Title também a
         // manda pra meta `theme-color` do engine — sem ela ia o roxo do
         // Material. Quem vale no navegador é a `#mare-theme` (index.html),

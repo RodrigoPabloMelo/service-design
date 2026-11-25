@@ -2,7 +2,7 @@
 
 Repositório de service design de um app para **mulheres viajantes descobrirem rolês locais com confiança e segurança** (piloto Recife/Olinda). Projeto da disciplina DD032, 2026.2 — Rodrigo, Eulália e Maria Clara.
 
-O repo tem duas partes: a **documentação do serviço** (`docs/`, `UX.md`, `diagrams/`, `research/`) — fonte de verdade — e o **protótipo navegável** em Flutter (`prototype/app/`), que materializa partes do serviço. Maré é o nome de trabalho usado no protótipo; o nome do serviço continua em aberto ([Q-01](docs/questoes-em-aberto.md#q-01)).
+O repo tem duas partes: a **documentação do serviço** (`docs/`, `UX.md`, `diagrams/`, `research/`) — fonte de verdade — e o **protótipo navegável** em Flutter (`prototype/app/`), que materializa partes do serviço. O serviço se chama **Coral** ([D-32](docs/decisoes.md)); **Maré** é a assistente de IA do app (o agente de roteiros) e dá nome ao sistema visual de trabalho (`mare-design`). Junto mora o **pitch** da Coral (`pitch/`).
 
 ## Gerando qualquer coisa (telas, fluxos, textos, protótipos, slides, código de UI)
 
@@ -81,3 +81,11 @@ Preview: `design-preview` em `.claude/launch.json` (porta 8080), abrir `/agente`
 ### Commits
 
 Conventional commits em pt-BR: `feat(agente): ...`, `fix(...)`, `docs: ...`, `chore: ...`.
+
+## Pitch (`pitch/`)
+
+Apresentação interativa da Coral, construída aos poucos. **Leia [pitch/DIRECAO.md](pitch/DIRECAO.md) antes de mexer**: direção de estilo e o que vale neste pitch (sem som, slides brancos no tema claro com o azul do app, só fontes do app, só põe na tela o texto que o Rodrigo mandar, créditos do Magnific só com aprovação).
+
+- HTML + CSS + JS puro em `pitch/index.html`, fotos em `pitch/img/` e vídeos em `pitch/video/` (créditos no `CREDITS.md` de cada pasta). Fora do Flutter: as regras do protótipo não se aplicam aqui.
+- Publica junto com o protótipo em `/pitch`: `vercel_build.sh` copia a pasta para `build/web/pitch` e o `vercel.json` tem os rewrites antes do catch-all.
+- Preview: `pitch-preview` em `.claude/launch.json` (porta 8090), abrir `/pitch/`. Ensaio direto: `?momento=N&passo=N`.
