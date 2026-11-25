@@ -780,22 +780,25 @@
     .bp-em-foco .bp-nome { color: var(--azul-texto); }
 
     /*
-      ---------- Dado: 96,7% (IBGE, 2024; docs/visao-do-servico.md) ----------
-      O número conta de 0 até 96,7 em algarismos tabulares (não tremem enquanto contam); a frase vem do desfoque.
+      ---------- Dados (docs/visao-do-servico.md, "Dados usados na apresentação") ----------
+      Três colunas. Cada número conta de 0 até o valor em algarismos tabulares (não tremem enquanto contam); a frase e
+      a fonte chegam do desfoque. Uma coluna depois da outra.
     */
-    .dado {
+    .dados {
       position: absolute;
-      left: 50%;
-      top: 50%;
-      translate: -50% -50%;
-      width: min(84vw, 15em);
-      margin: 0;
-      font-size: clamp(1.6rem, 3.3vw, 4rem);
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5vw;
+      align-content: center;
+      align-items: start;
+      padding: 0 7vw;
       color: var(--texto);
     }
+    .dado { margin: 0; }
     .dado-numero {
       display: block;
-      font-size: 3.4em;
+      font-size: clamp(3.2rem, 7vw, 8.6rem);
       font-weight: 300;
       line-height: 0.95;
       letter-spacing: -0.045em;
@@ -804,27 +807,38 @@
       opacity: 0;
     }
     .dado-numero .pct { color: var(--azul-texto); }
-    .dado-frase { display: block; margin-top: 0.35em; font-weight: 300; line-height: 1.14; letter-spacing: -0.03em; text-wrap: balance; }
+    .dado-frase {
+      display: block;
+      margin-top: 0.45em;
+      font-size: clamp(1.1rem, 1.9vw, 2.3rem);
+      font-weight: 300;
+      line-height: 1.16;
+      letter-spacing: -0.025em;
+      text-wrap: balance;
+    }
+    .dado-frase em { font-style: italic; font-weight: 400; color: var(--azul-texto); font-variant-numeric: tabular-nums; }
     .dado-fonte {
       display: block;
-      margin-top: 1.6em;
-      font-size: 0.42em;
-      font-weight: 400;
-      letter-spacing: 0;
+      margin-top: 1.4em;
+      font-size: clamp(0.75rem, 0.95vw, 1.15rem);
+      line-height: 1.35;
       color: var(--texto-2);
       font-variant-numeric: tabular-nums;
+      text-wrap: pretty;
+    }
+    @media (max-aspect-ratio: 1/1) {
+      .dados { grid-template-columns: 1fr; gap: 4vh; }
     }
 
     /*
       ---------- Técnicas e ferramentas de design ----------
-      Técnicas na ordem do projeto (docs/pesquisa.md "Métodos usados" e os artefatos do serviço); ferramentas que o
-      repositório comprova. Títulos sobem de uma fresta; cada item chega do desfoque, em cascata.
+      Técnicas = como pesquisamos e testamos; ferramentas = os artefatos de design do serviço (pedido do Rodrigo). Títulos sobem de uma fresta; cada item chega do desfoque, em cascata.
     */
     .metodos {
       position: absolute;
       inset: 0;
       display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
       gap: 6vw;
       align-content: center;
       padding: 0 8vw;
@@ -834,7 +848,7 @@
     :root[data-tema="escuro"] .metodos { --fio: rgb(242 242 245 / 0.14); }
     .metodos-titulo { margin: 0 0 0.7em; font-size: clamp(1.9rem, 3.4vw, 4.1rem); font-weight: 300; line-height: 1.05; letter-spacing: -0.035em; }
     .metodos ol, .metodos ul { list-style: none; margin: 0; padding: 0; font-size: clamp(1rem, 1.42vw, 1.75rem); line-height: 1.22; letter-spacing: -0.015em; }
-    .metodos-tecnicas ol { columns: 2; column-gap: 3.5vw; }
+    .metodos-ferramentas ol { columns: 2; column-gap: 3.5vw; }
     .metodos li { display: flex; gap: 0.85em; align-items: baseline; padding: 0.6em 0; border-top: 1px solid var(--fio); break-inside: avoid; opacity: 0; }
     .metodos .num { flex: none; min-width: 1.5em; font-size: 0.62em; font-weight: 600; color: var(--azul-texto); font-variant-numeric: tabular-nums; }
     .metodos .desc { display: block; margin-top: 0.2em; font-size: 0.7em; color: var(--texto-2); letter-spacing: -0.005em; }
@@ -1050,18 +1064,30 @@
       </div>
     </section>
 
-    <!-- 10. Dado (IBGE, 2024), do Rodrigo; também em docs/visao-do-servico.md. -->
-    <section class="momento" data-passos="0" data-brilho="normal" data-luz="0.7" data-cena-dado aria-label="96,7% das viagens dos brasileiros são dentro do país (IBGE, 2024)">
-      <p class="dado">
-        <span class="dado-numero" aria-hidden="true"><span class="valor">96,7</span><span class="pct">%</span></span>
-        <span class="dado-frase" data-coreo="desfoque" data-ritmo="90">das viagens dos brasileiros são dentro do país</span>
-        <span class="dado-fonte" data-coreo="desfoque">(IBGE, 2024)</span>
-      </p>
+    <!-- 10. Dados do Rodrigo (também em docs/visao-do-servico.md), lado a lado, uma coluna depois da outra. -->
+    <section class="momento" data-passos="0" data-brilho="normal" data-luz="0.7" data-cena-dado aria-label="96,7% das viagens dos brasileiros são dentro do país (IBGE, 2024). 41,8% das brasileiras já viajaram sozinhas (Ministério do Turismo e UNESCO, 2025). 80% dos viajantes visitam apenas 10% dos destinos turísticos do mundo (Murmuration e National Geographic, 2024).">
+      <div class="dados">
+        <p class="dado" data-alvo="96.7" data-casas="1">
+          <span class="dado-numero" aria-hidden="true"><span class="valor">96,7</span><span class="pct">%</span></span>
+          <span class="dado-frase" data-coreo="desfoque" data-ritmo="70">das viagens dos brasileiros são dentro do país</span>
+          <span class="dado-fonte" data-coreo="desfoque" data-ritmo="40">(IBGE, 2024)</span>
+        </p>
+        <p class="dado" data-alvo="41.8" data-casas="1">
+          <span class="dado-numero" aria-hidden="true"><span class="valor">41,8</span><span class="pct">%</span></span>
+          <span class="dado-frase" data-coreo="desfoque" data-ritmo="70">das brasileiras já viajaram sozinhas</span>
+          <span class="dado-fonte" data-coreo="desfoque" data-ritmo="40">Ministério do Turismo &amp; UNESCO (“Mulheres que Viajam Sozinhas”, 2025)</span>
+        </p>
+        <p class="dado" data-alvo="80" data-casas="0">
+          <span class="dado-numero" aria-hidden="true"><span class="valor">80</span><span class="pct">%</span></span>
+          <span class="dado-frase" data-coreo="desfoque" data-ritmo="70">dos viajantes visitam apenas <em>10%</em> dos destinos turísticos do mundo</span>
+          <span class="dado-fonte" data-coreo="desfoque" data-ritmo="40">Murmuration &amp; National Geographic (“Is overtourism a problem?”, 2024)</span>
+        </p>
+      </div>
     </section>
 
     <!--
-      11. Técnicas e ferramentas de design. Técnicas: docs/pesquisa.md ("Métodos usados") e os artefatos do serviço
-      (mapa, blueprint, fluxos, storyboard, protótipo). Ferramentas: só as que o repositório comprova. Entra sozinho.
+      11. Técnicas e ferramentas de design. Técnicas: como pesquisamos e testamos (docs/pesquisa.md). Ferramentas: os
+      artefatos de design do serviço (matriz CSD, personas, jornada, mapa do sistema, blueprint, fluxos, storyboard).
     -->
     <section class="momento" data-passos="0" data-brilho="normal" data-luz="0.6" data-cena-metodos aria-label="Técnicas e ferramentas de design">
       <div class="metodos">
@@ -1071,25 +1097,20 @@
             <li><span class="num">01</span><span>Desk research</span></li>
             <li><span class="num">02</span><span>Análise de concorrentes</span></li>
             <li><span class="num">03</span><span>Entrevistas semiestruturadas</span></li>
-            <li><span class="num">04</span><span>Matriz CSD</span></li>
-            <li><span class="num">05</span><span>Personas</span></li>
-            <li><span class="num">06</span><span>Mapa de jornada</span></li>
-            <li><span class="num">07</span><span>Mapa do sistema</span></li>
-            <li><span class="num">08</span><span>Blueprint de serviço</span></li>
-            <li><span class="num">09</span><span>Fluxos de tela</span></li>
-            <li><span class="num">10</span><span>Storyboard</span></li>
-            <li><span class="num">11</span><span>Protótipo navegável</span></li>
+            <li><span class="num">04</span><span>Prototipagem</span></li>
           </ol>
         </div>
         <div class="metodos-ferramentas">
           <p class="metodos-titulo" data-coreo="subir">Ferramentas</p>
-          <ul>
-            <li><span><span class="nome-ferramenta">Claude Code</span><span class="desc">documentação, diagramas e protótipo</span></span></li>
-            <li><span><span class="nome-ferramenta">Flutter</span><span class="desc">protótipo navegável</span></span></li>
-            <li><span><span class="nome-ferramenta">Vercel</span><span class="desc">publicação do protótipo e do pitch</span></span></li>
-            <li><span><span class="nome-ferramenta">GitHub</span><span class="desc">versionamento</span></span></li>
-            <li><span><span class="nome-ferramenta">Magnific</span><span class="desc">vídeos de textura do pitch</span></span></li>
-          </ul>
+          <ol>
+            <li><span class="num">01</span><span>Matriz CSD</span></li>
+            <li><span class="num">02</span><span>Personas</span></li>
+            <li><span class="num">03</span><span>Mapa de jornada</span></li>
+            <li><span class="num">04</span><span>Mapa do sistema</span></li>
+            <li><span class="num">05</span><span>Blueprint de serviço</span></li>
+            <li><span class="num">06</span><span>Fluxos de tela</span></li>
+            <li><span class="num">07</span><span>Storyboard</span></li>
+          </ol>
         </div>
       </div>
     </section>
@@ -1826,42 +1847,49 @@
     cenaProposta.addEventListener('saiu', limparProposta)
 
     // =====================================================================
-    // 10. Dado: o número conta até 96,7 e a frase chega do desfoque
+    // 10. Dados: cada número conta até o valor; frase e fonte chegam do desfoque, coluna a coluna
     // =====================================================================
     const cenaDado = document.querySelector('[data-cena-dado]')
-    const numeroDado = cenaDado.querySelector('.dado-numero')
-    const valorDado = numeroDado.querySelector('.valor')
-    const fraseDado = cenaDado.querySelector('.dado-frase')
-    const fonteDado = cenaDado.querySelector('.dado-fonte')
-    const ALVO_DADO = 96.7
-    const formatoDado = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+    const colunasDado = [...cenaDado.querySelectorAll('.dado')].map((el) => ({
+      numero: el.querySelector('.dado-numero'),
+      valor: el.querySelector('.valor'),
+      frase: el.querySelector('.dado-frase'),
+      fonte: el.querySelector('.dado-fonte'),
+      alvo: Number(el.dataset.alvo),
+      formato: new Intl.NumberFormat('pt-BR', { minimumFractionDigits: +el.dataset.casas, maximumFractionDigits: +el.dataset.casas }),
+    }))
     let lacoDado = 0
     Object.assign(cenaDado, { _anims: [], _timers: [], _vez: 0 })
     cenaDado.addEventListener('entrar', () => {
       zerar(cenaDado)
       cancelAnimationFrame(lacoDado)
-      valorDado.textContent = formatoDado.format(reduzido.matches ? ALVO_DADO : 0)
-      tocar(cenaDado, numeroDado, [
-        { opacity: 0, filter: 'blur(14px)', transform: 'translateY(0.12em)' },
-        { opacity: 1, filter: 'blur(0px)', transform: 'none' },
-      ], { duration: 900, delay: 350, easing: SAIDA })
-      if (!reduzido.matches) {
-        const DUR = 2000, ini = performance.now() + 450
-        const contar = (agora) => {
-          const t = limitar((agora - ini) / DUR, 0, 1)
-          valorDado.textContent = formatoDado.format(ALVO_DADO * (1 - Math.pow(2, -10 * t)) / (1 - Math.pow(2, -10)))
-          lacoDado = t < 1 ? requestAnimationFrame(contar) : 0
-        }
-        lacoDado = requestAnimationFrame(contar)
+      const DUR = 1800, PASSO = 900
+      const ini = performance.now()
+      colunasDado.forEach((c, k) => {
+        c.valor.textContent = c.formato.format(reduzido.matches ? c.alvo : 0)
+        tocar(cenaDado, c.numero, [
+          { opacity: 0, filter: 'blur(14px)', transform: 'translateY(0.12em)' },
+          { opacity: 1, filter: 'blur(0px)', transform: 'none' },
+        ], { duration: 900, delay: 350 + k * PASSO, easing: SAIDA })
+        entrar(c.frase, 1300 + k * PASSO)
+        entrar(c.fonte, 2100 + k * PASSO)
+      })
+      if (reduzido.matches) return
+      const contar = (agora) => {
+        let vivo = false
+        colunasDado.forEach((c, k) => {
+          const t = limitar((agora - ini - 450 - k * PASSO) / DUR, 0, 1)
+          c.valor.textContent = c.formato.format((c.alvo * (1 - Math.pow(2, -10 * t))) / (1 - Math.pow(2, -10)))
+          if (t < 1) vivo = true
+        })
+        lacoDado = vivo ? requestAnimationFrame(contar) : 0
       }
-      entrar(fraseDado, 1500)
-      entrar(fonteDado, 2700)
+      lacoDado = requestAnimationFrame(contar)
     })
     cenaDado.addEventListener('saiu', () => {
       cancelAnimationFrame(lacoDado)
       zerar(cenaDado)
-      zerar(fraseDado)
-      zerar(fonteDado)
+      colunasDado.forEach((c) => { zerar(c.frase); zerar(c.fonte) })
     })
 
     // =====================================================================
