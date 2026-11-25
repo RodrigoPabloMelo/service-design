@@ -779,6 +779,42 @@
     .bp-fora { --oc: 0.3; }
     .bp-em-foco .bp-nome { color: var(--azul-texto); }
 
+    /*
+      ---------- Dado: 96,7% (IBGE, 2024; docs/visao-do-servico.md) ----------
+      O número conta de 0 até 96,7 em algarismos tabulares (não tremem enquanto contam); a frase vem do desfoque.
+    */
+    .dado {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      translate: -50% -50%;
+      width: min(84vw, 15em);
+      margin: 0;
+      font-size: clamp(1.6rem, 3.3vw, 4rem);
+      color: var(--texto);
+    }
+    .dado-numero {
+      display: block;
+      font-size: 3.4em;
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+      opacity: 0;
+    }
+    .dado-numero .pct { color: var(--azul-texto); }
+    .dado-frase { display: block; margin-top: 0.35em; font-weight: 300; line-height: 1.14; letter-spacing: -0.03em; text-wrap: balance; }
+    .dado-fonte {
+      display: block;
+      margin-top: 1.6em;
+      font-size: 0.42em;
+      font-weight: 400;
+      letter-spacing: 0;
+      color: var(--texto-2);
+      font-variant-numeric: tabular-nums;
+    }
+
     /* Transição: passar o mouse em "Camila" mostra a foto dela, que segue o mouse até sair. */
     .foto-segue {
       position: absolute;
@@ -990,8 +1026,17 @@
       </div>
     </section>
 
+    <!-- 10. Dado (IBGE, 2024), do Rodrigo; também em docs/visao-do-servico.md. -->
+    <section class="momento" data-passos="0" data-brilho="normal" data-luz="0.7" data-cena-dado aria-label="96,7% das viagens dos brasileiros são dentro do país (IBGE, 2024)">
+      <p class="dado">
+        <span class="dado-numero" aria-hidden="true"><span class="valor">96,7</span><span class="pct">%</span></span>
+        <span class="dado-frase" data-coreo="desfoque" data-ritmo="90">das viagens dos brasileiros são dentro do país</span>
+        <span class="dado-fonte" data-coreo="desfoque">(IBGE, 2024)</span>
+      </p>
+    </section>
+
     <!--
-      10. Mapa do sistema (fonte: diagrams/ecossistema.html e docs/ecossistema.md, atores A-1 a A-7). Ao entrar,
+      11. Mapa do sistema (fonte: diagrams/ecossistema.html e docs/ecossistema.md, atores A-1 a A-7). Ao entrar,
       os atores aparecem e os fluxos se desenham; passar o mouse num ator ou num item da legenda destaca os fluxos
       dele. Adaptação: o Grupo (A-2, a equipe que faz a curadoria) aparece com a marca da Coral.
     -->
@@ -1072,7 +1117,7 @@
     </section>
 
     <!--
-      11. Blueprint (fonte: diagrams/blueprint.html, v2, D-23), montado pelo script. Passo 0: inteiro na tela.
+      12. Blueprint (fonte: diagrams/blueprint.html, v2, D-23), montado pelo script. Passo 0: inteiro na tela.
       Passos 1 a 3, uma faixa por vez em leitura, com as etapas presas no topo: a jornada da viajante; a linha de
       frente e os bastidores; o suporte e os parceiros. Passar o mouse numa coluna destaca a etapa.
       Adaptação: "agente" vira Maré (D-32). O que termina em "?" segue como questão em aberto (tracejado).
@@ -1085,14 +1130,14 @@
       </div>
     </section>
 
-    <!-- 12. Transição para o storyboard (texto do Rodrigo). Mouse em "Camila": a foto dela segue o mouse. -->
+    <!-- 13. Transição para o storyboard (texto do Rodrigo). Mouse em "Camila": a foto dela segue o mouse. -->
     <section class="momento" data-passos="0" data-brilho="normal" data-cena-transicao>
       <img class="foto-segue" src="img/camila.webp" alt="" aria-hidden="true" decoding="async" />
       <p class="frase" data-coreo="montar">Vamos acompanhar <em>Camila</em> em uma viagem para Recife.</p>
     </section>
 
     <!--
-      13. Camila (P-CAMILA, docs/personas.md), antes da primeira cena. Foto e texto do Rodrigo; entra sozinho, sem passos.
+      14. Camila (P-CAMILA, docs/personas.md), antes da primeira cena. Foto e texto do Rodrigo; entra sozinho, sem passos.
     -->
     <section class="momento" data-passos="0" data-brilho="normal" data-luz="0.6" data-cena-camila aria-label="Camila">
       <div class="camila">
@@ -1107,7 +1152,7 @@
     </section>
 
     <!--
-      14. Storyboard da Camila (P-CAMILA, sozinha, 3 dias em Recife): 10 quadros em tela cheia, um por passo,
+      15. Storyboard da Camila (P-CAMILA, sozinha, 3 dias em Recife): 10 quadros em tela cheia, um por passo,
       com a legenda num bloco preto na largura toda. Imagens do Rodrigo (img/storyboard). Legendas são RASCUNHO.
     -->
     <section class="momento" data-passos="9" data-cena-storyboard aria-label="Storyboard">
@@ -1138,7 +1183,7 @@
     </section>
 
     <!--
-      15. Final: o logo sobre cor viva, como os destinos. Aparece no lugar, saindo do desfoque, e a tagline vem
+      16. Final: o logo sobre cor viva, como os destinos. Aparece no lugar, saindo do desfoque, e a tagline vem
       embaixo. Passo 1: marca e tagline sobem e encolhem e o QR do app (raiz do deploy, abre na primeira tela) aparece.
     -->
     <section class="momento" data-passos="1" data-final>
@@ -1722,7 +1767,46 @@
     cenaProposta.addEventListener('saiu', limparProposta)
 
     // =====================================================================
-    // 10. Mapa do sistema: atores aparecem, fluxos se desenham; mouse destaca
+    // 10. Dado: o número conta até 96,7 e a frase chega do desfoque
+    // =====================================================================
+    const cenaDado = document.querySelector('[data-cena-dado]')
+    const numeroDado = cenaDado.querySelector('.dado-numero')
+    const valorDado = numeroDado.querySelector('.valor')
+    const fraseDado = cenaDado.querySelector('.dado-frase')
+    const fonteDado = cenaDado.querySelector('.dado-fonte')
+    const ALVO_DADO = 96.7
+    const formatoDado = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+    let lacoDado = 0
+    Object.assign(cenaDado, { _anims: [], _timers: [], _vez: 0 })
+    cenaDado.addEventListener('entrar', () => {
+      zerar(cenaDado)
+      cancelAnimationFrame(lacoDado)
+      valorDado.textContent = formatoDado.format(reduzido.matches ? ALVO_DADO : 0)
+      tocar(cenaDado, numeroDado, [
+        { opacity: 0, filter: 'blur(14px)', transform: 'translateY(0.12em)' },
+        { opacity: 1, filter: 'blur(0px)', transform: 'none' },
+      ], { duration: 900, delay: 350, easing: SAIDA })
+      if (!reduzido.matches) {
+        const DUR = 2000, ini = performance.now() + 450
+        const contar = (agora) => {
+          const t = limitar((agora - ini) / DUR, 0, 1)
+          valorDado.textContent = formatoDado.format(ALVO_DADO * (1 - Math.pow(2, -10 * t)) / (1 - Math.pow(2, -10)))
+          lacoDado = t < 1 ? requestAnimationFrame(contar) : 0
+        }
+        lacoDado = requestAnimationFrame(contar)
+      }
+      entrar(fraseDado, 1500)
+      entrar(fonteDado, 2700)
+    })
+    cenaDado.addEventListener('saiu', () => {
+      cancelAnimationFrame(lacoDado)
+      zerar(cenaDado)
+      zerar(fraseDado)
+      zerar(fonteDado)
+    })
+
+    // =====================================================================
+    // 11. Mapa do sistema: atores aparecem, fluxos se desenham; mouse destaca
     // =====================================================================
     const cenaMapa = document.querySelector('[data-cena-mapa]')
     const mapa = cenaMapa.querySelector('.mapa')
@@ -1875,7 +1959,7 @@
     })
 
     // =====================================================================
-    // 11. Blueprint: inteiro, depois uma faixa por vez com as etapas no topo
+    // 12. Blueprint: inteiro, depois uma faixa por vez com as etapas no topo
     // =====================================================================
     // Conteúdo de diagrams/blueprint.html (DATA). Mudou lá, mude aqui. Só "agente" virou Maré (D-32).
     const BLUEPRINT = {
@@ -2077,7 +2161,7 @@
     bpJanela.addEventListener('pointerleave', () => focarColuna(null))
 
     // =====================================================================
-    // 12. Transição para o storyboard
+    // 13. Transição para o storyboard
     // =====================================================================
     const cenaTransicao = document.querySelector('[data-cena-transicao]')
     const fraseTransicao = cenaTransicao.querySelector('.frase')
@@ -2116,7 +2200,7 @@
     cenaTransicao.addEventListener('sair', () => mostrarFoto(false))
 
     // =====================================================================
-    // 13. Camila: foto nasce de baixo para cima, nome sobe, o resto chega em cascata
+    // 14. Camila: foto nasce de baixo para cima, nome sobe, o resto chega em cascata
     // =====================================================================
     const cenaCamila = document.querySelector('[data-cena-camila]')
     const fotoCamila = cenaCamila.querySelector('.camila-foto img')
@@ -2140,7 +2224,7 @@
     })
 
     // =====================================================================
-    // 14. Storyboard: um quadro por passo; a faixa preta fica e só a legenda troca
+    // 15. Storyboard: um quadro por passo; a faixa preta fica e só a legenda troca
     // =====================================================================
     const cenaStory = document.querySelector('[data-cena-storyboard]')
     const quadros = [...cenaStory.querySelectorAll('.quadros img')]
@@ -2569,7 +2653,7 @@
     }
 
     // =====================================================================
-    // 15. Final
+    // 16. Final
     // =====================================================================
     const cenaFinal = document.querySelector('[data-final]')
     const shaderFinal = criarShader(cenaFinal.querySelector('canvas'))
